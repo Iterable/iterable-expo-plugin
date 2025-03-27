@@ -2,4 +2,4 @@
 // and on native platforms to ExpoAdapterIterableModule.ts
 export { default } from './ExpoAdapterIterableModule';
 export { default as ExpoAdapterIterableView } from './ExpoAdapterIterableView';
-export * from  './ExpoAdapterIterable.types';
+export * from './ExpoAdapterIterable.types';
