@@ -1,17 +1,10 @@
 {
-  "platforms": [
-    "apple",
-    "android",
-    "web"
-  ],
+  "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": [
-      "ExpoAdapterIterableModule"
-    ]
+    "modules": ["ExpoAdapterIterableModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.adapters.iterable.ExpoAdapterIterableModule"
-    ]
-  }
+    "modules": ["expo.modules.adapters.iterable.ExpoAdapterIterableModule"]
+  },
+  "newArchEnabled": false
 }
