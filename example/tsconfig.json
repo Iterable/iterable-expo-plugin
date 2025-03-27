@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@iterable/expo-plugin": ["../src/index"],
+      "@iterable/expo-plugin/*": ["../src/*"]
+    }
+  }
+}
