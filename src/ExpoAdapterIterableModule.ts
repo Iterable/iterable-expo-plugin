@@ -6,6 +6,8 @@ declare class ExpoAdapterIterableModule extends NativeModule<ExpoAdapterIterable
   PI: number;
   hello(): string;
   setValueAsync(value: string): Promise<void>;
+  // Gets the api key set in the expo config.
+  getApiKey(): string;
 }
 
 // This call loads the native module object from the JSI.

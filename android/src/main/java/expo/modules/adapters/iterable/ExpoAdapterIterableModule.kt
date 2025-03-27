@@ -14,6 +14,12 @@ class ExpoAdapterIterableModule : Module() {
     // The module will be accessible from `requireNativeModule('ExpoAdapterIterable')` in JavaScript.
     Name("ExpoAdapterIterable")
 
+    // Sets a JavaScript function that runs the native code on the JavaScript
+    // thread.  This function will return the api key set in the expo config.
+    Function("getApiKey") {
+      return@Function "api-key"
+    }
+
     // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants(
       "PI" to Math.PI

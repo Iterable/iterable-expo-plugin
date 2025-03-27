@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
-  # s.dependency 'Iterable-React-Native-SDK'
+  s.dependency 'Iterable-React-Native-SDK'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
