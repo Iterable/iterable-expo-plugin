@@ -7,7 +7,11 @@ import {
 
 import { ConfigPluginProps } from './withIterable.types';
 
-export const withApiKey: ConfigPlugin<ConfigPluginProps> = (config, { apiKey }) => {
+export const withApiKey: ConfigPlugin<ConfigPluginProps> = (config, { apiKey } = {}) => {
+  if (!apiKey) {
+    return config;
+  }
+
   config = withInfoPlist(config, (config) => {
     config.modResults['ITERABLE_API_KEY'] = apiKey;
     return config;
