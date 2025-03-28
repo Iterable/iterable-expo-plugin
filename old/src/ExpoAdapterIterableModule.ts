@@ -1,0 +1,14 @@
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoAdapterIterableModuleEvents } from '../old/src/ExpoAdapterIterable.types';
+
+declare class ExpoAdapterIterableModule extends NativeModule<ExpoAdapterIterableModuleEvents> {
+  PI: number;
+  hello(): string;
+  setValueAsync(value: string): Promise<void>;
+  // Gets the api key set in the expo config.
+  getApiKey(): string;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoAdapterIterableModule>('ExpoAdapterIterable');

@@ -13,7 +13,9 @@
     "@iterable/react-native-sdk": "^2.0.0-beta",
     "expo": "~52.0.41",
     "react": "18.3.1",
-    "react-native": "0.76.7"
+    "react-native": "0.76.7",
+    "@expo/config-plugins": "~9.0.0",
+    "expo-system-ui": "~4.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

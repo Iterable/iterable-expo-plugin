@@ -26,6 +26,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [["../app.plugin.js", { "apiKey": "YOUR_API_KEY" }]]
+    "plugins": [["../app.plugin.js", { "apiKey": "be63942e7f1e425b9923c4d86596528c" }]]
   }
 }

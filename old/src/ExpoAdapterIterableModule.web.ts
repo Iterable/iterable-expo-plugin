@@ -1,6 +1,6 @@
 import { registerWebModule, NativeModule } from 'expo';
 
-import { ExpoAdapterIterableModuleEvents } from './ExpoAdapterIterable.types';
+import { ExpoAdapterIterableModuleEvents } from '../old/src/ExpoAdapterIterable.types';
 
 class ExpoAdapterIterableModule extends NativeModule<ExpoAdapterIterableModuleEvents> {
   PI = Math.PI;

@@ -1,8 +1,28 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import {
+  withInfoPlist,
+  withAndroidManifest,
+  AndroidConfig,
+  ConfigPlugin,
+} from 'expo/config-plugins';
 
-const withIterable: ConfigPlugin<{ name?: string }> = (config, { name = 'my-app' } = {}) => {
-  console.log('withIterable', config);
+const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
+  config = withInfoPlist(config, (config) => {
+    config.modResults['MY_CUSTOM_API_KEY'] = apiKey;
+    return config;
+  });
+
+  config = withAndroidManifest(config, (config) => {
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+    AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+      mainApplication,
+      'MY_CUSTOM_API_KEY',
+      apiKey,
+    );
+    return config;
+  });
+
   return config;
 };
 
-export default withIterable;
+export default withMyApiKey;
