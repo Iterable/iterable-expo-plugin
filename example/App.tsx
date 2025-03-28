@@ -1,11 +1,56 @@
-import { Text, View } from 'react-native';
 import * as ExpoAdapterIterable from '@iterable/expo-plugin';
+import {
+  Iterable,
+  IterableConfig,
+  IterableLogLevel,
+  IterableInAppShowResponse,
+  IterableInbox,
+} from '@iterable/react-native-sdk';
+import { NavigationContainer } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
+import { Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const config = new IterableConfig();
+
+    config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
+
+    config.urlHandler = (url: string) => {
+      console.log('url', url);
+      return true;
+    };
+
+    config.allowedProtocols = ['app', 'iterable'];
+
+    config.logLevel = IterableLogLevel.debug;
+
+    config.inAppHandler = () => IterableInAppShowResponse.show;
+
+    Iterable.initialize(ExpoAdapterIterable.getApiKey(), config).finally(() => {
+      Iterable.setEmail('loren.posen@iterable.com');
+      setTimeout(() => {
+        setLoggedIn(true);
+        console.log('logged in');
+      }, 1000);
+    });
+  }, []);
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>API key: {ExpoAdapterIterable.getApiKey()}</Text>
-    </View>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        {loggedIn ? (
+          <IterableInbox />
+        ) : (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>API key: {ExpoAdapterIterable.getApiKey()}</Text>
+          </View>
+        )}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

@@ -13,7 +13,9 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "open:android": "open -a \"Android Studio\" example/android",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "keywords": [
     "react-native",
@@ -28,16 +30,22 @@
   "author": "Loren Posen <loren.posen@iterable.com> (https://github.com/lposen)",
   "license": "MIT",
   "homepage": "https://github.com/Iterable/iterable-expo-plugin#readme",
-  "dependencies": {},
   "devDependencies": {
+    "@iterable/react-native-sdk": "^2.0.0-beta",
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "^4.0.3",
     "expo": "~52.0.0",
+    "expo-module-scripts": "^4.0.3",
     "react-native": "0.76.0"
   },
   "peerDependencies": {
+    "@iterable/react-native-sdk": "^2.0.0-beta",
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "dependencies": {
+    "expo": "~52.0.41",
+    "react": "18.3.1",
+    "react-native": "0.76.7"
   }
 }

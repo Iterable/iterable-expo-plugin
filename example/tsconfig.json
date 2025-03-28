@@ -5,6 +5,8 @@
     "paths": {
       "@iterable/expo-plugin": ["../src/index"],
       "@iterable/expo-plugin/*": ["../src/*"]
-    }
+    },
+    "moduleResolution": "node16",
+    "module": "Node16"
   }
 }
