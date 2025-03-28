@@ -28,14 +28,15 @@
   "author": "Loren Posen <loren.posen@iterable.com> (https://github.com/lposen)",
   "license": "MIT",
   "homepage": "https://github.com/Iterable/iterable-expo-plugin#readme",
-  "dependencies": {},
   "devDependencies": {
+    "@iterable/react-native-sdk": "^2.0.0-beta",
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "^4.0.3",
     "expo": "~52.0.0",
+    "expo-module-scripts": "^4.0.3",
     "react-native": "0.76.0"
   },
   "peerDependencies": {
+    "@iterable/react-native-sdk": "^2.0.0-beta",
     "expo": "*",
     "react": "*",
     "react-native": "*"
