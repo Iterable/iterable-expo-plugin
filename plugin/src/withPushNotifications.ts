@@ -1,4 +1,9 @@
-import { ConfigPlugin, withInfoPlist, withEntitlementsPlist } from 'expo/config-plugins';
+import {
+  ConfigPlugin,
+  withInfoPlist,
+  withPodfile,
+  withEntitlementsPlist,
+} from 'expo/config-plugins';
 
 import { ConfigPluginProps } from './withIterable.types';
 
@@ -28,6 +33,18 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config, 
     };
     return config;
   });
+
+  _config = withPodfile(_config, (config) => {
+    config.modResults.contents =
+      config.modResults.contents +
+      `
+target 'Rich Notification Extension' do
+  pod 'Iterable-iOS-AppExtensions'
+end
+    `;
+    return config;
+  });
+
 
   return _config;
 };
