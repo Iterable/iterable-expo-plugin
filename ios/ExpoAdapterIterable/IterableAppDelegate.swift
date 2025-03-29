@@ -1,6 +1,13 @@
+import IterableSDK
+
 import ExpoModulesCore
 
 public class IterableAppDelegate: ExpoAppDelegateSubscriber {
+  
+  public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+      IterableAPI.register(token: deviceToken)
+  }
+
   public func applicationDidBecomeActive(_ application: UIApplication) {
     // The app has become active.
   }

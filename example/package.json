@@ -10,7 +10,6 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@iterable/expo-plugin": "file:../",
     "@iterable/react-native-sdk": "^2.0.0-beta",
     "@react-navigation/stack": "^7.2.3",
     "expo": "~52.0.41",
