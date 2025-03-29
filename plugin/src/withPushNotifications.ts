@@ -1,9 +1,9 @@
-import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+import { ConfigPlugin, withInfoPlist, withEntitlementsPlist } from 'expo/config-plugins';
 
 import { ConfigPluginProps } from './withIterable.types';
 
-export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
-  return withInfoPlist(config, (config) => {
+export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config, props = {}) => {
+  _config = withInfoPlist(_config, (config) => {
     const backgroundModes = config.modResults['UIBackgroundModes'] || [];
 
     // Add remote-notification to the background modes if it's not already there
@@ -16,6 +16,20 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (config, p
 
     return config;
   });
+
+  // Add the entitlement to allow time-sensitive notifications
+  // See:
+  // https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK,
+  // step 3.5.3
+  _config = withEntitlementsPlist(_config, (config) => {
+    config.modResults = {
+      ...config.modResults,
+      'com.apple.developer.usernotifications.time-sensitive': true,
+    };
+    return config;
+  });
+
+  return _config;
 };
 
 export default withPushNotifications;
