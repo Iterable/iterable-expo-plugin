@@ -26,7 +26,7 @@ const NS_FILES = [
 
 const NS_POD = 'Iterable-iOS-AppExtensions';
 
-export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) => {
+export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config, props) => {
   _config = withInfoPlist(_config, (config) => {
     const backgroundModes = config.modResults['UIBackgroundModes'] || [];
 
@@ -46,10 +46,9 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
   // https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK,
   // step 3.5.3
   _config = withEntitlementsPlist(_config, (config) => {
-    config.modResults = {
-      ...config.modResults,
-      'com.apple.developer.usernotifications.time-sensitive': true,
-    };
+    config.modResults['com.apple.developer.usernotifications.time-sensitive'] = true;
+    config.modResults['aps-environment'] = props.mode || 'development';
+    
     return config;
   });
 
