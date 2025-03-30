@@ -13,4 +13,9 @@ export interface ConfigPluginProps {
    * @default true
    */
   autoConfigurePushNotifications?: boolean;
+  /**
+   * Whether to enable time-sensitive push notifications.
+   * @default true
+   */
+  enableTimeSensitivePush?: boolean;
 }

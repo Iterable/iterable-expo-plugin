@@ -19,6 +19,16 @@ const withCapabilities: ConfigPlugin<ConfigPluginProps> = (config, props) => {
      */
     const appEnvironment = props?.appEnvironment || 'development';
     newConfig.modResults['aps-environment'] = appEnvironment;
+
+    /**
+     * Add the entitlement to allow time-sensitive notifications if
+     * `props.enableTimeSensitivePush` not explicitly set to `false`.
+     * @see Step 3.5.3 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
+     */
+    if (props.enableTimeSensitivePush !== false) {
+      newConfig.modResults['com.apple.developer.usernotifications.time-sensitive'] = true;
+    }
+
     return newConfig;
   });
 }
