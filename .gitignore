@@ -55,3 +55,7 @@ yarn-error.log
 
 # Expo
 .expo/*
+
+# Generated files
+example/ios/
+example/android/
