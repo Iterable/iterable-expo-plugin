@@ -49,7 +49,6 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
     config.modResults = {
       ...config.modResults,
       'com.apple.developer.usernotifications.time-sensitive': true,
-      'aps-environment': true,
     };
     return config;
   });
@@ -99,20 +98,21 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
     }
 
 
-    if (!config.modResults.pbxGroupByName(ITERABLE_IOS_RICH_PUSH_TARGET)) {
+    if (!config.modResults.pbxGroupByName(NS_TARGET_NAME)) {
       // Add the Notification Service Extension target.
       const richPushTarget = config.modResults.addTarget(
-        ITERABLE_IOS_RICH_PUSH_TARGET,
+        NS_TARGET_NAME,
         'app_extension',
-        ITERABLE_IOS_RICH_PUSH_TARGET,
-        `${config.ios?.bundleIdentifier}.${ITERABLE_IOS_RICH_PUSH_TARGET}`,
+        NS_TARGET_NAME,
+        `${config.ios?.bundleIdentifier}.${NS_TARGET_NAME}`,
       );
+
 
       // Add the relevant files to the PBX group.
       const itblNotificationServiceGroup = config.modResults.addPbxGroup(
-        ITERABLE_IOS_RICH_PUSH_FILES,
-        ITERABLE_IOS_RICH_PUSH_TARGET,
-        ITERABLE_IOS_RICH_PUSH_TARGET,
+        NS_FILES,
+        NS_TARGET_NAME,
+        NS_TARGET_NAME,
       );
 
       for (const groupUUID of Object.keys(groups)) {
@@ -125,9 +125,9 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
 
       for (const configUUID of Object.keys(xcconfigs)) {
         const buildSettings = xcconfigs[configUUID].buildSettings;
-        if (buildSettings && buildSettings.PRODUCT_NAME === `"${ITERABLE_IOS_RICH_PUSH_TARGET}"`) {
+        if (buildSettings && buildSettings.PRODUCT_NAME === `"${NS_TARGET_NAME}"`) {
           buildSettings.SWIFT_VERSION = swiftVersion;
-          buildSettings.CODE_SIGN_ENTITLEMENTS = `${ITERABLE_IOS_RICH_PUSH_TARGET}/${ITERABLE_IOS_RICH_PUSH_ENTITLEMENTS}`;
+          buildSettings.CODE_SIGN_ENTITLEMENTS = `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILENAME}`;
           if (codeSignStyle) { buildSettings.CODE_SIGN_STYLE = codeSignStyle; }
           if (codeSignIdentity) { buildSettings.CODE_SIGN_IDENTITY = codeSignIdentity; }
           if (otherCodeSigningFlags) { buildSettings.OTHER_CODE_SIGN_FLAGS = otherCodeSigningFlags; }
@@ -157,19 +157,19 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
     return config;
   });
 
-  _config = withPodfile(_config, (config) => {
-    const { contents } = config.modResults;
-    if (!contents.includes(NS_POD)) {
-      config.modResults.contents =
-        contents +
-        `
-  target '${NS_TARGET_NAME}' do
-    pod '${NS_POD}'
-  end`;
-    }
+  // _config = withPodfile(_config, (config) => {
+  //   const { contents } = config.modResults;
+  //   if (!contents.includes(NS_POD)) {
+  //     config.modResults.contents =
+  //       contents +
+  //       `
+  // target '${NS_TARGET_NAME}' do
+  //   pod '${NS_POD}'
+  // end`;
+  //   }
 
-    return config;
-  });
+  //   return config;
+  // });
 
   _config = withDangerousMod(_config, [
     'ios',
@@ -183,11 +183,7 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config) 
       const notificationServiceFileName = 'NotificationService.swift';
       const notificationServiceContent = `import UserNotifications
 
-import IterableAppExtensions
-
-class NotificationService: ITBNotificationServiceExtension {
-}
-      `;
+class NotificationService: UNNotificationServiceExtension {}`;
       const notificationServicePath = path.resolve(srcPath, NS_TARGET_NAME, notificationServiceFileName);
 
       // create a new folder
@@ -222,7 +218,7 @@ class NotificationService: ITBNotificationServiceExtension {
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSExtension</key>
@@ -243,7 +239,7 @@ class NotificationService: ITBNotificationServiceExtension {
 // 	<key>CFBundleDevelopmentRegion</key>
 // 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 // 	<key>CFBundleDisplayName</key>
-// 	<string>${ITERABLE_IOS_RICH_PUSH_TARGET}</string>
+// 	<string>${NS_TARGET_NAME}</string>
 // 	<key>CFBundleExecutable</key>
 // 	<string>$(EXECUTABLE_NAME)</string>
 // 	<key>CFBundleIdentifier</key>
@@ -296,19 +292,19 @@ class NotificationService: ITBNotificationServiceExtension {
       //   '@iterable/expo-plugin/ios/ExpoAdapterIterable/Rich Notification Extension/NotificationService.swift',
       // );
       // const sourcePath = path.dirname(absoluteSource);
-      // const destinationPath = `${projectRoot}/ios/${ITERABLE_IOS_RICH_PUSH_TARGET}`;
+      // const destinationPath = `${projectRoot}/ios/${NS_TARGET_NAME}`;
 
       // if (!fs.existsSync(`${destinationPath}`)) {
       //   fs.mkdirSync(`${destinationPath}`);
       // }
-      // for (const file of ITERABLE_IOS_RICH_PUSH_FILES) {
+      // for (const file of NS_FILES) {
       //   console.log(` file:`, file);
       //   fs.copyFileSync(`${sourcePath}/${file}`, `${destinationPath}/${file}`);
       // }
 
       // console.log(` absoluteSource:`, absoluteSource);
       // const sourcePath = path.dirname(absoluteSource);
-      // const destinationPath = `${projectRoot}/ios/${ITERABLE_IOS_RICH_PUSH_TARGET}`;
+      // const destinationPath = `${projectRoot}/ios/${NS_TARGET_NAME}`;
       // console.log(` sourcePath:`, sourcePath);
       // console.log(` destinationPath:`, destinationPath);
 
