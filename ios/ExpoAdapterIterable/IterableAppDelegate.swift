@@ -1,11 +1,13 @@
+import ExpoModulesCore
+import UIKit
+import UserNotifications
 import IterableSDK
 
-import ExpoModulesCore
-
-public class IterableAppDelegate: ExpoAppDelegateSubscriber {
+public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelegate {
   
   public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
       IterableAPI.register(token: deviceToken)
+      setupUserNotificationCenter()
   }
 
   public func applicationDidBecomeActive(_ application: UIApplication) {
@@ -27,4 +29,20 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber {
   public func applicationWillTerminate(_ application: UIApplication) {
     // The app is about to terminate.
   }
+
+  public func setupUserNotificationCenter() {
+//      UNUserNotificationCenter.current().delegate = self
+      UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+          if settings.authorizationStatus != .authorized {
+              ITBInfo("Not authorized")
+              // not authorized, ask for permission
+              UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
+                  ITBInfo("auth: \(success)")
+              }
+          } else {
+              // already authorized
+              ITBInfo("Already authorized")
+          }
+      }
+    }
 }
