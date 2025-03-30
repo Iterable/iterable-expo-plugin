@@ -64,3 +64,7 @@ target 'expopluginexample' do
     end
   end
 end
+
+  target 'IterableExpoRichPush' do
+    pod 'Iterable-iOS-AppExtensions'
+  end

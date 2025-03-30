@@ -1,3 +1,4 @@
 import UserNotifications
+import IterableAppExtensions
 
-class NotificationService: UNNotificationServiceExtension {}
+class NotificationService: ITBNotificationServiceExtension {}

@@ -156,19 +156,19 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config, 
     return config;
   });
 
-  // _config = withPodfile(_config, (config) => {
-  //   const { contents } = config.modResults;
-  //   if (!contents.includes(NS_POD)) {
-  //     config.modResults.contents =
-  //       contents +
-  //       `
-  // target '${NS_TARGET_NAME}' do
-  //   pod '${NS_POD}'
-  // end`;
-  //   }
+  _config = withPodfile(_config, (config) => {
+    const { contents } = config.modResults;
+    if (!contents.includes(NS_POD)) {
+      config.modResults.contents =
+        contents +
+        `
+  target '${NS_TARGET_NAME}' do
+    pod '${NS_POD}'
+  end`;
+    }
 
-  //   return config;
-  // });
+    return config;
+  });
 
   _config = withDangerousMod(_config, [
     'ios',
@@ -181,8 +181,9 @@ export const withPushNotifications: ConfigPlugin<ConfigPluginProps> = (_config, 
       );
       const notificationServiceFileName = 'NotificationService.swift';
       const notificationServiceContent = `import UserNotifications
+import IterableAppExtensions
 
-class NotificationService: UNNotificationServiceExtension {}`;
+class NotificationService: ITBNotificationServiceExtension {}`;
       const notificationServicePath = path.resolve(srcPath, NS_TARGET_NAME, notificationServiceFileName);
 
       // create a new folder
