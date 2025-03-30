@@ -18,4 +18,11 @@ export interface ConfigPluginProps {
    * @default true
    */
   enableTimeSensitivePush?: boolean;
+  /**
+   * Whether to request permissions for push notifications.
+   * @default true
+   */
+  requestPermissionsForPushNotifications?: boolean;
 }
+
+export type ConfigPluginPropsWithDefaults = Required<ConfigPluginProps>;
