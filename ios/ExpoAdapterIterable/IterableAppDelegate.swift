@@ -33,9 +33,14 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
     _ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
-    IterableAppIntegration.application(
-      application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler
-    )
+    if let appShouldRequestPushPermissions = Bundle.main.object(
+      forInfoDictionaryKey: "ITERABLE_ENABLE_IN_APP_MESSAGES") as? Bool
+    {
+      IterableAppIntegration.application(
+        application, didReceiveRemoteNotification: userInfo,
+        fetchCompletionHandler: completionHandler
+      )
+    }
   }
 
   public func application(
