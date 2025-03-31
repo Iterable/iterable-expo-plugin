@@ -262,6 +262,8 @@ const withPodfileUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         contents +
         `
 target '${NS_TARGET_NAME}' do
+    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
     pod '${NS_POD}'
 end`;
     }
@@ -290,6 +292,7 @@ export const withIosPushNotifications: ConfigPlugin<
     [withBackgroundModes, props],
     [withNewFiles, props],
     [withXcodeUpdates, props],
+    [withPodfileUpdates, props],
   ]);
 };
 
