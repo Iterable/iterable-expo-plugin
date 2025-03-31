@@ -17,8 +17,8 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
       * Request permissions for push notifications if the flag is not set to false.
       * @see Step 3.5.5 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
       */
-    if let appShouldRequestPushPermissions = Bundle.main.object(
-      forInfoDictionaryKey: "ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS") as? Bool
+    if Bundle.main.object(
+      forInfoDictionaryKey: "ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS") as? Bool == true
     {
       requestPushPermissions()
     }
