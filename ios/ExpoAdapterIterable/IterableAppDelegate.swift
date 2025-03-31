@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import IterableSDK
+import React
 import UIKit
 import UserNotifications
 
@@ -51,6 +52,34 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
      * @see Step 3.5.4 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
      */
     IterableAPI.register(token: deviceToken)
+  }
+
+  /**
+    * Add support for deep inks
+    * @see Step 3.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links
+    */
+  public func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    return RCTLinkingManager.application(
+      application,
+      continue: userActivity,
+      restorationHandler: restorationHandler
+    )
+  }
+
+  /**
+    * Add support for deep inks
+    * @see Step 3.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links
+    */
+  public func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    RCTLinkingManager.application(app, open: url, options: options)
   }
 
   public func requestPushPermissions() {
