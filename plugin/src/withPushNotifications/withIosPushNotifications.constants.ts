@@ -17,9 +17,9 @@ export const NS_FILES = [
   NS_ENTITLEMENTS_FILE_NAME,
 ];
 
-/** 
+/**
  * The Iterable pod that is require for the notification service to process
- * Iterable push notifications.  
+ * Iterable push notifications.
  */
 export const NS_POD = 'Iterable-iOS-AppExtensions';
 
