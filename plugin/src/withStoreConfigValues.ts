@@ -8,7 +8,27 @@ import {
 
 import { type ConfigPluginPropsWithDefaults } from './withIterable.types';
 
-const nativeKeyMap = {
+/**
+ * The keys of the props object that are passed to the plugin.  
+ * 
+ * These keys are used to configure the plugin in the apps app.json file.
+ */
+type JsKey = keyof Pick<ConfigPluginPropsWithDefaults, 'apiKey' | 'requestPermissionsForPushNotifications' | 'enableInAppMessages'>;
+
+/**
+ * Natively stored keys associated with the plugin options.  
+ * 
+ * These keys are added to the Info.plist file or the AndroidManifest.xml file,
+ * and are associated with the values found in the plugin options of the users
+ * app.json file.
+ */
+type NativeKey = string;
+
+/**
+ * A map of the plugin options keys to the native keys that are added to the
+ * Info.plist file or the AndroidManifest.xml file.
+ */
+const nativeKeyMap: Record<JsKey, NativeKey> = {
   apiKey: 'ITERABLE_API_KEY',
   requestPermissionsForPushNotifications:
     'ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS',
