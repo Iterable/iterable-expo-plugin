@@ -4,7 +4,7 @@ import {
   withEntitlementsPlist,
   withInfoPlist,
   withPlugins,
-  withXcodeProject,
+  withXcodeProject,withPodfile
 } from 'expo/config-plugins';
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
@@ -16,6 +16,7 @@ import {
   NS_MAIN_FILE_NAME,
   NS_PLIST_CONTENT,
   NS_PLIST_FILE_NAME,
+  NS_POD,
   NS_TARGET_NAME,
 } from './withIosPushNotifications.constants';
 
@@ -241,6 +242,28 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         'Frameworks',
         richPushTarget.uuid,
       );
+    }
+
+    return newConfig;
+  });
+};
+
+/**
+ * Adds the notification service pod to the podfile and ensures it uses our sdk
+ * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
+ */
+const withPodfileUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config,
+) => {
+  return withPodfile(config, (newConfig) => {
+    const { contents } = newConfig.modResults;
+    if (!contents.includes(NS_POD)) {
+      newConfig.modResults.contents =
+        contents +
+        `
+target '${NS_TARGET_NAME}' do
+    pod '${NS_POD}'
+end`;
     }
 
     return newConfig;
