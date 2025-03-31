@@ -4,7 +4,8 @@ import {
   withEntitlementsPlist,
   withInfoPlist,
   withPlugins,
-  withXcodeProject,withPodfile
+  withPodfile,
+  withXcodeProject,
 } from 'expo/config-plugins';
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
@@ -79,9 +80,8 @@ const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 
 /**
  * Adds the notification service files to the app.
- * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
-const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
   return withDangerousMod(config, [
     'ios',
     (newConfig) => {
@@ -131,7 +131,6 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
 
 /**
  * Updates the Xcode project to add the notification service target.
- * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
 const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
@@ -249,10 +248,24 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 };
 
 /**
+ * Adds the notification service.
+ * This is the equivalent of going to Xcode > File > New > Target... and selecting "Notification Service Extension".
+ * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
+ */
+const withAddNotifactionService: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config, props,
+) => {
+  return withPlugins(config, [
+    [withAddNSFiles, props],
+    [withXcodeUpdates, props],
+  ]);
+};
+
+/**
  * Adds the notification service pod to the podfile and ensures it uses our sdk
  * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
-const withPodfileUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+const withAddServiceToPodfile: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
 ) => {
   return withPodfile(config, (newConfig) => {
@@ -290,9 +303,8 @@ export const withIosPushNotifications: ConfigPlugin<
   return withPlugins(config, [
     [withCapabilities, props],
     [withBackgroundModes, props],
-    [withNewFiles, props],
-    [withXcodeUpdates, props],
-    [withPodfileUpdates, props],
+    [withAddNotifactionService, props],
+    [withAddServiceToPodfile, props],
   ]);
 };
 
