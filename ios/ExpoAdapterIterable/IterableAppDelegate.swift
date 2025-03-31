@@ -56,7 +56,7 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
   }
 
   /**
-    * Add support for deep inks
+    * Add support for deep links
     * @see Step 3.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links
     */
   public func application(
@@ -72,7 +72,7 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
   }
 
   /**
-    * Add support for deep inks
+    * Add support for deep links
     * @see Step 3.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links
     */
   public func application(
