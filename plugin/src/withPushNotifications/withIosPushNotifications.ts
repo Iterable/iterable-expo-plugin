@@ -28,7 +28,7 @@ const path = require('path');
  */
 const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
+  props,
 ) => {
   return withEntitlementsPlist(config, (newConfig) => {
     /**
@@ -57,7 +57,6 @@ const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
  */
 const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
 ) => {
   return withInfoPlist(config, (newConfig) => {
     const backgroundModes = newConfig.modResults.UIBackgroundModes || [];
@@ -98,7 +97,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const notificationServicePath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_MAIN_FILE_NAME
+        NS_MAIN_FILE_NAME,
       );
       if (!fs.existsSync(notificationServicePath)) {
         fs.writeFileSync(notificationServicePath, NS_MAIN_FILE_CONTENT);
@@ -108,7 +107,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const notificationPlistPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_PLIST_FILE_NAME
+        NS_PLIST_FILE_NAME,
       );
       if (!fs.existsSync(notificationPlistPath)) {
         fs.writeFileSync(notificationPlistPath, NS_PLIST_CONTENT);
@@ -118,7 +117,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const entitlementsPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_ENTITLEMENTS_FILE_NAME
+        NS_ENTITLEMENTS_FILE_NAME,
       );
       if (!fs.existsSync(entitlementsPath)) {
         fs.writeFileSync(entitlementsPath, NS_ENTITLEMENTS_CONTENT);
@@ -134,7 +133,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
  * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
 const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config
+  config,
 ) => {
   return withXcodeProject(config, (newConfig) => {
     const xcodeProject = newConfig.modResults;
@@ -179,14 +178,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         NS_TARGET_NAME,
         'app_extension',
         NS_TARGET_NAME,
-        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`
+        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`,
       );
 
       // Add the relevant files to the PBX group.
       const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
         NS_FILES,
         NS_TARGET_NAME,
-        NS_TARGET_NAME
+        NS_TARGET_NAME,
       );
 
       for (const groupUUID of Object.keys(groups)) {
@@ -197,7 +196,7 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         ) {
           xcodeProject.addToPbxGroup(
             itblNotificationServiceGroup.uuid,
-            groupUUID
+            groupUUID,
           );
         }
       }
@@ -233,14 +232,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         [NS_MAIN_FILE_NAME],
         'PBXSourcesBuildPhase',
         'Sources',
-        richPushTarget.uuid
+        richPushTarget.uuid,
       );
 
       xcodeProject.addBuildPhase(
         ['UserNotifications.framework'],
         'PBXFrameworksBuildPhase',
         'Frameworks',
-        richPushTarget.uuid
+        richPushTarget.uuid,
       );
     }
 
