@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   extends: [
+    'eslint:recommended',
     'expo',
     '@react-native',
     'plugin:react/recommended',
@@ -10,7 +11,7 @@ module.exports = {
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
-      plugins: ['@typescript-eslint/eslint-plugin'],
+      plugins: ['@typescript-eslint'],
       extends: [
         'plugin:@typescript-eslint/recommended',
       ],
