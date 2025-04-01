@@ -14,7 +14,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "expo.modules.adapters.iterable.example"
+      "bundleIdentifier": "expo.modules.adapters.iterable.example",
+      "associatedDomains": [
+        "applinks:iterable.com",
+        "applinks:links.anotherone.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +30,18 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [["../app.plugin.js", { "apiKey": "YOUR_ITERABLE_API_KEY" }]]
+    "plugins": [
+      [
+        "../app.plugin.js",
+        {
+          "apiKey": "YOUR_ITERABLE_API_KEY",
+          "appEnvironment": "development",
+          "autoConfigurePushNotifications": true,
+          "enableInAppMessages": true,
+          "enableTimeSensitivePush": true,
+          "requestPermissionsForPushNotifications": true
+        }
+      ]
+    ]
   }
 }
