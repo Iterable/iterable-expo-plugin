@@ -8,13 +8,14 @@ import {
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
+  FIREBASE_CORE_CLASS_PATH,
+  FIREBASE_CORE_VERSION,
+  FIREBASE_MESSAGING_CLASS_PATH,
+  FIREBASE_MESSAGING_VERSION,
   GOOGLE_SERVICES_CLASS_PATH,
   GOOGLE_SERVICES_PLUGIN,
   GOOGLE_SERVICES_VERSION,
-  FIREBASE_MESSAGING_CLASS_PATH,
-  FIREBASE_MESSAGING_VERSION,
 } from './withAndroidPushNotifications.constants';
-
 
 /**
  * Add a dependency to the project build.gradle file.
@@ -88,6 +89,9 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
     if (newConfig.modResults.language === 'groovy') {
       newConfig.modResults.contents = addApplyPlugin(
         newConfig.modResults.contents, GOOGLE_SERVICES_PLUGIN
+      );
+      newConfig.modResults.contents = addAppDependency(
+        newConfig.modResults.contents, FIREBASE_CORE_CLASS_PATH, FIREBASE_CORE_VERSION
       );
       newConfig.modResults.contents = addAppDependency(
         newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
