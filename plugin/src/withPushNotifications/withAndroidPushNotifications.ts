@@ -8,13 +8,11 @@ import {
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
-  FIREBASE_CORE_CLASS_PATH,
-  FIREBASE_CORE_VERSION,
   FIREBASE_MESSAGING_CLASS_PATH,
   FIREBASE_MESSAGING_VERSION,
   GOOGLE_SERVICES_CLASS_PATH,
   GOOGLE_SERVICES_PLUGIN,
-  GOOGLE_SERVICES_VERSION,
+  GOOGLE_SERVICES_VERSION
 } from './withAndroidPushNotifications.constants';
 
 /**
@@ -92,9 +90,6 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       );
       newConfig.modResults.contents = addAppDependency(
         newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
-      );
-      newConfig.modResults.contents = addAppDependency(
-        newConfig.modResults.contents, FIREBASE_CORE_CLASS_PATH, FIREBASE_CORE_VERSION
       );
     } else {
       WarningAggregator.addWarningAndroid(
