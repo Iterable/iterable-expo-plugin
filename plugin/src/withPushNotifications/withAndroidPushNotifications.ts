@@ -38,8 +38,10 @@ function addAppDependency(buildGradle: string, classpath: string, version: strin
   if (!buildGradle.includes(classpath)) {
     return buildGradle.replace(
       /dependencies\s?{/,
+      // NOTE: awkard spacing is intentional -- it ensure correct alignment in
+      // the output build.gradle file
       `dependencies {
-        implementation '${classpath}:${version}'`
+    implementation '${classpath}:${version}'`
     );
   } else {
     return buildGradle;
