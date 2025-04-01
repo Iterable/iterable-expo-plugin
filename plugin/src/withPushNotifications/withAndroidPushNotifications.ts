@@ -8,39 +8,55 @@ import {
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
+  FIREBASE_BOM_CLASS_PATH,
+  FIREBASE_BOM_VERSION,
   FIREBASE_MESSAGING_CLASS_PATH,
-  FIREBASE_MESSAGING_VERSION,
   GOOGLE_SERVICES_CLASS_PATH,
   GOOGLE_SERVICES_PLUGIN,
   GOOGLE_SERVICES_VERSION
 } from './withAndroidPushNotifications.constants';
 
+interface GradleDependency {
+  classpath: string;
+  version?: string;
+}
+
 /**
  * Add a dependency to the project build.gradle file.
  */
-function addProjectDependency(buildGradle: string, classpath: string, version: string) {
-  if (!buildGradle.includes(classpath)) {
+function addProjectDependency(buildGradle: string, options: GradleDependency) {
+  if (!buildGradle.includes(options?.classpath)) {
     return buildGradle.replace(
       /dependencies\s?{/,
       `dependencies {
-        classpath('${classpath}:${version}')`
+        classpath('${options?.classpath}${options?.version ? `:${options?.version}` : ''}')`
     );
   } else {
     return buildGradle;
   }
 }
 
+interface AppGradleDependency extends GradleDependency {
+  /**
+   * The string to add to the dependencies block.
+   * 
+   * If this is not provided, ${classpath}:${version} will be used.
+   */
+  implementation?: string;
+}
+
 /**
  * Add a dependency to the app build.gradle file.
  */
-function addAppDependency(buildGradle: string, classpath: string, version: string) {
-  if (!buildGradle.includes(classpath)) {
+function addAppDependency(buildGradle: string, options: AppGradleDependency) {
+  if (!buildGradle.includes(options?.classpath)) {
+    const implementationString = options?.implementation ?? `'${options?.classpath}${options?.version ? `:${options?.version}` : ''}'`;
     return buildGradle.replace(
       /dependencies\s?{/,
       // NOTE: awkard spacing is intentional -- it ensure correct alignment in
       // the output build.gradle file
       `dependencies {
-    implementation '${classpath}:${version}'`
+    implementation ${implementationString}`
     );
   } else {
     return buildGradle;
@@ -71,7 +87,7 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
   config = withProjectBuildGradle(config, async (newConfig) => {
     if (newConfig.modResults.language === 'groovy') {
       newConfig.modResults.contents = addProjectDependency(
-        newConfig.modResults.contents, GOOGLE_SERVICES_CLASS_PATH, GOOGLE_SERVICES_VERSION
+        newConfig.modResults.contents, { classpath: GOOGLE_SERVICES_CLASS_PATH, version: GOOGLE_SERVICES_VERSION }
       );
     } else {
       WarningAggregator.addWarningAndroid(
@@ -89,8 +105,20 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
         newConfig.modResults.contents, GOOGLE_SERVICES_PLUGIN
       );
       newConfig.modResults.contents = addAppDependency(
-        newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
+        newConfig.modResults.contents,
+        {
+          classpath: FIREBASE_MESSAGING_CLASS_PATH,
+        }
       );
+      newConfig.modResults.contents = addAppDependency(
+        newConfig.modResults.contents,
+        {
+          classpath: FIREBASE_BOM_CLASS_PATH,
+          version: FIREBASE_BOM_VERSION,
+          implementation: `platform('${FIREBASE_BOM_CLASS_PATH}:${FIREBASE_BOM_VERSION}')`
+        }
+      );
+
     } else {
       WarningAggregator.addWarningAndroid(
         '@iterable/expo-plugin',
