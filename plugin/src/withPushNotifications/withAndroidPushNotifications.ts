@@ -91,10 +91,10 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
         newConfig.modResults.contents, GOOGLE_SERVICES_PLUGIN
       );
       newConfig.modResults.contents = addAppDependency(
-        newConfig.modResults.contents, FIREBASE_CORE_CLASS_PATH, FIREBASE_CORE_VERSION
+        newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
       );
       newConfig.modResults.contents = addAppDependency(
-        newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
+        newConfig.modResults.contents, FIREBASE_CORE_CLASS_PATH, FIREBASE_CORE_VERSION
       );
     } else {
       WarningAggregator.addWarningAndroid(
