@@ -37,10 +37,10 @@
     "eslint": "^9.23.0",
     "eslint-config-expo": "~8.0.1",
     "eslint-plugin-jest": "^28.11.0",
-    "expo": "~52.0.0",
+    "expo": "~52.0.42",
     "expo-module-scripts": "^4.0.3",
     "prettier": "^3.5.3",
-    "react-native": "0.76.0"
+    "react-native": "0.76.8"
   },
   "peerDependencies": {
     "@iterable/react-native-sdk": "^2.0.0-beta",
