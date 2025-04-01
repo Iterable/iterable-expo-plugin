@@ -1,37 +1,33 @@
 module.exports = {
   root: true,
-  extends: ['@react-native',
+  extends: [
+    'eslint:recommended',
+    'expo',
+    '@react-native',
     'plugin:react/recommended',
-    'plugin:react-native/all', 'expo', 'prettier'],
-  plugins: ['prettier'],
+    'plugin:react-native/all',
+  ],
   ignorePatterns: ['build'],
-  rules: {
-    'prettier/prettier': 'error',
-  },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
-      plugins: ['@typescript-eslint/eslint-plugin'],
+      plugins: ['@typescript-eslint'],
       extends: [
         'plugin:@typescript-eslint/recommended',
-        // We need more verbose typing to enable the below rule, but we should
-        // do this in the future
-        // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
       ],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: true,
         tsconfigRootDir: __dirname,
-      },
+      }
+    },
+    {
+      files: ['plugin/src/**/*.ts', 'plugin/src/**/*.tsx'],
       rules: {
-        '@typescript-eslint/no-var-requires': [
-          'error',
-          { allow: ['/package\\.json$'] },
-        ],
-        '@typescript-eslint/no-require-imports': [
-          'error',
-          { allow: ['/package\\.json$'] },
-        ],
+        // These are turned off for the plugin as it is actually run at build
+        // time, so it is able to use require.
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
       },
     },
     {

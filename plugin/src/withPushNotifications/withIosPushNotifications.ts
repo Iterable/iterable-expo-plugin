@@ -4,6 +4,7 @@ import {
   withEntitlementsPlist,
   withInfoPlist,
   withPlugins,
+  withPodfile,
   withXcodeProject,
 } from 'expo/config-plugins';
 
@@ -16,6 +17,7 @@ import {
   NS_MAIN_FILE_NAME,
   NS_PLIST_CONTENT,
   NS_PLIST_FILE_NAME,
+  NS_POD,
   NS_TARGET_NAME,
 } from './withIosPushNotifications.constants';
 
@@ -28,7 +30,7 @@ const path = require('path');
  */
 const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
+  props,
 ) => {
   return withEntitlementsPlist(config, (newConfig) => {
     /**
@@ -57,7 +59,6 @@ const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
  */
 const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
 ) => {
   return withInfoPlist(config, (newConfig) => {
     const backgroundModes = newConfig.modResults.UIBackgroundModes || [];
@@ -79,9 +80,8 @@ const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 
 /**
  * Adds the notification service files to the app.
- * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
-const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
   return withDangerousMod(config, [
     'ios',
     (newConfig) => {
@@ -98,7 +98,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const notificationServicePath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_MAIN_FILE_NAME
+        NS_MAIN_FILE_NAME,
       );
       if (!fs.existsSync(notificationServicePath)) {
         fs.writeFileSync(notificationServicePath, NS_MAIN_FILE_CONTENT);
@@ -108,7 +108,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const notificationPlistPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_PLIST_FILE_NAME
+        NS_PLIST_FILE_NAME,
       );
       if (!fs.existsSync(notificationPlistPath)) {
         fs.writeFileSync(notificationPlistPath, NS_PLIST_CONTENT);
@@ -118,7 +118,7 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
       const entitlementsPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_ENTITLEMENTS_FILE_NAME
+        NS_ENTITLEMENTS_FILE_NAME,
       );
       if (!fs.existsSync(entitlementsPath)) {
         fs.writeFileSync(entitlementsPath, NS_ENTITLEMENTS_CONTENT);
@@ -131,10 +131,9 @@ const withNewFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
 
 /**
  * Updates the Xcode project to add the notification service target.
- * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
 const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config
+  config,
 ) => {
   return withXcodeProject(config, (newConfig) => {
     const xcodeProject = newConfig.modResults;
@@ -179,14 +178,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         NS_TARGET_NAME,
         'app_extension',
         NS_TARGET_NAME,
-        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`
+        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`,
       );
 
       // Add the relevant files to the PBX group.
       const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
         NS_FILES,
         NS_TARGET_NAME,
-        NS_TARGET_NAME
+        NS_TARGET_NAME,
       );
 
       for (const groupUUID of Object.keys(groups)) {
@@ -197,7 +196,7 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         ) {
           xcodeProject.addToPbxGroup(
             itblNotificationServiceGroup.uuid,
-            groupUUID
+            groupUUID,
           );
         }
       }
@@ -233,15 +232,53 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         [NS_MAIN_FILE_NAME],
         'PBXSourcesBuildPhase',
         'Sources',
-        richPushTarget.uuid
+        richPushTarget.uuid,
       );
 
       xcodeProject.addBuildPhase(
         ['UserNotifications.framework'],
         'PBXFrameworksBuildPhase',
         'Frameworks',
-        richPushTarget.uuid
+        richPushTarget.uuid,
       );
+    }
+
+    return newConfig;
+  });
+};
+
+/**
+ * Adds the notification service.
+ * This is the equivalent of going to Xcode > File > New > Target... and selecting "Notification Service Extension".
+ * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
+ */
+const withAddNotifactionService: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config, props,
+) => {
+  return withPlugins(config, [
+    [withAddNSFiles, props],
+    [withXcodeUpdates, props],
+  ]);
+};
+
+/**
+ * Adds the notification service pod to the podfile and ensures it uses our sdk
+ * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
+ */
+const withAddServiceToPodfile: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config,
+) => {
+  return withPodfile(config, (newConfig) => {
+    const { contents } = newConfig.modResults;
+    if (!contents.includes(NS_POD)) {
+      newConfig.modResults.contents =
+        contents +
+        `
+target '${NS_TARGET_NAME}' do
+    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+    pod '${NS_POD}'
+end`;
     }
 
     return newConfig;
@@ -266,8 +303,8 @@ export const withIosPushNotifications: ConfigPlugin<
   return withPlugins(config, [
     [withCapabilities, props],
     [withBackgroundModes, props],
-    [withNewFiles, props],
-    [withXcodeUpdates, props],
+    [withAddNotifactionService, props],
+    [withAddServiceToPodfile, props],
   ]);
 };
 
