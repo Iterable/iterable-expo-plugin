@@ -15,37 +15,47 @@ import {
   FIREBASE_MESSAGING_VERSION,
 } from './withAndroidPushNotifications.constants';
 
-function setBuildscriptDependency(buildGradle: string) {
-  if (!buildGradle.includes(GOOGLE_SERVICES_CLASS_PATH)) {
+
+/**
+ * Add a dependency to the project build.gradle file.
+ */
+function addProjectDependency(buildGradle: string, classpath: string, version: string) {
+  if (!buildGradle.includes(classpath)) {
     return buildGradle.replace(
       /dependencies\s?{/,
       `dependencies {
-        classpath('${GOOGLE_SERVICES_CLASS_PATH}:${GOOGLE_SERVICES_VERSION}')`
+        classpath('${classpath}:${version}')`
     );
   } else {
     return buildGradle;
   }
 }
 
-function setDependencyImplementation(buildGradle: string) {
-  if (!buildGradle.includes(FIREBASE_MESSAGING_CLASS_PATH)) {
+/**
+ * Add a dependency to the app build.gradle file.
+ */
+function addAppDependency(buildGradle: string, classpath: string, version: string) {
+  if (!buildGradle.includes(classpath)) {
     return buildGradle.replace(
       /dependencies\s?{/,
       `dependencies {
-        implementation '${FIREBASE_MESSAGING_CLASS_PATH}:${FIREBASE_MESSAGING_VERSION}'`
+        implementation '${classpath}:${version}'`
     );
   } else {
     return buildGradle;
   }
 }
 
-function applyPlugin(appBuildGradle: string) {
+/**
+ * Add the apply plugin line to the app build.gradle file if it doesn't exist.
+ */
+function addApplyPlugin(appBuildGradle: string, pluginName: string) {
   // Make sure the project does not have the plugin already
   const pattern = new RegExp(
-    `apply\\s+plugin:\\s+['"]${GOOGLE_SERVICES_PLUGIN}['"]`
+    `apply\\s+plugin:\\s+['"]${pluginName}['"]`
   );
   if (!appBuildGradle.match(pattern)) {
-    return appBuildGradle + `\napply plugin: '${GOOGLE_SERVICES_PLUGIN}'`;
+    return appBuildGradle + `\napply plugin: '${pluginName}'`;
   }
 
   return appBuildGradle;
@@ -59,8 +69,8 @@ function applyPlugin(appBuildGradle: string) {
 const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
   config = withProjectBuildGradle(config, async (newConfig) => {
     if (newConfig.modResults.language === 'groovy') {
-      newConfig.modResults.contents = setBuildscriptDependency(
-        newConfig.modResults.contents
+      newConfig.modResults.contents = addProjectDependency(
+        newConfig.modResults.contents, GOOGLE_SERVICES_CLASS_PATH, GOOGLE_SERVICES_VERSION
       );
     } else {
       WarningAggregator.addWarningAndroid(
@@ -74,11 +84,11 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
 
   config = withAppBuildGradle(config, (newConfig) => {
     if (newConfig.modResults.language === 'groovy') {
-      newConfig.modResults.contents = applyPlugin(
-        newConfig.modResults.contents
+      newConfig.modResults.contents = addApplyPlugin(
+        newConfig.modResults.contents, GOOGLE_SERVICES_PLUGIN
       );
-      newConfig.modResults.contents = setDependencyImplementation(
-        newConfig.modResults.contents
+      newConfig.modResults.contents = addAppDependency(
+        newConfig.modResults.contents, FIREBASE_MESSAGING_CLASS_PATH, FIREBASE_MESSAGING_VERSION
       );
     } else {
       WarningAggregator.addWarningAndroid(
