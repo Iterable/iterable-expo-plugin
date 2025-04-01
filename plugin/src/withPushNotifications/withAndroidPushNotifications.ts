@@ -78,13 +78,8 @@ function addApplyPlugin(appBuildGradle: string, pluginName: string) {
   return appBuildGradle;
 }
 
-/**
- * Add the Google Services dependencies to the project and build.gradle file if
- * they don't exist.
- * @see Step 4.1 https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-4-1-set-up-firebase
- */
-const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
-  config = withProjectBuildGradle(config, async (newConfig) => {
+const withFirebaseInProjectBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+  return withProjectBuildGradle(config, async (newConfig) => {
     if (newConfig.modResults.language === 'groovy') {
       newConfig.modResults.contents = addProjectDependency(
         newConfig.modResults.contents, { classpath: GOOGLE_SERVICES_CLASS_PATH, version: GOOGLE_SERVICES_VERSION }
@@ -98,8 +93,10 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
 
     return newConfig;
   });
+}
 
-  config = withAppBuildGradle(config, (newConfig) => {
+const withFirebaseInAppBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+  return withAppBuildGradle(config, (newConfig) => {
     if (newConfig.modResults.language === 'groovy') {
       newConfig.modResults.contents = addApplyPlugin(
         newConfig.modResults.contents, GOOGLE_SERVICES_PLUGIN
@@ -127,8 +124,18 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
     }
     return newConfig;
   });
+}
 
-  return config;
+/**
+ * Add the Google Services dependencies to the project and build.gradle file if
+ * they don't exist.
+ * @see Step 4.1 https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-4-1-set-up-firebase
+ */
+const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config, props) => {
+  return withPlugins(config, [
+    [withFirebaseInProjectBuildGradle, props],
+    [withFirebaseInAppBuildGradle, props],
+  ]);
 };
 
 export const withAndroidPushNotifications: ConfigPlugin<
