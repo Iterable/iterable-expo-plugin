@@ -232,7 +232,7 @@ export const borderColors = {
   borderInfo: baseColors.cyan100,
   borderInfoSubtle: baseColors.cyan20,
   outlineDark: 'rgba(0,0,0,.08)',
-  outlineLight: 'rbga(255,255,255,0.08)',
+  outlineLight: 'rgba(255,255,255,0.08)',
 };
 export type BorderColors = typeof borderColors;
 
@@ -253,7 +253,7 @@ export const iconColors = {
   iconInfo: baseColors.cyan100,
   iconFolder: baseColors.cyan50,
 };
-export type IconColors = typeof borderColors;
+export type IconColors = typeof iconColors;
 
 export const highchartColorPalette = [
   baseColors.purple100,
