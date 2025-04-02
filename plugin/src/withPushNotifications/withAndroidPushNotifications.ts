@@ -173,7 +173,6 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      console.log(` config:`, config);
       if (!config.android?.googleServicesFile) {
         throw new Error(
           'Path to google-services.json is not defined. Please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -203,6 +202,13 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
 
 export const withAndroidPushNotifications: ConfigPlugin<ConfigPluginPropsWithDefaults> =
   (config, props) => {
+    if (!config.android?.googleServicesFile) {
+      WarningAggregator.addWarningAndroid(
+        '@iterable/expo-plugin',
+        `Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the \`expo.android.googleServicesFile\` field in app.json.`
+      );
+      return config;
+    }
     return withPlugins(config, [
       [withFirebase, props],
       [withCopyAndroidGoogleServices, props],

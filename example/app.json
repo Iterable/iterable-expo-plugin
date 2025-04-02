@@ -25,8 +25,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "expo.modules.adapters.iterable.example",
-      "googleServicesFile": "./google-services.json"
+      "package": "expo.modules.adapters.iterable.example"
     },
     "web": {
       "favicon": "./assets/favicon.png"
