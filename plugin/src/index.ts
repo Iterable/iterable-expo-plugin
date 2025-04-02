@@ -1,11 +1,12 @@
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import {
-  ConfigPluginProps,
+  type ConfigPluginProps,
   type ConfigPluginPropsWithDefaults,
 } from './withIterable.types';
 import { withPushNotifications } from './withPushNotifications';
 import { withStoreConfigValues } from './withStoreConfigValues';
+import { withIterableApis } from './withIterableApis';
 
 const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
   // Set default values for props
@@ -23,6 +24,7 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
 
 
   return withPlugins(config, [
+    [withIterableApis, propsWithDefaults],
     [withStoreConfigValues, propsWithDefaults],
     [withPushNotifications, propsWithDefaults],
   ]);
