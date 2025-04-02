@@ -2,8 +2,8 @@ import { type ConfigPlugin, withSettingsGradle } from 'expo/config-plugins';
 import type { ConfigPluginPropsWithDefaults } from './withIterable.types';
 
 /**
- * Adds the Iterable API dependencies to the apps's settings.gradle file.
- * 
+ * Adds the Iterable API dependencies to the app's settings.gradle file.
+ 
  * TODO [MOB-11159]: Add step for android iterable api dependency to docs
  */
 export const withIterableApis: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
