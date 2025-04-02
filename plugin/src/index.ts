@@ -1,7 +1,13 @@
 import { ConfigPlugin } from 'expo/config-plugins';
 
-const withIterable: ConfigPlugin = (config) => {
-  console.log('withIterable plugin', config);
+import { withApiKey } from './withApiKey';
+import { ConfigPluginProps } from './withIterable.types';
+
+const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
+  if (props.apiKey) {
+    config = withApiKey(config, props);
+  }
+
   return config;
 };
 
