@@ -22,8 +22,7 @@ the root of the app, the expo file would look like this:
 Deep linking allows users to navigate to specific screens in your app using
 URLs.
 
-To set up deep linking in your **Expo** application, [configure deep links in
-Iterable](https://support.iterable.com/hc/en-us/articles/115002651226-Configuring-Deep-Links-for-Email-or-SMS),
+To set up deep linking in your **Expo** application, [configure deep links in Iterable](https://support.iterable.com/hc/en-us/articles/115002651226-Configuring-Deep-Links-for-Email-or-SMS),
 then follow the below instructions. 
 
 #### iOS
@@ -65,7 +64,7 @@ EG:
       "intentFilters": [
         {
           "action": "MAIN",
-          "category": ["LAUNCHER"]
+          "category": ["LAUNCHER"],
           "autoVerify": true,
         },
         {
