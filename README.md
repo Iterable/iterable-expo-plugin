@@ -1,6 +1,103 @@
-# @iterable/expo-plugin 
+# @iterable/expo-plugin
 
-## Instructions
+An Expo config plugin for integrating Iterable's React Native SDK into Expo
+projects.
+
+This plugin will configure your android/ios builds to work with
+[@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk)
+during prebuild.
+
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [@iterable/expo-plugin](#iterableexpo-plugin)
+  - [Quick Start](#quick-start)
+  - [Configuration](#configuration)
+    - [Plugin Options](#plugin-options)
+    - [Adding push capabilities to android](#adding-push-capabilities-to-android)
+    - [Adding Deeplinks](#adding-deeplinks)
+      - [iOS](#ios)
+      - [Android](#android)
+    - [Configuring Proguard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
+  - [Features](#features)
+    - [Push Notifications](#push-notifications)
+      - [iOS](#ios-1)
+      - [Android](#android-1)
+    - [Deep Links](#deep-links)
+      - [iOS](#ios-2)
+      - [Android](#android-2)
+  - [Troubleshooting](#troubleshooting)
+    - [Native Module Not Found](#native-module-not-found)
+    - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
+  - [License](#license)
+
+<!-- /code_chunk_output -->
+
+
+## Quick Start
+
+1. Install the plugin by running the following in your terminal:
+    ```bash
+    npx expo install @iterable/expo-plugin
+    ```
+2. Add the plugin to to your `app.json` or `app.config.js`
+    ```json
+    {
+      "expo": {
+        "plugins": [
+          ["@iterable/expo-plugin", {}]
+        ]
+      }
+    }
+    ```
+3. After installing and configuring the plugin, rebuild your native projects:
+    ```bash
+      npx expo prebuild --clean
+    ```
+    **WARNING**: `prebuild` will delete everything in your ios/android directories.
+4. Run your ios or android simulator:
+    - ios:
+      ```bash
+        npx expo run:ios
+      ```
+    - android:
+      ```bash
+        npx expo run:android
+      ```
+
+## Configuration
+
+Add the plugin to your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      ["@iterable/expo-plugin", {
+        "apiKey": "YOUR_ITERABLE_API_KEY",
+        "appEnvironment": "development",
+        "autoConfigurePushNotifications": true,
+        "enableTimeSensitivePush": true,
+        "requestPermissionsForPushNotifications": true,
+        "enableInAppMessages": true
+      }]
+    ]
+  }
+}
+```
+
+### Plugin Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `apiKey` | string | - | Your Iterable API key |
+| `appEnvironment` | 'development' \| 'production' | 'development' | The environment for your app |
+| `autoConfigurePushNotifications` | boolean | true | Whether to automatically configure push notifications |
+| `enableTimeSensitivePush` | boolean | true | Whether to enable time-sensitive push notifications (ios only) |
+| `requestPermissionsForPushNotifications` | boolean | true | Whether to request permissions for push notifications (ios only) |
+| `enableInAppMessages` | boolean | true | Whether to enable in-app messages |
 
 ### Adding push capabilities to android
 
@@ -86,11 +183,8 @@ EG:
 }
 ```
 
-This will set up 
-
 See further documentation about how expo setup of Android App Links
 [here](https://docs.expo.dev/linking/android-app-links/).
-
 
 ### Configuring [Proguard](https://reactnative.dev/docs/signed-apk-android#enabling-proguard-to-reduce-the-size-of-the-apk-optional)
 
@@ -107,7 +201,7 @@ Below is how to do this using Expo:
     ```
 2. Add the plugin to your *app.json* file
 3. To the plugin options, add `{android:{extraProguardRules:"-keep class
-   org.json.** { *; }"}}
+   org.json.** { *; }"}}`
 
 The overall code in your *app.json* file should look something like this:
 ```json
@@ -129,12 +223,64 @@ The overall code in your *app.json* file should look something like this:
 
 Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/articles/360035019712-Iterable-s-Android-SDK#step-4-configure-proguard) section of Iterables Android SDK setup docs.
 
+## Features
+
+### Push Notifications
+
+The plugin automatically configures push notifications for both iOS and Android platforms.
+
+#### iOS
+- Sets up notification service extension
+- Configures required entitlements
+- Handles notification permissions
+
+#### Android
+- Configures Firebase integration
+- Sets up notification handling
+- Manages notification permissions
+
+### Deep Links
+
+The plugin configures deep linking capabilities for both platforms.
+
+#### iOS
+- Sets up Universal Links
+- Configures associated domains
+
+#### Android
+- Configures App Links
+- Sets up intent filters
+
 ## Troubleshooting
 
-### Example App
+### Native Module Not Found
 
-#### Failed to delete [ios|android] code: ENOTEMPTY: directory not empty
+If you encounter the error "Your JavaScript code tried to access a native module that doesn't exist in this development client", try:
+
+1. Clean your project:
+```bash
+rm -rf node_modules
+rm -rf ios/Pods
+yarn cache clean
+```
+
+2. Reinstall dependencies:
+```bash
+yarn install
+```
+
+3. Rebuild native projects:
+```bash
+npx expo prebuild --clean
+cd ios && pod install && cd ..
+```
+
+### Failed to delete [ios|android] code: ENOTEMPTY: directory not empty
 
 Sometimes this error appears when running `npx expo prebuild --clean`.  It seems
 to be an intermittent bug within expo.  It usually works upon running the same
 command a second time, so just try again.
+
+## License
+
+MIT
