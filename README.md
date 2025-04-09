@@ -6,8 +6,6 @@ This config plugin automatically configures your Expo app to work with
 the native code is generated through `expo prebuild`.
 
 
-
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=3 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -19,7 +17,7 @@ the native code is generated through `expo prebuild`.
   - [Adding push capabilities to android](#adding-push-capabilities-to-android)
   - [Adding Deeplinks](#adding-deeplinks)
   - [Configuring Proguard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
-- [Requirements](#requirements)
+- [Requirements and Limitations](#requirements-and-limitations)
 - [Features](#features)
   - [Push Notifications](#push-notifications)
   - [Deep Links](#deep-links)
@@ -242,11 +240,20 @@ The overall code in your *app.json* file should look something like this:
 
 Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/articles/360035019712-Iterable-s-Android-SDK#step-4-configure-proguard) section of Iterables Android SDK setup docs.
 
-## Requirements
+## Requirements and Limitations
 
 - New Architecture needs to be disabled, as `@iterable/react-native-sdk` does
   not support it.  See [Disabling New Architecture](#disabling-new-architecture)
   for instructions on how to disable it.
+- Your expo app needs to be run as a [development
+  build](https://docs.expo.dev/develop/development-builds/introduction/) instead
+  of through Expo Go.  Both
+  `@iterable/iterable-expo-plugin` and `@iterable/react-native-sdk` will **NOT** work in Expo Go
+  as they are reliant on native code, which Expo Go [does not
+  support](https://expo.dev/blog/expo-go-vs-development-builds#expo-go-limitations).
+- `@iterable/iterable-expo-plugin` is intended for managed workflows, and will
+  overwrite the files in your `ios` and `android` directories.  Any manual
+  changes to those directories will be overwritten on the next build. 
 - This plugin has been tested on Expo version 52+.  While it may work on
   previous versions, they are not supported.
 
