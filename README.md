@@ -230,11 +230,13 @@ Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/art
 The plugin automatically configures push notifications for both iOS and Android platforms.
 
 #### iOS
+- Adds bridge to native Iterable code
 - Sets up notification service extension
 - Configures required entitlements
 - Handles notification permissions
 
 #### Android
+- Adds bridge to native Iterable code
 - Configures Firebase integration
 - Sets up notification handling
 - Manages notification permissions
