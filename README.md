@@ -1,46 +1,42 @@
+![@iterable/expo-plugin](./assets/Iterable-Logo.png "@iterable/expo-plugin")
 # @iterable/expo-plugin
 
-An Expo config plugin for integrating Iterable's React Native SDK into Expo
-projects.
-
-This plugin will configure your android/ios builds to work with
-[@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk)
-during prebuild.
+This config plugin automatically configures your Expo app to work with
+[@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
+the native code is generated through `expo prebuild`.
 
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=3 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [@iterable/expo-plugin](#iterableexpo-plugin)
-  - [Quick Start](#quick-start)
-  - [Configuration](#configuration)
-    - [Plugin Options](#plugin-options)
-    - [Adding push capabilities to android](#adding-push-capabilities-to-android)
-    - [Adding Deeplinks](#adding-deeplinks)
-      - [iOS](#ios)
-      - [Android](#android)
-    - [Configuring Proguard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
-  - [Features](#features)
-    - [Push Notifications](#push-notifications)
-      - [iOS](#ios-1)
-      - [Android](#android-1)
-    - [Deep Links](#deep-links)
-      - [iOS](#ios-2)
-      - [Android](#android-2)
-  - [Troubleshooting](#troubleshooting)
-    - [Native Module Not Found](#native-module-not-found)
-    - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
-  - [License](#license)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+  - [Plugin Options](#plugin-options)
+  - [Disabling New Architecture](#disabling-new-architecture)
+  - [Adding push capabilities to android](#adding-push-capabilities-to-android)
+  - [Adding Deeplinks](#adding-deeplinks)
+  - [Configuring Proguard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
+- [Requirements](#requirements)
+- [Features](#features)
+  - [Push Notifications](#push-notifications)
+  - [Deep Links](#deep-links)
+- [Troubleshooting](#troubleshooting)
+  - [Native Module Not Found](#native-module-not-found)
+  - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
+- [License](#license)
+- [Further Reading](#further-reading)
 
 <!-- /code_chunk_output -->
 
 
 ## Quick Start
 
-1. Install the plugin by running the following in your terminal:
+1. Install the plugin and `@iterable/react-native-sdk` by running the following in your terminal:
     ```bash
-    npx expo install @iterable/expo-plugin
+    npx expo install @iterable/expo-plugin @iterable/react-native-sdk
     ```
 2. Add the plugin to to your `app.json` or `app.config.js`
     ```json
@@ -66,6 +62,17 @@ during prebuild.
       ```bash
         npx expo run:android
       ```
+5. Import `@iterable/react-native-sdk` and use as needed.  EG:
+    ```tsx
+    import {useEffect} from 'react';
+    import {Iterable, IterableConfig} from '@iterable/react-native-sdk';
+
+    const App = () => {
+      useEffect(() => {
+        Iterable.initialize('MY_API_KEY', new IterableConfig());
+      }, []);
+    }
+    ```
 
 ## Configuration
 
@@ -98,6 +105,18 @@ Add the plugin to your `app.json` or `app.config.js`:
 | `enableTimeSensitivePush` | boolean | true | Whether to enable time-sensitive push notifications (ios only) |
 | `requestPermissionsForPushNotifications` | boolean | true | Whether to request permissions for push notifications (ios only) |
 | `enableInAppMessages` | boolean | true | Whether to enable in-app messages |
+
+### Disabling New Architecture
+`@iterable/react-native-sdk` is *NOT* compatible with Reacts New Architecture,
+so this needs to be disabled in your `app.json`:
+
+```json
+{
+  "expo": {
+    "newArchEnabled": false
+  }
+}
+```
 
 ### Adding push capabilities to android
 
@@ -223,6 +242,14 @@ The overall code in your *app.json* file should look something like this:
 
 Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/articles/360035019712-Iterable-s-Android-SDK#step-4-configure-proguard) section of Iterables Android SDK setup docs.
 
+## Requirements
+
+- New Architecture needs to be disabled, as `@iterable/react-native-sdk` does
+  not support it.  See [Disabling New Architecture](#disabling-new-architecture)
+  for instructions on how to disable it.
+- This plugin has been tested on Expo version 52+.  While it may work on
+  previous versions, they are not supported.
+
 ## Features
 
 ### Push Notifications
@@ -286,3 +313,8 @@ command a second time, so just try again.
 ## License
 
 MIT
+
+## Further Reading
+- [Installing Iterables React Native
+  SDK](https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links)
+- [Expo docs](https://docs.expo.dev/)
