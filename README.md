@@ -58,9 +58,7 @@ Below is how to do this using Expo:
     npx expo install expo-build-properties
     ```
 2. Add the plugin to your *app.json* file
-3. To the plugin options, add `{android:{extraProguardRules:"-keep class
-   org.json.** { *; }"}}
-
+3. To the plugin options, add `{"android":{"extraProguardRules":"-keep class org.json.** { *; }"}}`
 The overall code in your *app.json* file should look something like this:
 ```json
 {
