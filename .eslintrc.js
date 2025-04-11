@@ -19,6 +19,9 @@ module.exports = {
       parserOptions: {
         project: true,
         tsconfigRootDir: __dirname,
+      },
+      rules: {
+        '@typescript-eslint/func-call-spacing': 'off'
       }
     },
     {
