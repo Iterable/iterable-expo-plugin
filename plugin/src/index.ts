@@ -1,14 +1,30 @@
-import { ConfigPlugin } from 'expo/config-plugins';
+import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
-import { withApiKey } from './withApiKey';
-import { ConfigPluginProps } from './withIterable.types';
+import {
+  ConfigPluginProps,
+  type ConfigPluginPropsWithDefaults,
+} from './withIterable.types';
+import { withPushNotifications } from './withPushNotifications';
+import { withStoreConfigValues } from './withStoreConfigValues';
 
 const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
-  if (props.apiKey) {
-    config = withApiKey(config, props);
-  }
+  // Set default values for props
+  const propsWithDefaults: ConfigPluginPropsWithDefaults = {
+    ...props,
+    apiKey: props.apiKey ?? '',
+    appEnvironment: props.appEnvironment ?? 'development',
+    autoConfigurePushNotifications:
+      props.autoConfigurePushNotifications ?? true,
+    enableTimeSensitivePush: props.enableTimeSensitivePush ?? true,
+    requestPermissionsForPushNotifications:
+      props.requestPermissionsForPushNotifications ?? false,
+  };
 
-  return config;
+
+  return withPlugins(config, [
+    [withStoreConfigValues, propsWithDefaults],
+    [withPushNotifications, propsWithDefaults],
+  ]);
 };
 
 export default withIterable;

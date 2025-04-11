@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/withapikey.ts","./src/withiterable.types.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/withiterable.types.ts","./src/withstoreconfigvalues.ts","./src/withpushnotifications/index.ts","./src/withpushnotifications/withiospushnotifications.constants.ts","./src/withpushnotifications/withiospushnotifications.ts"],"version":"5.8.2"}
