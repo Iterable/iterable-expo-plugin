@@ -92,8 +92,48 @@ See further documentation about how expo setup of Android App Links
 [here](https://docs.expo.dev/linking/android-app-links/).
 
 
-### Configuring [Proguard](https://reactnative.dev/docs/signed-apk-android#enabling-proguard-to-reduce-the-size-of-the-apk-optional)
+#### Android
+To add deeplinks to your Expo app for use with Iterable on Android devices, add
+URL schemes and intent filters to your `app.json` under the Android
+configuration.  These would be in `expo.android.intentFilters`.
 
+EG:
+```json
+{
+  "expo": {
+    "android": {
+      "intentFilters": [
+        {
+          "action": "MAIN",
+          "category": ["LAUNCHER"],
+          "autoVerify": true,
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "links.example.com",
+              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
+              "pathPrefix": "/a/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    }
+  }
+}
+```
+
+This will set up 
+
+See further documentation about how expo setup of Android App Links
+[here](https://docs.expo.dev/linking/android-app-links/).
+
+
+### Configuring [ProGuard](https://reactnative.dev/docs/signed-apk-android#enabling-proguard-to-reduce-the-size-of-the-apk-optional)
 If you're using ProGuard when building your Android app, you will need to add
 this line of ProGuard configuration to your build: `-keep class org.json.** { *;
 }`.
@@ -106,9 +146,7 @@ Below is how to do this using Expo:
     npx expo install expo-build-properties
     ```
 2. Add the plugin to your *app.json* file
-3. To the plugin options, add `{android:{extraProguardRules:"-keep class
-   org.json.** { *; }"}}
-
+3. To the plugin options, add `{"android":{"extraProguardRules":"-keep class org.json.** { *; }"}}`
 The overall code in your *app.json* file should look something like this:
 ```json
 {

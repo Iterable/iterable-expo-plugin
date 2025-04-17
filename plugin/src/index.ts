@@ -19,7 +19,7 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
       props.autoConfigurePushNotifications ?? true,
     enableTimeSensitivePush: props.enableTimeSensitivePush ?? true,
     requestPermissionsForPushNotifications:
-      props.requestPermissionsForPushNotifications ?? true,
+      props.requestPermissionsForPushNotifications ?? false,
     enableInAppMessages: props.enableInAppMessages ?? true,
   };
 
