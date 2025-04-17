@@ -8,12 +8,37 @@ import {
 
 import { type ConfigPluginPropsWithDefaults } from './withIterable.types';
 
-const nativeKeyMap = {
+/**
+ * The keys of the props object that are passed to the plugin.  
+ * 
+ * These keys are used to configure the plugin in the apps app.json file.
+ */
+type JsKey = keyof Pick<ConfigPluginPropsWithDefaults, 'apiKey' | 'requestPermissionsForPushNotifications' | 'enableInAppMessages'>;
+
+/**
+ * Natively stored keys associated with the plugin options.  
+ * 
+ * These keys are added to the Info.plist file or the AndroidManifest.xml file,
+ * and are associated with the values found in the plugin options of the users
+ * app.json file.
+ */
+type NativeKey = string;
+
+/**
+ * A map of the plugin options keys to the native keys that are added to the
+ * Info.plist file or the AndroidManifest.xml file.
+ */
+const nativeKeyMap: Record<JsKey, NativeKey> = {
   apiKey: 'ITERABLE_API_KEY',
-  requestPermissionsForPushNotifications: 'ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS',
+  requestPermissionsForPushNotifications:
+    'ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS',
+  enableInAppMessages: 'ITERABLE_ENABLE_IN_APP_MESSAGES',
 };
 
-const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config, props) => {
+const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config,
+  props
+) => {
   return withInfoPlist(config, (newConfig) => {
     Object.entries(nativeKeyMap).forEach(([configKey, nativeKey]) => {
       newConfig.modResults[nativeKey] = props[configKey as keyof typeof props];
@@ -22,23 +47,30 @@ const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (confi
   });
 };
 
-const withStoreValuesOnAndroid: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config, props) => {
+const withStoreValuesOnAndroid: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config,
+  props
+) => {
   return withAndroidManifest(config, (newConfig) => {
-    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(newConfig.modResults);
+    const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
+      newConfig.modResults
+    );
 
     Object.entries(nativeKeyMap).forEach(([configKey, nativeKey]) => {
       AndroidConfig.Manifest.addMetaDataItemToMainApplication(
         mainApplication,
         nativeKey,
-        String(props[configKey as keyof typeof props]),
+        String(props[configKey as keyof typeof props])
       );
     });
 
     return newConfig;
   });
-};  
+};
 
-export const withStoreConfigValues: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config, props) => {
+export const withStoreConfigValues: ConfigPlugin<
+  ConfigPluginPropsWithDefaults
+> = (config, props) => {
   return withPlugins(config, [
     [withStoreValuesOnIos, props],
     [withStoreValuesOnAndroid, props],

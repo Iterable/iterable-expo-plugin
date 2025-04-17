@@ -25,6 +25,25 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
     return true
   }
 
+  /**
+    * Add support for in-app messages
+    * @see Step 3.6 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-6-add-support-for-in-app-messages
+    */
+  public func application(
+    _ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
+
+    if Bundle.main.object(
+      forInfoDictionaryKey: "ITERABLE_ENABLE_IN_APP_MESSAGES") as? Bool == true
+    {
+      IterableAppIntegration.application(
+        application, didReceiveRemoteNotification: userInfo,
+        fetchCompletionHandler: completionHandler
+      )
+    }
+  }
+
   public func application(
     _ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
   ) {
