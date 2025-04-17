@@ -2,6 +2,21 @@
 
 ## Instructions
 
+### Adding push capabilities to android
+
+Add the path to your google-services.json file to the app file under
+`expo.android.googleServicesFile`.  EG: If the google services file was added to
+the root of the app, the expo file would look like this:
+```json
+{
+  "expo": {
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    }
+  }
+}
+```
+
 ### Adding Deeplinks 
 
 #### iOS

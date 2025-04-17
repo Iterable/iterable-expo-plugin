@@ -59,3 +59,4 @@ yarn-error.log
 # Generated files
 example/ios/
 example/android/
+example/google-services.json
