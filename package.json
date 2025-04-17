@@ -38,7 +38,7 @@
     "eslint-config-expo": "~8.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jest": "^28.11.0",
-    "expo": "~52.0.0",
+    "expo": "~52.0.42",
     "expo-module-scripts": "^4.0.3",
     "prettier": "^3.5.3",
     "react": "18.3.1",
@@ -51,5 +51,8 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "yarn@4.9.0"
+  "packageManager": "yarn@4.9.0",
+  "workspaces": [
+    "example"
+  ]
 }
