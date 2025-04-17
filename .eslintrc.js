@@ -19,6 +19,9 @@ module.exports = {
       parserOptions: {
         project: ['./tsconfig.json', './plugin/tsconfig.json'],
         tsconfigRootDir: __dirname,
+      },
+      rules: {
+        '@typescript-eslint/func-call-spacing': 'off'
       }
     },
     {
