@@ -8,6 +8,9 @@ module.exports = {
     'plugin:react-native/all',
   ],
   ignorePatterns: ['build'],
+  parserOptions: {
+    requireConfigFile: false
+  },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -27,8 +30,6 @@ module.exports = {
     {
       files: ['plugin/src/**/*.ts', 'plugin/src/**/*.tsx'],
       rules: {
-        // These are turned off for the plugin as it is actually run at build
-        // time, so it is able to use require.
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/no-require-imports': 'off',
       },

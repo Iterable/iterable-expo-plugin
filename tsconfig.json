@@ -4,6 +4,13 @@
   "compilerOptions": {
     "outDir": "./build"
   },
-  "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
+  "include": [
+    "./src",
+    "./example/src"
+  ],
+  "exclude": [
+    "**/__mocks__/*",
+    "**/__tests__/*",
+    "**/__rsc_tests__/*"
+  ]
 }
