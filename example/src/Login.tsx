@@ -1,3 +1,4 @@
+import React from 'react';
 import { getApiKey } from '@iterable/expo-plugin';
 import {
   Iterable,
@@ -36,7 +37,7 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
 
     config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
 
-    config.urlHandler = (url: string) => true;
+    config.urlHandler = () => true;
 
     config.allowedProtocols = ['app', 'iterable'];
 
@@ -117,15 +118,15 @@ const buttonText: TextStyle = {
 
 const styles = StyleSheet.create({
   appName: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 14,
-    width: '100%',
-    marginTop: 41,
-    marginBottom: 64,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
     color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    marginBottom: 64,
+    marginTop: 41,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    width: '100%',
   },
   button: setButton(),
   buttonDisabled: setButton({ backgroundColor: colors.backgroundDisabled }),
@@ -136,54 +137,54 @@ const styles = StyleSheet.create({
   },
   formContainer: { marginTop: 24 },
   input: {
-    height: 40,
     backgroundColor: colors.white,
     borderColor: colors.borderPrimary,
-    borderWidth: 1,
-    padding: 10,
     borderRadius: 8,
-    shadowColor: colors.black,
+    borderWidth: 1,
     elevation: 2,
+    height: 40,
+    marginBottom: 15,
+    padding: 10,
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.06,
     shadowRadius: 2,
-    marginBottom: 15,
   },
   label: {
-    fontWeight: '500',
-    fontSize: 14,
-    lineHeight: 20,
-    letterSpacing: 0.1,
     color: colors.textPrimary,
+    fontSize: 14,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+    lineHeight: 20,
     marginBottom: 4,
   },
   loadingContainer: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
   },
   loginScreenContainer: {
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    padding: 16,
-    marginTop: Platform.OS === 'android' ? 0 : 50,
     backgroundColor: colors.white,
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: 'flex-start',
+    marginTop: Platform.OS === 'android' ? 0 : 50,
+    padding: 16,
   },
   subtitle: {
     color: colors.textSecondary,
     fontSize: 14,
-    lineHeight: 20,
-    letterSpacing: 0.1,
-    marginBottom: 20,
     fontWeight: '400',
+    letterSpacing: 0.1,
+    lineHeight: 20,
+    marginBottom: 20,
   },
   title: {
     color: colors.textPrimary,
-    fontWeight: '700',
     fontSize: 24,
-    lineHeight: 28,
+    fontWeight: '700',
     letterSpacing: -0.25,
+    lineHeight: 28,
     marginBottom: 12,
   },
 });

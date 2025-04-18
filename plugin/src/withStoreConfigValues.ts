@@ -9,15 +9,15 @@ import {
 import { type ConfigPluginPropsWithDefaults } from './withIterable.types';
 
 /**
- * The keys of the props object that are passed to the plugin.  
- * 
+ * The keys of the props object that are passed to the plugin.
+ *
  * These keys are used to configure the plugin in the apps app.json file.
  */
 type JsKey = keyof Pick<ConfigPluginPropsWithDefaults, 'apiKey' | 'requestPermissionsForPushNotifications' | 'enableInAppMessages'>;
 
 /**
- * Natively stored keys associated with the plugin options.  
- * 
+ * Natively stored keys associated with the plugin options.
+ *
  * These keys are added to the Info.plist file or the AndroidManifest.xml file,
  * and are associated with the values found in the plugin options of the users
  * app.json file.
@@ -37,7 +37,7 @@ const nativeKeyMap: Record<JsKey, NativeKey> = {
 
 const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
+  props,
 ) => {
   return withInfoPlist(config, (newConfig) => {
     Object.entries(nativeKeyMap).forEach(([configKey, nativeKey]) => {
@@ -49,18 +49,18 @@ const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 
 const withStoreValuesOnAndroid: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
+  props,
 ) => {
   return withAndroidManifest(config, (newConfig) => {
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(
-      newConfig.modResults
+      newConfig.modResults,
     );
 
     Object.entries(nativeKeyMap).forEach(([configKey, nativeKey]) => {
       AndroidConfig.Manifest.addMetaDataItemToMainApplication(
         mainApplication,
         nativeKey,
-        String(props[configKey as keyof typeof props])
+        String(props[configKey as keyof typeof props]),
       );
     });
 

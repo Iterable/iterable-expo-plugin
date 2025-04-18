@@ -1,6 +1,6 @@
 import { IterableInbox } from '@iterable/react-native-sdk';
 import { NavigationContainer } from '@react-navigation/native';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Login } from './Login';

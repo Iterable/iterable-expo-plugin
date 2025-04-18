@@ -9,7 +9,19 @@ module.exports = {
   ],
   ignorePatterns: ['build'],
   parserOptions: {
-    requireConfigFile: false
+    requireConfigFile: false,
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: ['./tsconfig.json', './plugin/tsconfig.json'],
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
   },
   overrides: [
     {
@@ -24,8 +36,10 @@ module.exports = {
         tsconfigRootDir: __dirname,
       },
       rules: {
-        '@typescript-eslint/func-call-spacing': 'off'
-      }
+        '@typescript-eslint/func-call-spacing': 'off',
+        'import/namespace': 'off',
+        'import/no-unresolved': 'off',
+      },
     },
     {
       files: ['plugin/src/**/*.ts', 'plugin/src/**/*.tsx'],
