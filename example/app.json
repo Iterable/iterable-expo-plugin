@@ -25,7 +25,32 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "expo.modules.adapters.iterable.example"
+      "package": "expo.modules.adapters.iterable.example",
+      "intentFilters": [
+        {
+          "action": "MAIN",
+          "category": [
+            "LAUNCHER"
+          ],
+          "autoVerify": true
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "links.example.com",
+              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
+              "pathPrefix": "/a/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

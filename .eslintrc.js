@@ -8,6 +8,21 @@ module.exports = {
     'plugin:react-native/all',
   ],
   ignorePatterns: ['build'],
+  parserOptions: {
+    requireConfigFile: false,
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: ['./tsconfig.json', './plugin/tsconfig.json'],
+      },
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
+  },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -21,14 +36,14 @@ module.exports = {
         tsconfigRootDir: __dirname,
       },
       rules: {
-        '@typescript-eslint/func-call-spacing': 'off'
-      }
+        '@typescript-eslint/func-call-spacing': 'off',
+        'import/namespace': 'off',
+        'import/no-unresolved': 'off',
+      },
     },
     {
       files: ['plugin/src/**/*.ts', 'plugin/src/**/*.tsx'],
       rules: {
-        // These are turned off for the plugin as it is actually run at build
-        // time, so it is able to use require.
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/no-require-imports': 'off',
       },

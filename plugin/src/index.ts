@@ -6,6 +6,7 @@ import {
 } from './withIterable.types';
 import { withPushNotifications } from './withPushNotifications';
 import { withStoreConfigValues } from './withStoreConfigValues';
+import { withDeepLinks } from './withDeepLinks';
 
 const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
   // Set default values for props
@@ -25,6 +26,7 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
   return withPlugins(config, [
     [withStoreConfigValues, propsWithDefaults],
     [withPushNotifications, propsWithDefaults],
+    [withDeepLinks, propsWithDefaults],
   ]);
 };
 

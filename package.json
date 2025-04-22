@@ -51,8 +51,5 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "yarn@4.9.0",
-  "workspaces": [
-    "example"
-  ]
+  "packageManager": "yarn@4.9.0"
 }

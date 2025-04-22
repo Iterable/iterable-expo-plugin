@@ -2,6 +2,7 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
 // npm v7+ will install ../node_modules/react and ../node_modules/react-native because of peerDependencies.
