@@ -1,14 +1,15 @@
 {
   "platforms": [
-    "apple",
-    "android",
-    "web"
+    "ios",
+    "android"
   ],
-  "apple": {
+  "ios": {
     "modules": [
       "ExpoAdapterIterableModule"
     ],
-    "appDelegateSubscribers": ["IterableAppDelegate"]
+    "appDelegateSubscribers": [
+      "IterableAppDelegate"
+    ]
   },
   "android": {
     "modules": [

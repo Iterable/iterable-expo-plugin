@@ -1,5 +1,4 @@
-// Reexport the native module. On web, it will be resolved to ExpoAdapterIterableModule.web.ts
-// and on native platforms to ExpoAdapterIterableModule.ts
+// Reexport the native module.
 import ExpoAdapterIterableModule from './ExpoAdapterIterableModule';
 
 export function getApiKey(): string {
