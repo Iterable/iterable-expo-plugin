@@ -20,7 +20,7 @@ export interface ConfigPluginProps {
   enableTimeSensitivePush?: boolean;
   /**
    * Whether to request permissions for push notifications.
-   * @default true
+   * @default false
    */
   requestPermissionsForPushNotifications?: boolean;
   /**

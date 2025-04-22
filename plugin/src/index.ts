@@ -6,7 +6,6 @@ import {
 } from './withIterable.types';
 import { withPushNotifications } from './withPushNotifications';
 import { withStoreConfigValues } from './withStoreConfigValues';
-import { withIterableApis } from './withIterableApis';
 import { withDeepLinks } from './withDeepLinks';
 
 const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
@@ -19,13 +18,12 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
       props.autoConfigurePushNotifications ?? true,
     enableTimeSensitivePush: props.enableTimeSensitivePush ?? true,
     requestPermissionsForPushNotifications:
-      props.requestPermissionsForPushNotifications ?? true,
+      props.requestPermissionsForPushNotifications ?? false,
     enableInAppMessages: props.enableInAppMessages ?? true,
   };
 
 
   return withPlugins(config, [
-    [withIterableApis, propsWithDefaults],
     [withStoreConfigValues, propsWithDefaults],
     [withPushNotifications, propsWithDefaults],
     [withDeepLinks, propsWithDefaults],

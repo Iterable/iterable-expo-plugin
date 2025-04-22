@@ -36,7 +36,7 @@ function addProjectDependency(buildGradle: string, options: GradleDependency) {
       `dependencies {
         classpath('${options?.classpath}${
         options?.version ? `:${options?.version}` : ''
-      }')`
+      }')`,
     );
   } else {
     return buildGradle;
@@ -67,7 +67,7 @@ function addAppDependency(buildGradle: string, options: AppGradleDependency) {
       // NOTE: awkard spacing is intentional -- it ensure correct alignment in
       // the output build.gradle file
       `dependencies {
-    implementation ${implementationString}`
+    implementation ${implementationString}`,
     );
   } else {
     return buildGradle;
@@ -80,7 +80,7 @@ function addAppDependency(buildGradle: string, options: AppGradleDependency) {
 function addApplyPlugin(appBuildGradle: string, pluginName: string) {
   // Check for `apply plugin: 'com.google.gms.google-services'`
   const applyPluginPattern = new RegExp(
-    `apply\\s+plugin:\\s+['"]${pluginName}['"]`
+    `apply\\s+plugin:\\s+['"]${pluginName}['"]`,
   );
   // Check for `plugins { id 'com.google.gms.google-services' }`
   const pluginIdPattern = new RegExp(`id\\s+['"]${pluginName}['"]`);
@@ -105,12 +105,12 @@ const withFirebaseInProjectBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaul
           {
             classpath: GOOGLE_SERVICES_CLASS_PATH,
             version: GOOGLE_SERVICES_VERSION,
-          }
+          },
         );
       } else {
         WarningAggregator.addWarningAndroid(
           '@iterable/expo-plugin',
-          `Cannot automatically configure project build.gradle if it's not groovy`
+          "Cannot automatically configure project build.gradle if it's not groovy",
         );
       }
 
@@ -124,13 +124,13 @@ const withFirebaseInAppBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaults> 
       if (newConfig.modResults.language === 'groovy') {
         newConfig.modResults.contents = addApplyPlugin(
           newConfig.modResults.contents,
-          GOOGLE_SERVICES_PLUGIN
+          GOOGLE_SERVICES_PLUGIN,
         );
         newConfig.modResults.contents = addAppDependency(
           newConfig.modResults.contents,
           {
             classpath: FIREBASE_MESSAGING_CLASS_PATH,
-          }
+          },
         );
         newConfig.modResults.contents = addAppDependency(
           newConfig.modResults.contents,
@@ -138,12 +138,12 @@ const withFirebaseInAppBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaults> 
             classpath: FIREBASE_BOM_CLASS_PATH,
             version: FIREBASE_BOM_VERSION,
             implementation: `platform('${FIREBASE_BOM_CLASS_PATH}:${FIREBASE_BOM_VERSION}')`,
-          }
+          },
         );
       } else {
         WarningAggregator.addWarningAndroid(
           '@iterable/expo-plugin',
-          `Cannot automatically configure app build.gradle if it's not groovy`
+          "Cannot automatically configure app build.gradle if it's not groovy",
         );
       }
       return newConfig;
@@ -157,7 +157,7 @@ const withFirebaseInAppBuildGradle: ConfigPlugin<ConfigPluginPropsWithDefaults> 
  */
 const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props
+  props,
 ) => {
   return withPlugins(config, [
     [withFirebaseInProjectBuildGradle, props],
@@ -172,30 +172,30 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async (config) => {
-      if (!config.android?.googleServicesFile) {
+    async (newConfig) => {
+      if (!newConfig.android?.googleServicesFile) {
         throw new Error(
-          'Path to google-services.json is not defined. Please specify the `expo.android.googleServicesFile` field in app.json.'
+          'Path to google-services.json is not defined. Please specify the `expo.android.googleServicesFile` field in app.json.',
         );
       }
 
       const srcPath = path.resolve(
-        config.modRequest.projectRoot,
-        config.android.googleServicesFile
+        newConfig.modRequest.projectRoot,
+        newConfig.android.googleServicesFile,
       );
       const destPath = path.resolve(
-        config.modRequest.platformProjectRoot,
-        DEFAULT_GOOGLE_SERVICES_PATH
+        newConfig.modRequest.platformProjectRoot,
+        DEFAULT_GOOGLE_SERVICES_PATH,
       );
 
       try {
         await fs.promises.copyFile(srcPath, destPath);
-      } catch (_) {
+      } catch {
         throw new Error(
-          `Cannot copy google-services.json, because the file ${srcPath} doesn't exist. Please provide a valid path in \`app.json\`.`
+          `Cannot copy google-services.json, because the file ${srcPath} doesn't exist. Please provide a valid path in \`app.json\`.`,
         );
       }
-      return config;
+      return newConfig;
     },
   ]);
 };
@@ -205,7 +205,7 @@ export const withAndroidPushNotifications: ConfigPlugin<ConfigPluginPropsWithDef
     if (!config.android?.googleServicesFile) {
       WarningAggregator.addWarningAndroid(
         '@iterable/expo-plugin',
-        `Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the \`expo.android.googleServicesFile\` field in app.json.`
+        'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.',
       );
       return config;
     }
