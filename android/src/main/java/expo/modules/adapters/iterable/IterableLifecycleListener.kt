@@ -7,7 +7,6 @@ import com.iterable.iterableapi.IterableApi;
 
 class IterableApplicationLifecycleListener() : ApplicationLifecycleListener {
     override fun onCreate(application: Application) {
-        super.onCreate(application)
         /**
          * See step 4.5 of the Iterable RN SDK integration guide:
          * https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK

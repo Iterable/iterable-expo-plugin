@@ -16,7 +16,7 @@ the native code is generated through `expo prebuild`.
   - [Disabling New Architecture](#disabling-new-architecture)
   - [Adding push capabilities to android](#adding-push-capabilities-to-android)
   - [Adding Deeplinks](#adding-deeplinks)
-  - [Configuring Proguard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
+  - [Configuring ProGuard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
 - [Requirements and Limitations](#requirements-and-limitations)
 - [Features](#features)
   - [Push Notifications](#push-notifications)
@@ -203,8 +203,7 @@ EG:
 See further documentation about how expo setup of Android App Links
 [here](https://docs.expo.dev/linking/android-app-links/).
 
-### Configuring [Proguard](https://reactnative.dev/docs/signed-apk-android#enabling-proguard-to-reduce-the-size-of-the-apk-optional)
-
+### Configuring [ProGuard](https://reactnative.dev/docs/signed-apk-android#enabling-proguard-to-reduce-the-size-of-the-apk-optional)
 If you're using ProGuard when building your Android app, you will need to add
 this line of ProGuard configuration to your build: `-keep class org.json.** { *;
 }`.
@@ -217,8 +216,7 @@ Below is how to do this using Expo:
     npx expo install expo-build-properties
     ```
 2. Add the plugin to your *app.json* file
-3. To the plugin options, add `{android:{extraProguardRules:"-keep class
-   org.json.** { *; }"}}`
+3. To the plugin options, add `{"android":{"extraProguardRules":"-keep class org.json.** { *; }"}}`
 
 The overall code in your *app.json* file should look something like this:
 ```json

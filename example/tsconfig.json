@@ -2,11 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "moduleResolution": "node16",
-    "module": "Node16",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
     "paths": {
-      "@iterable/expo-plugin": ["../src/index"],
-      "@iterable/expo-plugin/*": ["../src/*"]
+      "@iterable/expo-plugin": [
+        "../src/index"
+      ],
+      "@iterable/expo-plugin/*": [
+        "../src/*"
+      ]
     }
   }
 }
