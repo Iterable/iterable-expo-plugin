@@ -41,7 +41,7 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
 
     config.allowedProtocols = ['app', 'iterable'];
 
-    config.logLevel = IterableLogLevel.debug;
+    config.logLevel = IterableLogLevel.info;
 
     config.inAppHandler = () => IterableInAppShowResponse.show;
 
