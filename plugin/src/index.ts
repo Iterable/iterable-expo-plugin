@@ -1,7 +1,7 @@
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import {
-  ConfigPluginProps,
+  type ConfigPluginProps,
   type ConfigPluginPropsWithDefaults,
 } from './withIterable.types';
 import { withPushNotifications } from './withPushNotifications';

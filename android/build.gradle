@@ -41,3 +41,9 @@ android {
     abortOnError false
   }
 }
+
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation project(':iterable_react-native-sdk')
+}
+
