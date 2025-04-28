@@ -2233,7 +2233,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@iterable/expo-plugin@workspace:."
   dependencies:
-    "@iterable/react-native-sdk": "npm:^2.0.0-beta"
+    "@iterable/react-native-sdk": "npm:^2.0.0-beta.1"
     "@react-native/eslint-config": "npm:^0.78.1"
     "@types/react": "npm:~18.3.12"
     "@typescript-eslint/eslint-plugin": "npm:8.28.0"
@@ -2249,16 +2249,15 @@ __metadata:
     react-native: "npm:0.76.9"
     typescript: "npm:^5.3.3"
   peerDependencies:
-    "@iterable/react-native-sdk": ^2.0.0-beta
     expo: "*"
     react: "*"
     react-native: "*"
   languageName: unknown
   linkType: soft
 
-"@iterable/react-native-sdk@npm:^2.0.0-beta":
-  version: 2.0.0-beta
-  resolution: "@iterable/react-native-sdk@npm:2.0.0-beta"
+"@iterable/react-native-sdk@npm:^2.0.0-beta.1":
+  version: 2.0.0-beta.1
+  resolution: "@iterable/react-native-sdk@npm:2.0.0-beta.1"
   peerDependencies:
     "@react-navigation/native": "*"
     react: "*"
@@ -2266,7 +2265,10 @@ __metadata:
     react-native-safe-area-context: "*"
     react-native-vector-icons: "*"
     react-native-webview: "*"
-  checksum: 10c0/55b6ea08802568d455f5c478897b6076066bdfac5974b32011dab4ced1c5e2a2dec024ae0d1a4ae2121487129894fced4b417438bfd17f844be2983cf26a4eb8
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/6ac46d9eb2e4e7285e48fc64b489cf905c84f376d13990b06a954e2b2f4a838d7fc10b8ca6e3c6b6f5ea0ba1f0c85aa7d43b7d8471b45ce1a6a4601fe482a4c4
   languageName: node
   linkType: hard
 
