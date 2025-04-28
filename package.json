@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://github.com/Iterable/iterable-expo-plugin#readme",
   "devDependencies": {
-    "@iterable/react-native-sdk": "^2.0.0-beta",
+    "@iterable/react-native-sdk": "^2.0.0-beta.1",
     "@react-native/eslint-config": "^0.78.1",
     "@types/react": "~18.3.12",
     "@typescript-eslint/eslint-plugin": "8.28.0",
@@ -46,10 +46,15 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@iterable/react-native-sdk": "^2.0.0-beta",
+    "@iterable/react-native-sdk": "^2.0.0-beta.1",
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "packageManager": "yarn@4.9.0"
 }
