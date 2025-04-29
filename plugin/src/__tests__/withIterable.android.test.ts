@@ -86,9 +86,32 @@ describe('withIterable', () => {
   const createMockAndroidManifest = (): Record<string, any> => ({
     manifest: {
       application: [
-        { $: { 'android:name': '.MainApplication' }, activity: [] },
+        { $: { 'android:name': '.MainApplication' }, activity: [{ $: {} }] },
       ],
     },
+  });
+
+  it('should set the launch mode to singleTask', async () => {
+    const config = createTestConfig();
+    const props: ConfigPluginProps = {
+      enableInAppMessages: true,
+    };
+
+    const result = withIterable(config, props) as WithIterableResult;
+    const modifiedManifest = await result.mods.android.manifest(
+      createMockConfigWithProps(createMockAndroidManifest())
+    );
+    const manifest = modifiedManifest.modResults.manifest;
+
+    expect(manifest.application[0].activity).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          $: {
+            'android:launchMode': 'singleTask',
+          },
+        }),
+      ])
+    );
   });
 
   describe('apiKey', () => {
@@ -132,20 +155,11 @@ describe('withIterable', () => {
 
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
-        createMockConfigWithProps({
-          manifest: {
-            application: [
-              {
-                $: { 'android:name': '.MainApplication' },
-                activity: [],
-              },
-            ],
-          },
-        })
+        createMockConfigWithProps(createMockAndroidManifest())
       );
-      const manifest = modifiedManifest.modResults;
+      const manifest = modifiedManifest.modResults.manifest;
 
-      expect(manifest.manifest.application[0]['meta-data']).toEqual(
+      expect(manifest.application[0]['meta-data']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             $: {
@@ -179,9 +193,9 @@ describe('withIterable', () => {
           },
         })
       );
-      const manifest = modifiedManifest.modResults;
+      const manifest = modifiedManifest.modResults.manifest;
 
-      expect(manifest.manifest.application[0]['meta-data']).toEqual(
+      expect(manifest.application[0]['meta-data']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             $: {

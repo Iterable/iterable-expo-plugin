@@ -1,7 +1,7 @@
 module.exports = {
   // Coverage does not work with expo-module-scripts, so we use jest-expo instead
   preset: 'jest-expo',
-  collectCoverage: true,
+  // collectCoverage: true,
   collectCoverageFrom: [
     'plugin/src/**/*.{js,jsx,ts,tsx}',
     '!plugin/src/**/*.d.ts',
