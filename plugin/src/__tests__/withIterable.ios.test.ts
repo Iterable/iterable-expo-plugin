@@ -57,6 +57,18 @@ describe('withIterable', () => {
     _internal: { projectRoot: process.cwd() },
   });
 
+  it('should not throw an error if there are no existing mod results', async () => {
+    async function runTest() {
+      // @ts-ignore
+      const result = withIterable(createTestConfig()) as WithIterableResult;
+      const mockConfigWithProps = createMockConfigWithProps();
+      // @ts-ignore
+      delete mockConfigWithProps.modResults;
+      return result.mods.ios.infoPlist(mockConfigWithProps);
+    }
+    await expect(runTest()).resolves.not.toThrow();
+  });
+
   it('should render the correct defaults if no config is provided', async () => {
     const config = createTestConfig();
     const props: ConfigPluginPropsWithDefaults = {

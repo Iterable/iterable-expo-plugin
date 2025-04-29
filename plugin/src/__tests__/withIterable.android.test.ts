@@ -104,7 +104,6 @@ describe('withIterable', () => {
       );
       const manifest = modifiedManifest.modResults.manifest;
 
-      console.log(` it > manifest:`, manifest.application[0]['meta-data']);
       expect(manifest.application[0]['meta-data']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({

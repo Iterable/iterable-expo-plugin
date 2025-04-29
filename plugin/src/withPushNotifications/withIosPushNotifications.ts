@@ -61,6 +61,10 @@ const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config
 ) => {
   return withInfoPlist(config, (newConfig) => {
+    if (!newConfig.modResults) {
+      newConfig.modResults = {};
+    }
+
     const backgroundModes = newConfig.modResults.UIBackgroundModes || [];
 
     /**
