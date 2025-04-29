@@ -109,7 +109,49 @@ describe('withIterable', () => {
     });
   });
 
-  describe('appEnvironment', () => {});
+  describe('appEnvironment', () => {
+    it('should set the aps-environment to development in the entitlements by default', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(modifiedEntitlements?.modResults['aps-environment']).toBe(
+        'development'
+      );
+    });
+    it('should set the aps-environment if set to production', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+        appEnvironment: 'production',
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(modifiedEntitlements?.modResults['aps-environment']).toBe(
+        'production'
+      );
+    });
+    it('should not set the aps-environment if `autoConfigurePushNotifications` is `false`', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: false,
+        appEnvironment: 'production',
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(
+        modifiedEntitlements?.modResults['aps-environment']
+      ).toBeUndefined();
+    });
+  });
 
   describe('autoConfigurePushNotifications', () => {
     describe('true', () => {
@@ -122,12 +164,33 @@ describe('withIterable', () => {
         const modifiedInfoPlist = await result.mods.ios.infoPlist(
           createMockConfigWithProps()
         );
-        const infoPlist = modifiedInfoPlist.modResults;
-        expect(infoPlist).toEqual(
-          expect.objectContaining({
-            UIBackgroundModes: ['remote-notification'],
-          })
+        expect(modifiedInfoPlist.modResults.UIBackgroundModes).toEqual(
+          expect.arrayContaining(['remote-notification'])
         );
+      });
+
+      it('should not add remote notifications background mode if it is already present', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: true,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        const mockConfig = createMockConfigWithProps();
+        mockConfig.modResults.UIBackgroundModes = [
+          'remote-notification',
+          'background-processing',
+        ];
+        const modifiedInfoPlist = await result.mods.ios.infoPlist(mockConfig);
+        const backgroundModes = modifiedInfoPlist.modResults.UIBackgroundModes;
+        expect(backgroundModes).toEqual(
+          expect.arrayContaining([
+            'remote-notification',
+            'background-processing',
+          ])
+        );
+        expect(
+          backgroundModes.filter((i) => i === 'remote-notification')
+        ).toHaveLength(1);
       });
 
       it('should add a reference to the notification service extension in the pod file if it is not already present', async () => {
@@ -181,9 +244,8 @@ describe('withIterable', () => {
           autoConfigurePushNotifications: false,
         };
         const result = withIterable(config, props) as WithIterableResult;
-        const modifiedInfoPlist = await result.mods.ios.infoPlist(
-          createMockConfigWithProps()
-        );
+        const mockConfig = createMockConfigWithProps();
+        const modifiedInfoPlist = await result.mods.ios.infoPlist(mockConfig);
         const infoPlist = modifiedInfoPlist.modResults;
         expect(infoPlist).not.toEqual(
           expect.objectContaining({
@@ -194,7 +256,58 @@ describe('withIterable', () => {
     });
   });
 
-  describe('enableTimeSensitivePush', () => {});
+  describe('enableTimeSensitivePush', () => {
+    it('should set `com.apple.developer.usernotifications.time-sensitive` to ` in the entitlements', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+        enableTimeSensitivePush: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(
+        modifiedEntitlements?.modResults[
+          'com.apple.developer.usernotifications.time-sensitive'
+        ]
+      ).toBe(true);
+    });
+
+    it('should not set `com.apple.developer.usernotifications.time-sensitive` to `true` if  set to `false`', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+        enableTimeSensitivePush: false,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(
+        modifiedEntitlements?.modResults[
+          'com.apple.developer.usernotifications.time-sensitive'
+        ]
+      ).not.toBe(true);
+    });
+
+    it('should set `com.apple.developer.usernotifications.time-sensitive` if `autoConfigurePushNotifications` is set to `false`', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: false,
+        enableTimeSensitivePush: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockConfig = createMockConfigWithProps();
+      const modifiedEntitlements =
+        await result.mods.ios?.entitlements?.(mockConfig);
+      expect(
+        modifiedEntitlements?.modResults[
+          'com.apple.developer.usernotifications.time-sensitive'
+        ]
+      ).toBeUndefined();
+    });
+  });
 
   describe('requestPermissionsForPushNotifications', () => {
     it('should add `ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS` to Info.plist', async () => {
@@ -203,9 +316,8 @@ describe('withIterable', () => {
         autoConfigurePushNotifications: false,
       };
       const result = withIterable(config, props) as WithIterableResult;
-      const modifiedInfoPlist = await result.mods.ios.infoPlist(
-        createMockConfigWithProps()
-      );
+      const mockConfig = createMockConfigWithProps();
+      const modifiedInfoPlist = await result.mods.ios.infoPlist(mockConfig);
       const infoPlist = modifiedInfoPlist.modResults;
       expect(infoPlist).toEqual(
         expect.objectContaining({
