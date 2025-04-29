@@ -119,10 +119,7 @@ describe('withIterable', () => {
     const result = await withIterable(config, props);
     // @ts-ignore
     await result.mods.ios.infoPlist;
-    console.log(` it > result:`, result);
     // @ts-ignore
-    console.log(` it > result.mods.ios.infoPlist:`, result.mods.ios.infoPlist);
-    console.log('result.ios', result.ios);
 
     // The plugin should still return a config object
     expect(result).toHaveProperty('ios');
