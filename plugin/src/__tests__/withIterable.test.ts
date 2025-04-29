@@ -67,7 +67,7 @@ describe('withIterable', () => {
       requestPermissionsForPushNotifications: false,
       enableInAppMessages: false,
     };
-    // @ts-expect-error
+    // @ts-ignore
     const result = withIterable(config) as WithIterableResult;
     const modifiedInfoPlist = await result.mods.ios.infoPlist(
       createMockConfigWithProps()
@@ -97,6 +97,48 @@ describe('withIterable', () => {
   describe('appEnvironment', () => {});
 
   describe('autoConfigurePushNotifications', () => {
+    describe('true', () => {
+      it('should add remote notifications background mode', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: true,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        const modifiedInfoPlist = await result.mods.ios.infoPlist(
+          createMockConfigWithProps()
+        );
+        const infoPlist = modifiedInfoPlist.modResults;
+        expect(infoPlist).toEqual(
+          expect.objectContaining({
+            UIBackgroundModes: ['remote-notification'],
+          })
+        );
+      });
+    });
+
+    describe('false', () => {
+      it('should notadd remote notifications background mode', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: false,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        const modifiedInfoPlist = await result.mods.ios.infoPlist(
+          createMockConfigWithProps()
+        );
+        const infoPlist = modifiedInfoPlist.modResults;
+        expect(infoPlist).not.toEqual(
+          expect.objectContaining({
+            UIBackgroundModes: ['remote-notification'],
+          })
+        );
+      });
+    });
+  });
+
+  describe('enableTimeSensitivePush', () => {});
+
+  describe('requestPermissionsForPushNotifications', () => {
     it('should add `ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS` to Info.plist', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
@@ -114,10 +156,6 @@ describe('withIterable', () => {
       );
     });
   });
-
-  describe('enableTimeSensitivePush', () => {});
-
-  describe('requestPermissionsForPushNotifications', () => {});
 
   describe('enableInAppMessages', () => {
     it('should add `ITERABLE_ENABLE_IN_APP_MESSAGES` to Info.plist', async () => {
