@@ -1,7 +1,10 @@
 import { withAndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
+
 import type { ConfigPluginPropsWithDefaults } from './withIterable.types';
 
-export const withDeepLinks: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+export const withDeepLinks: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config
+) => {
   return withAndroidManifest(config, (newConfig) => {
     const application = newConfig.modResults.manifest?.application?.[0];
     const activity = application?.activity?.[0];

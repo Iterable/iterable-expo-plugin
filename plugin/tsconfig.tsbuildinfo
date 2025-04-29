@@ -1,15 +1,1 @@
-{
-  "root": [
-    "./src/index.ts",
-    "./src/withdeeplinks.ts",
-    "./src/withiterable.types.ts",
-    "./src/withiterableapis.ts",
-    "./src/withstoreconfigvalues.ts",
-    "./src/withpushnotifications/index.ts",
-    "./src/withpushnotifications/withandroidpushnotifications.constants.ts",
-    "./src/withpushnotifications/withandroidpushnotifications.ts",
-    "./src/withpushnotifications/withiospushnotifications.constants.ts",
-    "./src/withpushnotifications/withiospushnotifications.ts"
-  ],
-  "version": "5.8.3"
-}
+{"root":["./src/withdeeplinks.ts","./src/withiterable.ts","./src/withiterable.types.ts","./src/withstoreconfigvalues.ts","./src/withpushnotifications/index.ts","./src/withpushnotifications/withandroidpushnotifications.constants.ts","./src/withpushnotifications/withandroidpushnotifications.ts","./src/withpushnotifications/withiospushnotifications.constants.ts","./src/withpushnotifications/withiospushnotifications.ts"],"version":"5.8.3"}
