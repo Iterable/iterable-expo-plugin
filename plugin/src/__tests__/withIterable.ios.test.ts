@@ -12,6 +12,7 @@ import type {
   ConfigPluginProps,
   ConfigPluginPropsWithDefaults,
 } from '../withIterable.types';
+import { NS_TARGET_NAME } from '../withPushNotifications/withIosPushNotifications.constants';
 
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
@@ -35,15 +36,16 @@ type WithIterableResult = ConfigWithMods & {
 const createMockConfigWithProps = (
   infoPlist: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults: infoPlist,
   modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'infoPlist',
     platform: 'ios',
+    projectRoot: '/test',
+    modName: 'test',
+    platformProjectRoot: '/test/ios',
     introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
+  },
+  modResults: {
+    contents: '# Podfile contents',
+  },
   modRawConfig: { name: 'TestApp', slug: 'test-app' },
   name: 'TestApp',
   slug: 'test-app',
@@ -54,6 +56,7 @@ describe('withIterable', () => {
     name: 'TestApp',
     slug: 'test-app',
     ios: { infoPlist: {} },
+    android: { googleServicesFile: 'test-google-services.json' },
     _internal: { projectRoot: process.cwd() },
   });
 
@@ -126,10 +129,53 @@ describe('withIterable', () => {
           })
         );
       });
+
+      it('should add a reference to the notification service extension in the pod file if it is not already present', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: true,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        const modifiedPodfile = await result.mods.ios?.podfile?.(
+          createMockConfigWithProps()
+        );
+        expect(modifiedPodfile?.modResults.contents).toContain(NS_TARGET_NAME);
+        expect(modifiedPodfile?.modResults.contents).toContain(
+          `pod 'Iterable-iOS-AppExtensions'`
+        );
+      });
+
+      it('should not add the notification service extension target if it is already present', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: true,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        const mockConfig = createMockConfigWithProps();
+        mockConfig.modResults.contents = `
+          ${mockConfig.modResults.contents}
+
+          target '${NS_TARGET_NAME}' do
+            pod 'Iterable-iOS-AppExtensions'
+          end
+        `;
+        const modifiedPodfile = await result.mods.ios?.podfile?.(mockConfig);
+
+        const countOccurrences = (str, word) => {
+          const regex = new RegExp(word, 'g');
+          const matches = str.match(regex);
+          return matches ? matches.length : 0;
+        };
+
+        expect(modifiedPodfile?.modResults.contents).toContain(NS_TARGET_NAME);
+        expect(
+          countOccurrences(modifiedPodfile?.modResults.contents, NS_TARGET_NAME)
+        ).toBe(1);
+      });
     });
 
     describe('false', () => {
-      it('should notadd remote notifications background mode', async () => {
+      it('should not add remote notifications background mode', async () => {
         const config = createTestConfig();
         const props: ConfigPluginProps = {
           autoConfigurePushNotifications: false,
