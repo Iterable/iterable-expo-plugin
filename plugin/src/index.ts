@@ -1,12 +1,9 @@
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
-import {
-  type ConfigPluginProps,
-  type ConfigPluginPropsWithDefaults,
-} from './withIterable.types';
+import { withDeepLinks } from './withDeepLinks';
+import { type ConfigPluginProps, type ConfigPluginPropsWithDefaults } from './withIterable.types';
 import { withPushNotifications } from './withPushNotifications';
 import { withStoreConfigValues } from './withStoreConfigValues';
-import { withDeepLinks } from './withDeepLinks';
 
 const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
   // Set default values for props
@@ -14,14 +11,11 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
     ...props,
     apiKey: props.apiKey ?? '',
     appEnvironment: props.appEnvironment ?? 'development',
-    autoConfigurePushNotifications:
-      props.autoConfigurePushNotifications ?? true,
+    autoConfigurePushNotifications: props.autoConfigurePushNotifications ?? true,
     enableTimeSensitivePush: props.enableTimeSensitivePush ?? true,
-    requestPermissionsForPushNotifications:
-      props.requestPermissionsForPushNotifications ?? false,
+    requestPermissionsForPushNotifications: props.requestPermissionsForPushNotifications ?? false,
     enableInAppMessages: props.enableInAppMessages ?? true,
   };
-
 
   return withPlugins(config, [
     [withStoreConfigValues, propsWithDefaults],
