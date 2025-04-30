@@ -53,7 +53,7 @@ const createMockConfigWithProps = (
   slug: 'test-app',
 });
 
-describe('withIterable', () => {
+describe.skip('withIterable', () => {
   // it('should set default values for props', () => {
   //   const config = { name: 'TestApp', slug: 'test-app', ios: {}, android: {} };
   //   // Call with no props

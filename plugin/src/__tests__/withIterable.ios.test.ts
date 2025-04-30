@@ -45,6 +45,74 @@ const createMockConfigWithProps = (
   },
   modResults: {
     contents: '# Podfile contents',
+    pbxTargetByName: (targetName: string) => {
+      // Mock implementation that returns false to simulate target not existing
+      return false;
+    },
+    pbxGroupByName: (groupName: string) => {
+      // Mock implementation that returns false to simulate group not existing
+      return false;
+    },
+    addTarget: (name: string, type: string, path: string) => {
+      // Mock implementation that returns a new target
+      return {
+        uuid: 'test-uuid',
+        name,
+        type,
+        path,
+      };
+    },
+    addBuildPhase: (files: any[], type: string, name: string, target: any) => {
+      // Mock implementation that returns a new build phase
+      return {
+        uuid: 'test-build-phase-uuid',
+        files,
+        type,
+        name,
+        target,
+      };
+    },
+    addSourceFile: (path: string, group: string) => {
+      // Mock implementation that returns a new source file
+      return {
+        uuid: 'test-source-file-uuid',
+        path,
+        group,
+      };
+    },
+    addPbxGroup: (
+      files: string[],
+      name: string,
+      path: string,
+      sourceTree: string
+    ) => {
+      // Mock implementation that returns a new PBX group
+      return {
+        uuid: 'test-group-uuid',
+        name,
+        path,
+        sourceTree,
+        children: files.map((file) => ({
+          uuid: `test-child-${file}-uuid`,
+          path: file,
+        })),
+      };
+    },
+    hash: {
+      project: {
+        objects: {
+          PBXTargetDependency: {},
+          PBXContainerItemProxy: {},
+          PBXBuildFile: {},
+          PBXFileReference: {},
+          PBXGroup: {},
+          PBXNativeTarget: {},
+          PBXProject: {},
+          XCBuildConfiguration: {},
+          XCConfigurationList: {},
+        },
+      },
+    },
   },
   modRawConfig: { name: 'TestApp', slug: 'test-app' },
   name: 'TestApp',
@@ -234,6 +302,28 @@ describe('withIterable', () => {
         expect(
           countOccurrences(modifiedPodfile?.modResults.contents, NS_TARGET_NAME)
         ).toBe(1);
+      });
+
+      it('should add the correct xcode project settings', async () => {
+        const config = createTestConfig();
+        const props: ConfigPluginProps = {
+          autoConfigurePushNotifications: true,
+        };
+        const result = withIterable(config, props) as WithIterableResult;
+        console.log(` it > result:`, result);
+        // console.log(` it > result:`, result);
+        const mockConfig = createMockConfigWithProps();
+        const modifiedXcodeProject =
+          await result.mods.ios?.xcodeproj?.(mockConfig);
+        console.log(` it > modifiedXcodeProject:`, modifiedXcodeProject);
+        console.log(
+          ` it > modifiedXcodeProject?.modResults:`,
+          modifiedXcodeProject?.modResults
+        );
+        console.log(
+          ` it > modifiedXcodeProject.modResults:`,
+          modifiedXcodeProject?.modResults.hash.project.objects
+        );
       });
     });
 
