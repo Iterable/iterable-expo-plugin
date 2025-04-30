@@ -6,6 +6,11 @@ declare class ExpoAdapterIterableModule extends NativeModule {
    * @return The Iterable API key.
    */
   getApiKey(): string;
+
+  /**
+   * Request notification permission.
+   */
+  requestNotificationPermission(): void;
 }
 
 // This call loads the native module object from the JSI.

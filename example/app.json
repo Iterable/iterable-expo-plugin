@@ -26,6 +26,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "expo.modules.adapters.iterable.example",
+      "permissions": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.INTERNET",
+        "android.permission.POST_NOTIFICATIONS"
+      ],
       "intentFilters": [
         {
           "action": "MAIN",
