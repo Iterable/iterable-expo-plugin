@@ -1,4 +1,3 @@
-import React from 'react';
 import { getApiKey } from '@iterable/expo-plugin';
 import {
   Iterable,
@@ -80,7 +79,13 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
               disabled={!email.length}
               onPressOut={onPress}
             >
-              <Text style={email.length > 0 ? styles.buttonText : styles.buttonTextDisabled}>
+              <Text
+                style={
+                  email.length > 0
+                    ? styles.buttonText
+                    : styles.buttonTextDisabled
+                }
+              >
                 Login
               </Text>
             </Pressable>
