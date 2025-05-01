@@ -18,7 +18,8 @@
       "associatedDomains": [
         "applinks:iterable.com",
         "applinks:links.anotherone.com"
-      ]
+      ],
+      "appleTeamId": "BP98Z28R86"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +32,7 @@
         "android.permission.INTERNET",
         "android.permission.POST_NOTIFICATIONS"
       ],
+      "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
           "action": "MAIN",
@@ -46,7 +48,6 @@
             {
               "scheme": "https",
               "host": "links.example.com",
-              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
               "pathPrefix": "/a/"
             }
           ],
@@ -72,7 +73,7 @@
       [
         "../app.plugin.js",
         {
-          "apiKey": "YOUR_ITERABLE_API_KEY",
+          "apiKey": "be63942e7f1e425b9923c4d86596528c",
           "appEnvironment": "development",
           "autoConfigurePushNotifications": true,
           "enableInAppMessages": true,
