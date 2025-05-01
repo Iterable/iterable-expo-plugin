@@ -18,8 +18,7 @@
       "associatedDomains": [
         "applinks:iterable.com",
         "applinks:links.anotherone.com"
-      ],
-      "appleTeamId": "BP98Z28R86"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -73,7 +72,7 @@
       [
         "../app.plugin.js",
         {
-          "apiKey": "be63942e7f1e425b9923c4d86596528c",
+          "apiKey": "ITERABLE_API_KEY",
           "appEnvironment": "development",
           "autoConfigurePushNotifications": true,
           "enableInAppMessages": true,

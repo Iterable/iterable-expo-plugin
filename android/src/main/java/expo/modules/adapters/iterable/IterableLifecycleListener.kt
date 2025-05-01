@@ -31,8 +31,6 @@ class IterableApplicationLifecycleListener : ApplicationLifecycleListener {
             false
         ) ?: false
 
-        println("shouldRequestPermissions: $shouldRequestPermissions")
-
         if (shouldRequestPermissions && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val permission = Manifest.permission.POST_NOTIFICATIONS
             if (ContextCompat.checkSelfPermission(application, permission) != PackageManager.PERMISSION_GRANTED) {
