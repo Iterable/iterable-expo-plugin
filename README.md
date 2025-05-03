@@ -118,7 +118,9 @@ so this needs to be disabled in your `app.json`:
 
 ### Adding push capabilities to android
 
-Add the path to your google-services.json file to the app file under
+#### Google Services File
+
+Add the path to your google-services.json file to the app.json file under
 `expo.android.googleServicesFile`.  EG: If the google services file was added to
 the root of the app, the expo file would look like this:
 ```json
@@ -126,6 +128,18 @@ the root of the app, the expo file would look like this:
   "expo": {
     "android": {
       "googleServicesFile": "./google-services.json"
+    }
+  }
+}
+```
+
+#### Push Notifications Permissions
+Add `"android.permission.POST_NOTIFICATIONS"` to the app.json file under `expo.android.permissions`.  EG:
+```json
+{
+  "expo": {
+    "android": {
+      "permissions": ["android.permission.POST_NOTIFICATIONS"]
     }
   }
 }
