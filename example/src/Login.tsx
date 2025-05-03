@@ -28,7 +28,9 @@ interface LoginProps {
 
 export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   const [initialized, setInitialized] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(
+    process.env.EXPO_PUBLIC_ITERABLE_API_KEY ?? ''
+  );
 
   useEffect(() => {
     const config = new IterableConfig();
