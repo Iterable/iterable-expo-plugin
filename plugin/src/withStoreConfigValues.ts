@@ -15,7 +15,7 @@ import { type ConfigPluginPropsWithDefaults } from './withIterable.types';
  */
 type JsKey = keyof Pick<
   ConfigPluginPropsWithDefaults,
-  'apiKey' | 'requestPermissionsForPushNotifications' | 'enableInAppMessages'
+  'apiKey' | 'requestPermissionsForPushNotifications'
 >;
 
 /**
@@ -35,7 +35,6 @@ const nativeKeyMap: Record<JsKey, NativeKey> = {
   apiKey: 'ITERABLE_API_KEY',
   requestPermissionsForPushNotifications:
     'ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS',
-  enableInAppMessages: 'ITERABLE_ENABLE_IN_APP_MESSAGES',
 };
 
 const withStoreValuesOnIos: ConfigPlugin<ConfigPluginPropsWithDefaults> = (

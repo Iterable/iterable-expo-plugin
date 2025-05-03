@@ -23,11 +23,6 @@ export interface ConfigPluginProps {
    * @default false
    */
   requestPermissionsForPushNotifications?: boolean;
-  /**
-   * Whether to enable in-app messages.
-   * @default true
-   */
-  enableInAppMessages?: boolean;
 }
 
 export type ConfigPluginPropsWithDefaults = Required<ConfigPluginProps>;

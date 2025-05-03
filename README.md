@@ -86,7 +86,6 @@ Add the plugin to your `app.json` or `app.config.js`:
         "autoConfigurePushNotifications": true,
         "enableTimeSensitivePush": true,
         "requestPermissionsForPushNotifications": true,
-        "enableInAppMessages": true
       }]
     ]
   }
@@ -102,7 +101,6 @@ Add the plugin to your `app.json` or `app.config.js`:
 | `autoConfigurePushNotifications` | boolean | true | Whether to automatically configure push notifications |
 | `enableTimeSensitivePush` | boolean | true | Whether to enable time-sensitive push notifications (ios only) |
 | `requestPermissionsForPushNotifications` | boolean | true | Whether to request permissions for push notifications (ios only) |
-| `enableInAppMessages` | boolean | true | Whether to enable in-app messages |
 
 ### Disabling New Architecture
 `@iterable/react-native-sdk` is *NOT* compatible with Reacts New Architecture,
