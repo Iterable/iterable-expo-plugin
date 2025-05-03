@@ -40,8 +40,8 @@ Expo.
     yarn install
     ```
 3. Configure your Iterable API key:
-   - Open `app.json`
-   - Replace `YOUR_API_KEY` with your actual Iterable API key
+   - Copy `.env` to `.env.local`
+   - Replace `YOUR_ITERABLE_API_KEY` with your actual Iterable API key
 
 4. For Android push notifications:
    - Place your `google-services.json` file in the root of the example directory

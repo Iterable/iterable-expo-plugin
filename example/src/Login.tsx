@@ -1,4 +1,3 @@
-import { getApiKey } from '@iterable/expo-plugin';
 import {
   Iterable,
   IterableConfig,
@@ -44,7 +43,10 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
 
     config.inAppHandler = () => IterableInAppShowResponse.show;
 
-    Iterable.initialize(getApiKey(), config).finally(() => {
+    Iterable.initialize(
+      process.env.EXPO_PUBLIC_ITERABLE_API_KEY as string,
+      config
+    ).finally(() => {
       setInitialized(true);
     });
   }, []);

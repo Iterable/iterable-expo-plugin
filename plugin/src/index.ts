@@ -12,7 +12,6 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
   // Set default values for props
   const propsWithDefaults: ConfigPluginPropsWithDefaults = {
     ...props,
-    apiKey: props.apiKey ?? '',
     appEnvironment: props.appEnvironment ?? 'development',
     autoConfigurePushNotifications:
       props.autoConfigurePushNotifications ?? true,

@@ -67,7 +67,6 @@
       [
         "../app.plugin.js",
         {
-          "apiKey": "YOUR_ITERABLE_API_KEY",
           "appEnvironment": "development",
           "autoConfigurePushNotifications": true,
           "enableInAppMessages": true,
