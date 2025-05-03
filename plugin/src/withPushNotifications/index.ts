@@ -1,8 +1,8 @@
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import { type ConfigPluginPropsWithDefaults } from '../withIterable.types';
-import { withIosPushNotifications } from './withIosPushNotifications';
 import { withAndroidPushNotifications } from './withAndroidPushNotifications';
+import { withIosPushNotifications } from './withIosPushNotifications';
 
 export const withPushNotifications: ConfigPlugin<
   ConfigPluginPropsWithDefaults

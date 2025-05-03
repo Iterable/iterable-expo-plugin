@@ -11,7 +11,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {loggedIn ? <IterableInbox /> : <Login onLoggedIn={() => setLoggedIn(true)} />}
+        {loggedIn ? (
+          <IterableInbox />
+        ) : (
+          <Login onLoggedIn={() => setLoggedIn(true)} />
+        )}
       </NavigationContainer>
     </SafeAreaProvider>
   );

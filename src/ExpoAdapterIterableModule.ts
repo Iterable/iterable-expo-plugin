@@ -9,4 +9,6 @@ declare class ExpoAdapterIterableModule extends NativeModule {
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoAdapterIterableModule>('ExpoAdapterIterable');
+export default requireNativeModule<ExpoAdapterIterableModule>(
+  'ExpoAdapterIterable'
+);

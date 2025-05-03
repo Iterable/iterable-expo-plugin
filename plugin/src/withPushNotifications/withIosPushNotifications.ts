@@ -30,7 +30,7 @@ const path = require('path');
  */
 const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   config,
-  props,
+  props
 ) => {
   return withEntitlementsPlist(config, (newConfig) => {
     /**
@@ -58,7 +58,7 @@ const withCapabilities: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
  * Adds any needed background modes to the app.
  */
 const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config,
+  config
 ) => {
   return withInfoPlist(config, (newConfig) => {
     const backgroundModes = newConfig.modResults.UIBackgroundModes || [];
@@ -81,7 +81,9 @@ const withBackgroundModes: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 /**
  * Adds the notification service files to the app.
  */
-const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => {
+const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config
+) => {
   return withDangerousMod(config, [
     'ios',
     (newConfig) => {
@@ -98,7 +100,7 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => 
       const notificationServicePath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_MAIN_FILE_NAME,
+        NS_MAIN_FILE_NAME
       );
       if (!fs.existsSync(notificationServicePath)) {
         fs.writeFileSync(notificationServicePath, NS_MAIN_FILE_CONTENT);
@@ -108,7 +110,7 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => 
       const notificationPlistPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_PLIST_FILE_NAME,
+        NS_PLIST_FILE_NAME
       );
       if (!fs.existsSync(notificationPlistPath)) {
         fs.writeFileSync(notificationPlistPath, NS_PLIST_CONTENT);
@@ -118,7 +120,7 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => 
       const entitlementsPath = path.resolve(
         srcPath,
         NS_TARGET_NAME,
-        NS_ENTITLEMENTS_FILE_NAME,
+        NS_ENTITLEMENTS_FILE_NAME
       );
       if (!fs.existsSync(entitlementsPath)) {
         fs.writeFileSync(entitlementsPath, NS_ENTITLEMENTS_CONTENT);
@@ -133,7 +135,7 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (config) => 
  * Updates the Xcode project to add the notification service target.
  */
 const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config,
+  config
 ) => {
   return withXcodeProject(config, (newConfig) => {
     const xcodeProject = newConfig.modResults;
@@ -178,14 +180,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         NS_TARGET_NAME,
         'app_extension',
         NS_TARGET_NAME,
-        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`,
+        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`
       );
 
       // Add the relevant files to the PBX group.
       const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
         NS_FILES,
         NS_TARGET_NAME,
-        NS_TARGET_NAME,
+        NS_TARGET_NAME
       );
 
       for (const groupUUID of Object.keys(groups)) {
@@ -196,7 +198,7 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         ) {
           xcodeProject.addToPbxGroup(
             itblNotificationServiceGroup.uuid,
-            groupUUID,
+            groupUUID
           );
         }
       }
@@ -232,14 +234,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         [NS_MAIN_FILE_NAME],
         'PBXSourcesBuildPhase',
         'Sources',
-        richPushTarget.uuid,
+        richPushTarget.uuid
       );
 
       xcodeProject.addBuildPhase(
         ['UserNotifications.framework'],
         'PBXFrameworksBuildPhase',
         'Frameworks',
-        richPushTarget.uuid,
+        richPushTarget.uuid
       );
     }
 
@@ -252,9 +254,9 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
  * This is the equivalent of going to Xcode > File > New > Target... and selecting "Notification Service Extension".
  * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
-const withAddNotifactionService: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config, props,
-) => {
+const withAddNotificationService: ConfigPlugin<
+  ConfigPluginPropsWithDefaults
+> = (config, props) => {
   return withPlugins(config, [
     [withAddNSFiles, props],
     [withXcodeUpdates, props],
@@ -266,7 +268,7 @@ const withAddNotifactionService: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
  * @see Step 3.5.7 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
  */
 const withAddServiceToPodfile: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config,
+  config
 ) => {
   return withPodfile(config, (newConfig) => {
     const { contents } = newConfig.modResults;
@@ -303,7 +305,7 @@ export const withIosPushNotifications: ConfigPlugin<
   return withPlugins(config, [
     [withCapabilities, props],
     [withBackgroundModes, props],
-    [withAddNotifactionService, props],
+    [withAddNotificationService, props],
     [withAddServiceToPodfile, props],
   ]);
 };
