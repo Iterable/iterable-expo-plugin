@@ -8,6 +8,10 @@ import {
 
 import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
+import {
+  NS_POD,
+  NS_TARGET_NAME,
+} from '../withPushNotifications/withIosPushNotifications.constants';
 
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
@@ -17,6 +21,14 @@ interface ConfigWithMods extends ExpoConfig {
     };
   };
 }
+
+const createTestConfig = (): ConfigWithMods => ({
+  name: 'TestApp',
+  slug: 'test-app',
+  ios: { infoPlist: {}, entitlements: {}, podfile: {} },
+  android: { googleServicesFile: './__mocks__/google-services.json' },
+  _internal: { projectRoot: process.cwd() },
+});
 
 // Helper function to create a mock ExportedConfigWithProps
 const createMockConfigWithPlist = (
@@ -53,12 +65,21 @@ const createMockConfigWithEntitlements = (
   slug: 'test-app',
 });
 
-const createTestConfig = (): ConfigWithMods => ({
+const createMockConfigWithPodfile = (
+  data: Record<string, any> = { contents: '' }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults: data,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'podfile',
+    platform: 'ios',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
   name: 'TestApp',
   slug: 'test-app',
-  ios: { infoPlist: {}, entitlements: {} },
-  android: { googleServicesFile: './__mocks__/google-services.json' },
-  _internal: { projectRoot: process.cwd() },
 });
 
 describe('withIterable', () => {
@@ -94,7 +115,80 @@ describe('withIterable', () => {
     });
   });
 
-  describe('autoConfigurePushNotifications', () => {});
+  describe('autoConfigurePushNotifications', () => {
+    it('should add `remote-notification` to the UIBackgroundModes', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props);
+      // @ts-ignore
+      const modifiedInfoPlist = await result.mods.ios.infoPlist(
+        createMockConfigWithPlist()
+      );
+      expect(modifiedInfoPlist.modResults.UIBackgroundModes).toEqual(
+        expect.arrayContaining(['remote-notification'])
+      );
+    });
+
+    it('should not add `remote-notification` to the UIBackgroundModes if it already exists', async () => {
+      const config = createTestConfig();
+      // @ts-ignore
+      config.ios.infoPlist.UIBackgroundModes = ['remote-notification'];
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props);
+      // @ts-ignore
+      const modifiedInfoPlist = await result.mods.ios.infoPlist(
+        // @ts-ignore
+        createMockConfigWithPlist(config.ios.infoPlist)
+      );
+      expect(
+        modifiedInfoPlist.modResults.UIBackgroundModes.filter(
+          (x: string) => x === 'remote-notification'
+        ).length
+      ).toEqual(1);
+    });
+
+    it('should add the notification to the podfile', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props);
+      // @ts-ignore
+      const modifiedPodfile = await result.mods.ios.podfile(
+        createMockConfigWithPodfile()
+      );
+      expect(modifiedPodfile.modResults.contents).toContain(NS_TARGET_NAME);
+      expect(modifiedPodfile.modResults.contents).toContain(NS_POD);
+    });
+
+    it('should not add the notification to the podfile if it already exists', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props);
+      // @ts-ignore
+      const modifiedPodfile = await result.mods.ios.podfile(
+        createMockConfigWithPodfile({
+          contents: `
+          target '${NS_TARGET_NAME}' do
+            use_frameworks!
+            pod '${NS_POD}'
+          end
+          `,
+        })
+      );
+      const { contents } = modifiedPodfile.modResults;
+      const count = (str: string, word: string) =>
+        (str.match(new RegExp(word, 'g')) || []).length;
+      expect(count(contents, NS_TARGET_NAME)).toBe(1);
+      expect(count(contents, NS_POD)).toBe(1);
+    });
+  });
 
   describe('enableTimeSensitivePush', () => {
     it('should add time sensitive push to the entitlements if not explicitly set to false', async () => {
