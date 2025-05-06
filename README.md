@@ -24,7 +24,9 @@ the native code is generated through `expo prebuild`.
 - [Troubleshooting](#troubleshooting)
   - [Native Module Not Found](#native-module-not-found)
   - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
+- [Contributing](#contributing)
 - [License](#license)
+- [Support](#support)
 - [Further Reading](#further-reading)
 
 <!-- /code_chunk_output -->
@@ -96,11 +98,11 @@ Add the plugin to your `app.json` or `app.config.js`:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | string | - | Your Iterable API key |
-| `appEnvironment` | 'development' \| 'production' | 'development' | The environment for your app |
-| `autoConfigurePushNotifications` | boolean | true | Whether to automatically configure push notifications |
-| `enableTimeSensitivePush` | boolean | true | Whether to enable time-sensitive push notifications (ios only) |
-| `requestPermissionsForPushNotifications` | boolean | true | Whether to request permissions for push notifications (ios only) |
+| `apiKey` | string | `''` | Your Iterable project API key |
+| `appEnvironment` | `'development'` \| `'production'` | `'development'` | The environment of your app |
+| `autoConfigurePushNotifications` | boolean | `true` | Whether to automatically configure push notifications. Set to `false` if you want to configure push notifications manually.  <br><br> **WARNING**: Iterable cannot guarantee compatibility with custom push notification configurations. |
+| `enableTimeSensitivePush` | boolean | `true` | Whether to enable time-sensitive push notifications (iOS only) |
+| `requestPermissionsForPushNotifications` | boolean | `false` | Whether to request permissions for push notifications (iOS only) |
 
 ### Disabling New Architecture
 `@iterable/react-native-sdk` is *NOT* compatible with Reacts New Architecture,
@@ -313,9 +315,21 @@ Sometimes this error appears when running `npx expo prebuild --clean`.  It seems
 to be an intermittent bug within expo.  It usually works upon running the same
 command a second time, so just try again.
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## Support
+
+For support, please:
+1. Check the [documentation](https://github.com/Iterable/iterable-expo-plugin#readme)
+2. Open an [issue](https://github.com/Iterable/iterable-expo-plugin/issues)
+3. Contact [Iterable support](https://support.iterable.com/hc/en-us/requests/new)
 
 ## Further Reading
 - [Installing Iterables React Native
