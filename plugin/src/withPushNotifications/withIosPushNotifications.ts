@@ -294,14 +294,6 @@ end`;
 export const withIosPushNotifications: ConfigPlugin<
   ConfigPluginPropsWithDefaults
 > = (config, props) => {
-  /**
-   * No need to do anything if `props.autoConfigurePushNotifications` is
-   * explicitly set to `false`.
-   */
-  if (props.autoConfigurePushNotifications === false) {
-    return config;
-  }
-
   return withPlugins(config, [
     [withCapabilities, props],
     [withBackgroundModes, props],
