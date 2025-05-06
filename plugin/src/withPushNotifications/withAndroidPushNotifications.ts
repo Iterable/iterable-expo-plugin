@@ -10,6 +10,11 @@ import {
 import fs from 'fs';
 import path from 'path';
 
+import {
+  addAppDependency,
+  addApplyPlugin,
+  addProjectDependency,
+} from '../utils.android';
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
   DEFAULT_GOOGLE_SERVICES_PATH,
@@ -20,81 +25,6 @@ import {
   GOOGLE_SERVICES_PLUGIN,
   GOOGLE_SERVICES_VERSION,
 } from './withAndroidPushNotifications.constants';
-
-interface GradleDependency {
-  classpath: string;
-  version?: string;
-}
-
-/**
- * Add a dependency to the project build.gradle file.
- */
-function addProjectDependency(buildGradle: string, options: GradleDependency) {
-  if (!buildGradle.includes(options?.classpath)) {
-    return buildGradle.replace(
-      /dependencies\s?{/,
-      `dependencies {
-        classpath('${options?.classpath}${
-          options?.version ? `:${options?.version}` : ''
-        }')`
-    );
-  } else {
-    return buildGradle;
-  }
-}
-
-interface AppGradleDependency extends GradleDependency {
-  /**
-   * The string to add to the dependencies block.
-   *
-   * If this is not provided, ${classpath}:${version} will be used.
-   */
-  implementation?: string;
-}
-
-/**
- * Add a dependency to the app build.gradle file.
- */
-function addAppDependency(buildGradle: string, options: AppGradleDependency) {
-  if (!buildGradle.includes(options?.classpath)) {
-    const implementationString =
-      options?.implementation ??
-      `'${options?.classpath}${
-        options?.version ? `:${options?.version}` : ''
-      }'`;
-    return buildGradle.replace(
-      /dependencies\s?{/,
-      // NOTE: awkward spacing is intentional -- it ensure correct alignment in
-      // the output build.gradle file
-      `dependencies {
-    implementation ${implementationString}`
-    );
-  } else {
-    return buildGradle;
-  }
-}
-
-/**
- * Add the apply plugin line to the app build.gradle file if it doesn't exist.
- */
-function addApplyPlugin(appBuildGradle: string, pluginName: string) {
-  // Check for `apply plugin: 'com.google.gms.google-services'`
-  const applyPluginPattern = new RegExp(
-    `apply\\s+plugin:\\s+['"]${pluginName}['"]`
-  );
-  // Check for `plugins { id 'com.google.gms.google-services' }`
-  const pluginIdPattern = new RegExp(`id\\s+['"]${pluginName}['"]`);
-
-  // Make sure the project does not have the plugin already
-  if (
-    !appBuildGradle.match(applyPluginPattern) &&
-    !appBuildGradle.match(pluginIdPattern)
-  ) {
-    return appBuildGradle + `\napply plugin: '${pluginName}'`;
-  }
-
-  return appBuildGradle;
-}
 
 const withFirebaseInProjectBuildGradle: ConfigPlugin<
   ConfigPluginPropsWithDefaults
@@ -203,9 +133,11 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
     'android',
     async (newConfig) => {
       if (!newConfig.android?.googleServicesFile) {
-        throw new Error(
-          'Path to google-services.json is not defined. Please specify the `expo.android.googleServicesFile` field in app.json.'
+        WarningAggregator.addWarningAndroid(
+          '@iterable/expo-plugin',
+          'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
         );
+        return newConfig;
       }
 
       const srcPath = path.resolve(
@@ -232,13 +164,6 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
 export const withAndroidPushNotifications: ConfigPlugin<
   ConfigPluginPropsWithDefaults
 > = (config, props) => {
-  if (!config.android?.googleServicesFile) {
-    WarningAggregator.addWarningAndroid(
-      '@iterable/expo-plugin',
-      'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
-    );
-    return config;
-  }
   return withPlugins(config, [
     [withAppPermissions, props],
     [withFirebase, props],

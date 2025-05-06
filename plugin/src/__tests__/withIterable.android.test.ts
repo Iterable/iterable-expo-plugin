@@ -27,6 +27,9 @@ import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
 import { GOOGLE_SERVICES_CLASS_PATH } from '../withPushNotifications/withAndroidPushNotifications.constants';
 
+const countWord = (str: string, word: string) =>
+  (str.match(new RegExp(word, 'g')) || []).length;
+
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
   mods?: {
@@ -107,6 +110,23 @@ const createMockAppBuildGradleConfigWithProps = (
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
     modName: 'appBuildGradle',
+    platform: 'android',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
+const createMockDangerousModConfigWithProps = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'dangerous',
     platform: 'android',
     introspect: true,
     severity: 'info',
@@ -378,8 +398,9 @@ describe('withIterable', () => {
         autoConfigurePushNotifications: true,
       };
       const result = withIterable(config, props) as WithIterableResult;
-      await result.mods.android.manifest(
-        createMockManifestConfigWithProps(createMockAndroidManifest())
+      // @ts-ignore
+      await result.mods.android.dangerous(
+        createMockDangerousModConfigWithProps()
       );
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
