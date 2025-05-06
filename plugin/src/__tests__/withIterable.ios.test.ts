@@ -1,3 +1,4 @@
+// Mock console.warn to prevent warnings in test output
 import { ExpoConfig } from 'expo/config';
 import {
   ExportedConfigWithProps,
@@ -12,6 +13,9 @@ import {
   NS_POD,
   NS_TARGET_NAME,
 } from '../withPushNotifications/withIosPushNotifications.constants';
+
+const originalWarn = console.warn;
+console.warn = jest.fn();
 
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
@@ -32,9 +36,9 @@ const createTestConfig = (): ConfigWithMods => ({
 
 // Helper function to create a mock ExportedConfigWithProps
 const createMockConfigWithPlist = (
-  data: Record<string, any> = {}
+  modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults: data,
+  modResults,
   modRequest: {
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
@@ -49,9 +53,9 @@ const createMockConfigWithPlist = (
 });
 
 const createMockConfigWithEntitlements = (
-  data: Record<string, any> = {}
+  modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults: data,
+  modResults,
   modRequest: {
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
@@ -66,9 +70,9 @@ const createMockConfigWithEntitlements = (
 });
 
 const createMockConfigWithPodfile = (
-  data: Record<string, any> = { contents: '' }
+  modResults: Record<string, any> = { contents: '' }
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults: data,
+  modResults,
   modRequest: {
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
@@ -83,6 +87,15 @@ const createMockConfigWithPodfile = (
 });
 
 describe('withIterable', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    // Restore console.warn after all tests
+    console.warn = originalWarn;
+  });
+
   describe('apiKey', () => {
     it('should store API key in Info.plist', async () => {
       const config = createTestConfig();
@@ -187,6 +200,31 @@ describe('withIterable', () => {
         (str.match(new RegExp(word, 'g')) || []).length;
       expect(count(contents, NS_TARGET_NAME)).toBe(1);
       expect(count(contents, NS_POD)).toBe(1);
+    });
+
+    it('should handle non-Groovy build.gradle files', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props);
+      // @ts-ignore
+      const modifiedProjectGradle =
+        await result.mods.android.projectBuildGradle({
+          modResults: { language: 'kotlin', contents: '' },
+          modRequest: {
+            projectRoot: process.cwd(),
+            platformProjectRoot: process.cwd(),
+            modName: 'projectBuildGradle',
+            platform: 'android',
+            introspect: true,
+            severity: 'info',
+          },
+          modRawConfig: { name: 'TestApp', slug: 'test-app' },
+          name: 'TestApp',
+          slug: 'test-app',
+        });
+      expect(modifiedProjectGradle.modResults.contents).toBe('');
     });
   });
 

@@ -1,13 +1,31 @@
+// Mock console.warn to prevent warnings in test output
+const originalWarn = console.warn;
+console.warn = jest.fn();
+
+// Mock WarningAggregator before any imports
+/* eslint-disable import/first */
+jest.mock('expo/config-plugins', () => {
+  const original = jest.requireActual('expo/config-plugins');
+  return {
+    ...original,
+    WarningAggregator: {
+      addWarningAndroid: jest.fn(),
+    },
+  };
+});
+
 import { ExpoConfig } from 'expo/config';
 import {
   ExportedConfigWithProps,
   Mod,
   ModPlatform,
   ModProps,
+  WarningAggregator,
 } from 'expo/config-plugins';
 
 import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
+import { GOOGLE_SERVICES_CLASS_PATH } from '../withPushNotifications/withAndroidPushNotifications.constants';
 
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
@@ -31,7 +49,7 @@ type WithIterableResult = ConfigWithMods & {
 };
 
 // Helper function to create a mock ExportedConfigWithProps
-const createMockConfigWithProps = (
+const createMockManifestConfigWithProps = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
   modResults,
@@ -48,7 +66,41 @@ const createMockConfigWithProps = (
   slug: 'test-app',
 });
 
+const getDefaultProjectBuildGradleContents = () => `
+dependencies { 
+}
+`;
+
+const createMockProjectBuildGradleConfigWithProps = (
+  modResults: Record<string, any> = {
+    contents: getDefaultProjectBuildGradleContents(),
+    language: 'groovy',
+  }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'projectBuildGradle',
+    platform: 'android',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
 describe('withIterable', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    // Restore console.warn after all tests
+    console.warn = originalWarn;
+  });
+
   const createTestConfig = (): ConfigWithMods => ({
     name: 'TestApp',
     slug: 'test-app',
@@ -93,7 +145,7 @@ describe('withIterable', () => {
 
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
-      createMockConfigWithProps(createMockAndroidManifest())
+      createMockManifestConfigWithProps(createMockAndroidManifest())
     );
     const manifest = modifiedManifest.modResults.manifest;
 
@@ -114,7 +166,7 @@ describe('withIterable', () => {
 
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
-      createMockConfigWithProps({
+      createMockManifestConfigWithProps({
         manifest: {
           application: [
             { $: { 'android:name': '.MainApplication' }, activity: [] },
@@ -144,7 +196,7 @@ describe('withIterable', () => {
 
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
-        createMockConfigWithProps(createMockAndroidManifest())
+        createMockManifestConfigWithProps(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
 
@@ -161,11 +213,44 @@ describe('withIterable', () => {
     });
   });
 
-  describe('appEnvironment', () => {});
+  describe('autoConfigurePushNotifications', () => {
+    it('should add firebase to the project gradle', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedProjectBuildGradle =
+        // @ts-ignore
+        await result.mods.android.projectBuildGradle(
+          createMockProjectBuildGradleConfigWithProps()
+        );
+      const projectBuildGradle = modifiedProjectBuildGradle.modResults.contents;
 
-  describe('autoConfigurePushNotifications', () => {});
+      expect(projectBuildGradle).toContain(GOOGLE_SERVICES_CLASS_PATH);
+    });
 
-  describe('enableTimeSensitivePush', () => {});
+    it('should warn the user if the project gradle is not groovy', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+
+      const result = withIterable(config, props) as WithIterableResult;
+      // @ts-ignore
+      await result.mods.android.projectBuildGradle(
+        createMockProjectBuildGradleConfigWithProps({
+          contents: getDefaultProjectBuildGradleContents(),
+          language: 'kotlin',
+        })
+      );
+
+      expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+        '@iterable/expo-plugin',
+        "Cannot automatically configure project build.gradle if it's not groovy"
+      );
+    });
+  });
 
   describe('requestPermissionsForPushNotifications', () => {
     it('should add `ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS` to Android Manifest', async () => {
@@ -176,7 +261,7 @@ describe('withIterable', () => {
 
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
-        createMockConfigWithProps(createMockAndroidManifest())
+        createMockManifestConfigWithProps(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
 
