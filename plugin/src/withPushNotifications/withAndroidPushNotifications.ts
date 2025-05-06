@@ -64,7 +64,7 @@ function addAppDependency(buildGradle: string, options: AppGradleDependency) {
       }'`;
     return buildGradle.replace(
       /dependencies\s?{/,
-      // NOTE: awkard spacing is intentional -- it ensure correct alignment in
+      // NOTE: awkward spacing is intentional -- it ensure correct alignment in
       // the output build.gradle file
       `dependencies {
     implementation ${implementationString}`

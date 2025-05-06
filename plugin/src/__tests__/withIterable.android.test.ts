@@ -67,9 +67,9 @@ const createMockManifestConfigWithProps = (
 });
 
 const getDefaultProjectBuildGradleContents = () => `
-dependencies { 
-}
-`;
+  dependencies { 
+  }
+  `;
 
 const createMockProjectBuildGradleConfigWithProps = (
   modResults: Record<string, any> = {
@@ -82,6 +82,31 @@ const createMockProjectBuildGradleConfigWithProps = (
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
     modName: 'projectBuildGradle',
+    platform: 'android',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
+const getDefaultAppBuildGradleContents = () => `
+dependencies { 
+}
+`;
+
+const createMockAppBuildGradleConfigWithProps = (
+  modResults: Record<string, any> = {
+    contents: getDefaultAppBuildGradleContents(),
+    language: 'groovy',
+  }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'appBuildGradle',
     platform: 'android',
     introspect: true,
     severity: 'info',
@@ -248,6 +273,117 @@ describe('withIterable', () => {
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         "Cannot automatically configure project build.gradle if it's not groovy"
+      );
+    });
+
+    it('should add dependencies to the app gradle', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedAppBuildGradle =
+        // @ts-ignore
+        await result.mods.android.appBuildGradle(
+          createMockAppBuildGradleConfigWithProps()
+        );
+      const { contents } = modifiedAppBuildGradle.modResults;
+      expect(contents).toContain(
+        `implementation platform('com.google.firebase:firebase-bom`
+      );
+      expect(contents).toContain(
+        `implementation 'com.google.firebase:firebase-messaging'`
+      );
+      expect(contents).toContain(
+        `apply plugin: 'com.google.gms.google-services'`
+      );
+    });
+
+    it('should warn the user if the app gradle is not groovy', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+
+      const result = withIterable(config, props) as WithIterableResult;
+      // @ts-ignore
+      await result.mods.android.appBuildGradle(
+        createMockAppBuildGradleConfigWithProps({
+          contents: getDefaultAppBuildGradleContents(),
+          language: 'kotlin',
+        })
+      );
+
+      expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+        '@iterable/expo-plugin',
+        "Cannot automatically configure app build.gradle if it's not groovy"
+      );
+    });
+
+    it('should add the POST_NOTIFICATIONS permission to the manifest', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedManifest = await result.mods.android.manifest(
+        createMockManifestConfigWithProps(createMockAndroidManifest())
+      );
+      const manifest = modifiedManifest.modResults.manifest;
+      expect(manifest['uses-permission']).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            $: {
+              'android:name': 'android.permission.POST_NOTIFICATIONS',
+            },
+          }),
+        ])
+      );
+    });
+
+    it('should not add a duplicate POST_NOTIFICATIONS permission to the manifest', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const mockAndroidManifest = createMockAndroidManifest();
+      mockAndroidManifest.manifest['uses-permission'] = [
+        {
+          $: { 'android:name': 'android.permission.POST_NOTIFICATIONS' },
+        },
+      ];
+      const modifiedManifest = await result.mods.android.manifest(
+        createMockManifestConfigWithProps(mockAndroidManifest)
+      );
+      const manifest = modifiedManifest.modResults.manifest;
+      const num = manifest['uses-permission'].reduce((previous, current) => {
+        if (
+          current['$']['android:name'] ===
+          'android.permission.POST_NOTIFICATIONS'
+        ) {
+          return previous + 1;
+        }
+        return previous;
+      }, 0);
+      expect(num).toBe(1);
+    });
+
+    it('should warn the user if the google-services.json file is not found', async () => {
+      const config = createTestConfig();
+      // @ts-ignore
+      delete config.android.googleServicesFile;
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      await result.mods.android.manifest(
+        createMockManifestConfigWithProps(createMockAndroidManifest())
+      );
+      expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+        '@iterable/expo-plugin',
+        'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
       );
     });
   });
