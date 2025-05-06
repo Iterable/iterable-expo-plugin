@@ -71,7 +71,6 @@
           "apiKey": "YOUR_ITERABLE_API_KEY",
           "appEnvironment": "development",
           "autoConfigurePushNotifications": true,
-          "enableInAppMessages": true,
           "enableTimeSensitivePush": true,
           "requestPermissionsForPushNotifications": true
         }
