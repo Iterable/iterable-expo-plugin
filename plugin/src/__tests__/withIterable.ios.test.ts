@@ -487,6 +487,63 @@ describe('withIterable', () => {
         'test-target-uuid'
       );
     });
+
+    it('should add groups to the notification service group if they have no name or path', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
+      (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
+
+      // Mock groups with different properties
+      mockXcodeProject.hash.project.objects.PBXGroup = {
+        group1: { name: undefined, path: undefined }, // Should be added
+        group2: { name: 'Test', path: undefined }, // Should not be added (has name)
+        group3: { name: undefined, path: 'test/path' }, // Should not be added (has path)
+        group4: { name: undefined, path: undefined }, // Should be added
+      };
+
+      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+
+      // Verify addToPbxGroup was called only for groups without name and path
+      expect(mockXcodeProject.addToPbxGroup).toHaveBeenCalledTimes(2);
+      expect(mockXcodeProject.addToPbxGroup).toHaveBeenCalledWith(
+        'test-group-uuid',
+        'group1'
+      );
+      expect(mockXcodeProject.addToPbxGroup).toHaveBeenCalledWith(
+        'test-group-uuid',
+        'group4'
+      );
+    });
+
+    it('should not add groups to the notification service group if they have name or path', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
+      (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
+
+      // Mock groups that should not be added
+      mockXcodeProject.hash.project.objects.PBXGroup = {
+        group1: { name: 'Test', path: undefined },
+        group2: { name: undefined, path: 'test/path' },
+        group3: { name: 'Test', path: 'test/path' },
+      };
+
+      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+
+      // Verify addToPbxGroup was not called
+      expect(mockXcodeProject.addToPbxGroup).not.toHaveBeenCalled();
+    });
   });
 
   describe('enableTimeSensitivePush', () => {
