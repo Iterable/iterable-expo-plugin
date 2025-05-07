@@ -9,6 +9,7 @@ import {
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
+import { XcodeProject } from 'xcode';
 
 import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
@@ -28,6 +29,27 @@ jest.mock('fs', () => ({
   promises: {
     readFile: jest.fn(),
   },
+}));
+
+jest.mock('xcode', () => ({
+  XcodeProject: jest.fn().mockImplementation(() => ({
+    pbxTargetByName: jest.fn(),
+    pbxGroupByName: jest.fn(),
+    hash: {
+      project: {
+        objects: {
+          PBXTargetDependency: {},
+          PBXContainerItemProxy: {},
+          PBXGroup: {},
+          XCBuildConfiguration: {},
+        },
+      },
+    },
+    addTarget: jest.fn().mockReturnValue({ uuid: 'test-target-uuid' }),
+    addPbxGroup: jest.fn().mockReturnValue({ uuid: 'test-group-uuid' }),
+    addToPbxGroup: jest.fn(),
+    addBuildPhase: jest.fn(),
+  })),
 }));
 
 const originalWarn = console.warn;
@@ -50,6 +72,7 @@ type WithIterableResult = ConfigWithMods & {
       entitlements: Mod<Record<string, any>>;
       podfile: Mod<Record<string, any>>;
       dangerous: Mod<Record<string, any>>;
+      xcodeproj: Mod<any>;
     };
   };
 };
@@ -114,6 +137,23 @@ const createMockConfigWithDangerousMod = (
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
     modName: 'dangerous',
+    platform: 'ios',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
+const createMockConfigWithXcodeMod = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'xcodeproj',
     platform: 'ios',
     introspect: true,
     severity: 'info',
@@ -318,6 +358,134 @@ describe('withIterable', () => {
       await dangerousMod(createMockConfigWithDangerousMod());
 
       expect(fs.writeFileSync).not.toHaveBeenCalled();
+    });
+
+    it('should skip if target already exists', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue({
+        uuid: 'existing-target',
+      });
+
+      await xcodeMod({
+        modResults: mockXcodeProject,
+        modRequest: {
+          projectRoot: process.cwd(),
+          platformProjectRoot: process.cwd(),
+          modName: 'xcodeproj',
+          platform: 'ios',
+          introspect: true,
+        },
+        modRawConfig: { name: 'TestApp', slug: 'test-app' },
+        name: 'TestApp',
+        slug: 'test-app',
+      });
+
+      expect(mockXcodeProject.addTarget).not.toHaveBeenCalled();
+      expect(mockXcodeProject.addPbxGroup).not.toHaveBeenCalled();
+      expect(mockXcodeProject.addBuildPhase).not.toHaveBeenCalled();
+    });
+
+    it('should create new target and group if they do not exist', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
+      (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
+
+      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+
+      expect(mockXcodeProject.addTarget).toHaveBeenCalledWith(
+        NS_TARGET_NAME,
+        'app_extension',
+        NS_TARGET_NAME,
+        expect.any(String)
+      );
+      expect(mockXcodeProject.addPbxGroup).toHaveBeenCalledWith(
+        expect.any(Array),
+        NS_TARGET_NAME,
+        NS_TARGET_NAME
+      );
+    });
+
+    it('should copy build settings from main target', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
+      (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
+
+      // Mock build settings
+      const mockBuildSettings = {
+        SWIFT_VERSION: '5.0',
+        CODE_SIGN_STYLE: 'Automatic',
+        CODE_SIGN_IDENTITY: 'Apple Development',
+        OTHER_CODE_SIGN_FLAGS: '--keychain=login.keychain',
+        DEVELOPMENT_TEAM: 'TEAM123',
+        PROVISIONING_PROFILE_SPECIFIER: 'Profile 1',
+      };
+
+      mockXcodeProject.hash.project.objects.XCBuildConfiguration = {
+        config1: { buildSettings: mockBuildSettings },
+        config2: { buildSettings: { PRODUCT_NAME: `"${NS_TARGET_NAME}"` } },
+      };
+
+      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+
+      const targetConfig =
+        mockXcodeProject.hash.project.objects.XCBuildConfiguration['config2']
+          .buildSettings;
+      expect(targetConfig.SWIFT_VERSION).toBe('5.0');
+      expect(targetConfig.CODE_SIGN_STYLE).toBe('Automatic');
+      expect(targetConfig.CODE_SIGN_IDENTITY).toBe('Apple Development');
+      expect(targetConfig.OTHER_CODE_SIGN_FLAGS).toBe(
+        '--keychain=login.keychain'
+      );
+      expect(targetConfig.DEVELOPMENT_TEAM).toBe('TEAM123');
+      expect(targetConfig.PROVISIONING_PROFILE_SPECIFIER).toBe('Profile 1');
+      expect(targetConfig.CODE_SIGN_ENTITLEMENTS).toBe(
+        `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`
+      );
+    });
+
+    it('should add build phases for sources and frameworks', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const xcodeMod = result.mods.ios.xcodeproj as Mod<any>;
+      const mockXcodeProject = new XcodeProject();
+      (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
+      (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
+
+      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+
+      expect(mockXcodeProject.addBuildPhase).toHaveBeenCalledWith(
+        [NS_MAIN_FILE_NAME],
+        'PBXSourcesBuildPhase',
+        'Sources',
+        'test-target-uuid'
+      );
+      expect(mockXcodeProject.addBuildPhase).toHaveBeenCalledWith(
+        ['UserNotifications.framework'],
+        'PBXFrameworksBuildPhase',
+        'Frameworks',
+        'test-target-uuid'
+      );
     });
   });
 
