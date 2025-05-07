@@ -69,7 +69,6 @@
         {
           "appEnvironment": "development",
           "autoConfigurePushNotifications": true,
-          "enableInAppMessages": true,
           "enableTimeSensitivePush": true,
           "requestPermissionsForPushNotifications": true
         }

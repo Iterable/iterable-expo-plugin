@@ -1,6 +1,7 @@
 import {
   ConfigPlugin,
   WarningAggregator,
+  withAndroidManifest,
   withAppBuildGradle,
   withDangerousMod,
   withPlugins,
@@ -167,6 +168,33 @@ const withFirebase: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 };
 
 /**
+ * Add the POST_NOTIFICATIONS permission to the AndroidManifest.xml file if it
+ * doesn't exist.
+ */
+const withAppPermissions: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config
+) => {
+  return withAndroidManifest(config, (newConfig) => {
+    const androidManifest = newConfig.modResults.manifest;
+    if (!androidManifest['uses-permission']) {
+      androidManifest['uses-permission'] = [];
+    }
+    const postPermission = 'android.permission.POST_NOTIFICATIONS';
+    const currPostPermission = androidManifest['uses-permission'].find(
+      (p) => p.$['android:name'] === postPermission
+    );
+
+    // Only add the permission if it doesn't exist
+    if (!currPostPermission) {
+      androidManifest['uses-permission'].push({
+        $: { 'android:name': postPermission },
+      });
+    }
+    return newConfig;
+  });
+};
+
+/**
  * Copy `google-services.json`
  * TODO: Add this step to the docs
  */
@@ -212,6 +240,7 @@ export const withAndroidPushNotifications: ConfigPlugin<
     return config;
   }
   return withPlugins(config, [
+    [withAppPermissions, props],
     [withFirebase, props],
     [withCopyAndroidGoogleServices, props],
   ]);
