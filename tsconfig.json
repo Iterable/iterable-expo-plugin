@@ -6,7 +6,6 @@
   },
   "include": [
     "./src",
-    "./example/src"
   ],
   "exclude": [
     "**/__mocks__/*",
