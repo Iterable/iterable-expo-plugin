@@ -22,13 +22,19 @@ import {
   ModProps,
   WarningAggregator,
 } from 'expo/config-plugins';
+import fs from 'fs';
+import path from 'path';
 
 import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
 import { GOOGLE_SERVICES_CLASS_PATH } from '../withPushNotifications/withAndroidPushNotifications.constants';
 
-const countWord = (str: string, word: string) =>
-  (str.match(new RegExp(word, 'g')) || []).length;
+// Mock fs promises
+jest.mock('fs', () => ({
+  promises: {
+    copyFile: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 // Extend ExpoConfig to include mods
 interface ConfigWithMods extends ExpoConfig {
@@ -406,6 +412,68 @@ describe('withIterable', () => {
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
       );
+    });
+
+    it('should copy google-services.json when path is defined', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.android.dangerous as Mod<any>;
+      await dangerousMod({
+        ...createMockDangerousModConfigWithProps(),
+        android: {
+          googleServicesFile: './google-services.json',
+        },
+      });
+
+      expect(fs.promises.copyFile).toHaveBeenCalledWith(
+        path.resolve(process.cwd(), './google-services.json'),
+        path.resolve(process.cwd(), 'app/google-services.json')
+      );
+    });
+
+    it('should warn when google-services.json path is not defined', async () => {
+      const config = {
+        ...createTestConfig(),
+        android: {
+          ...createTestConfig().android,
+          googleServicesFile: undefined,
+        },
+      };
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.android.dangerous as Mod<any>;
+      await dangerousMod(createMockDangerousModConfigWithProps());
+
+      expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+        '@iterable/expo-plugin',
+        'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
+      );
+      expect(fs.promises.copyFile).not.toHaveBeenCalled();
+    });
+
+    it('should throw error when google-services.json does not exist', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      (fs.promises.copyFile as jest.Mock).mockRejectedValueOnce(
+        new Error('File not found')
+      );
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.android.dangerous as Mod<any>;
+      await expect(
+        dangerousMod({
+          ...createMockDangerousModConfigWithProps(),
+          android: {
+            googleServicesFile: './google-services.json',
+          },
+        })
+      ).rejects.toThrow('Cannot copy google-services.json');
     });
   });
 
