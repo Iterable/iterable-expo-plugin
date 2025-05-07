@@ -48,24 +48,23 @@ interface ConfigWithMods extends ExpoConfig {
 // Type for the result of withIterable
 type WithIterableResult = ConfigWithMods & {
   mods: {
-    ios: {
-      infoPlist: Mod<Record<string, any>>;
-    };
     android: {
       manifest: Mod<Record<string, any>>;
+      projectBuildGradle: Mod<Record<string, any>>;
+      appBuildGradle: Mod<Record<string, any>>;
+      dangerous: Mod<Record<string, any>>;
     };
   };
 };
 
-// Helper function to create a mock ExportedConfigWithProps
-const createMockManifestConfigWithProps = (
-  modResults: Record<string, any> = {}
+const createMockMod = (
+  modName: string
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults,
+  modResults: {},
   modRequest: {
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
-    modName: 'manifest',
+    modName,
     platform: 'android',
     introspect: true,
     severity: 'info',
@@ -73,6 +72,14 @@ const createMockManifestConfigWithProps = (
   modRawConfig: { name: 'TestApp', slug: 'test-app' },
   name: 'TestApp',
   slug: 'test-app',
+});
+
+// Helper function to create a mock ExportedConfigWithProps
+const createMockManifestConfigWithProps = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockMod('manifest'),
+  modResults,
 });
 
 const getDefaultProjectBuildGradleContents = () => `
@@ -86,18 +93,8 @@ const createMockProjectBuildGradleConfigWithProps = (
     language: 'groovy',
   }
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockMod('projectBuildGradle'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'projectBuildGradle',
-    platform: 'android',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
 const getDefaultAppBuildGradleContents = () => `
@@ -111,35 +108,15 @@ const createMockAppBuildGradleConfigWithProps = (
     language: 'groovy',
   }
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockMod('appBuildGradle'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'appBuildGradle',
-    platform: 'android',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
 const createMockDangerousModConfigWithProps = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockMod('dangerous'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'dangerous',
-    platform: 'android',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
 describe('withIterable', () => {
@@ -193,13 +170,11 @@ describe('withIterable', () => {
   it('should set the launch mode to singleTask if activities exist', async () => {
     const config = createTestConfig();
     const props: ConfigPluginProps = {};
-
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
       createMockManifestConfigWithProps(createMockAndroidManifest())
     );
     const manifest = modifiedManifest.modResults.manifest;
-
     expect(manifest.application[0].activity).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -214,7 +189,6 @@ describe('withIterable', () => {
   it('should not set the launch mode to singleTask if activities do not exist', async () => {
     const config = createTestConfig();
     const props: ConfigPluginProps = {};
-
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
       createMockManifestConfigWithProps({
@@ -226,7 +200,6 @@ describe('withIterable', () => {
       })
     );
     const manifest = modifiedManifest.modResults.manifest;
-
     expect(manifest.application[0].activity).not.toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -244,13 +217,11 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         apiKey: 'test-api-key',
       };
-
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
         createMockManifestConfigWithProps(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
-
       expect(manifest.application[0]['meta-data']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -272,12 +243,10 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedProjectBuildGradle =
-        // @ts-ignore
         await result.mods.android.projectBuildGradle(
           createMockProjectBuildGradleConfigWithProps()
         );
       const projectBuildGradle = modifiedProjectBuildGradle.modResults.contents;
-
       expect(projectBuildGradle).toContain(GOOGLE_SERVICES_CLASS_PATH);
     });
 
@@ -286,16 +255,13 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-
       const result = withIterable(config, props) as WithIterableResult;
-      // @ts-ignore
       await result.mods.android.projectBuildGradle(
         createMockProjectBuildGradleConfigWithProps({
           contents: getDefaultProjectBuildGradleContents(),
           language: 'kotlin',
         })
       );
-
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         "Cannot automatically configure project build.gradle if it's not groovy"
@@ -308,11 +274,9 @@ describe('withIterable', () => {
         autoConfigurePushNotifications: true,
       };
       const result = withIterable(config, props) as WithIterableResult;
-      const modifiedAppBuildGradle =
-        // @ts-ignore
-        await result.mods.android.appBuildGradle(
-          createMockAppBuildGradleConfigWithProps()
-        );
+      const modifiedAppBuildGradle = await result.mods.android.appBuildGradle(
+        createMockAppBuildGradleConfigWithProps()
+      );
       const { contents } = modifiedAppBuildGradle.modResults;
       expect(contents).toContain(
         `implementation platform('com.google.firebase:firebase-bom`
@@ -330,16 +294,13 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-
       const result = withIterable(config, props) as WithIterableResult;
-      // @ts-ignore
       await result.mods.android.appBuildGradle(
         createMockAppBuildGradleConfigWithProps({
           contents: getDefaultAppBuildGradleContents(),
           language: 'kotlin',
         })
       );
-
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         "Cannot automatically configure app build.gradle if it's not groovy"
@@ -397,17 +358,19 @@ describe('withIterable', () => {
     });
 
     it('should warn the user if the google-services.json file is not found', async () => {
-      const config = createTestConfig();
-      // @ts-ignore
-      delete config.android.googleServicesFile;
+      const config = {
+        ...createTestConfig(),
+        android: {
+          ...createTestConfig().android,
+          googleServicesFile: undefined,
+        },
+      };
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
       const result = withIterable(config, props) as WithIterableResult;
-      // @ts-ignore
-      await result.mods.android.dangerous(
-        createMockDangerousModConfigWithProps()
-      );
+      const dangerousMod = result.mods.android.dangerous as Mod<any>;
+      await dangerousMod(createMockDangerousModConfigWithProps());
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -427,7 +390,6 @@ describe('withIterable', () => {
           googleServicesFile: './google-services.json',
         },
       });
-
       expect(fs.promises.copyFile).toHaveBeenCalledWith(
         path.resolve(process.cwd(), './google-services.json'),
         path.resolve(process.cwd(), 'app/google-services.json')
@@ -448,7 +410,6 @@ describe('withIterable', () => {
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
       await dangerousMod(createMockDangerousModConfigWithProps());
-
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -483,13 +444,12 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         requestPermissionsForPushNotifications: true,
       };
-
       const result = withIterable(config, props) as WithIterableResult;
-      const modifiedManifest = await result.mods.android.manifest(
+      const manifestMod = result.mods.android.manifest as Mod<any>;
+      const modifiedManifest = await manifestMod(
         createMockManifestConfigWithProps(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
-
       expect(manifest.application[0]['meta-data']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
