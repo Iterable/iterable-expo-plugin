@@ -26,7 +26,6 @@
         "backgroundColor": "#ffffff"
       },
       "package": "expo.modules.adapters.iterable.example",
-      "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
           "action": "MAIN",
