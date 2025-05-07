@@ -7,7 +7,6 @@ import {
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -49,6 +48,8 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   };
 
   const runInitialize = () => {
+    if (!isApiKeySet) return;
+
     const config = new IterableConfig();
 
     config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
@@ -66,15 +67,25 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   };
 
   useEffect(() => {
-    if (isApiKeySet) {
-      runInitialize();
-    } else {
-      Alert.alert(
-        'API Key not set',
-        'Please set your Iterable API key in the .env.local file.  See the example README or the .env file for more details.'
-      );
-    }
+    runInitialize();
   }, []);
+
+  if (!isApiKeySet) {
+    return (
+      <View style={styles.loginScreenContainer}>
+        <Text style={styles.warningTitle}>ERROR: API Key not set</Text>
+        <Text style={styles.warningText}>
+          Please set your Iterable API key in the
+          <Text style={styles.emphasisTest}> .env.local</Text> file.
+        </Text>
+        <Text style={styles.warningText}>
+          See the
+          <Text style={styles.emphasisTest}> example README</Text> or the
+          <Text style={styles.emphasisTest}> .env</Text> file for more details.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.loginScreenContainer}>
@@ -215,5 +226,27 @@ const styles = StyleSheet.create({
     letterSpacing: -0.25,
     lineHeight: 28,
     marginBottom: 12,
+  },
+  warningTitle: {
+    color: colors.textDestructive,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 20,
+    marginTop: 100,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  warningText: {
+    color: colors.textPrimary,
+    fontSize: 16,
+    fontWeight: '400',
+    lineHeight: 20,
+    marginBottom: 12,
+    textAlign: 'center',
+    paddingHorizontal: 40,
+  },
+  emphasisTest: {
+    fontStyle: 'italic',
+    fontWeight: '500',
   },
 });
