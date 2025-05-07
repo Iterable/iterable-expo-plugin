@@ -45,14 +45,22 @@ jobs:
           fi
           echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Upload coverage to Code Climate
+        uses: paambaati/codeclimate-action@v9.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE_KEY }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage/
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+          coverageCommand: yarn test --coverage --coverageReporters lcov
+          coverageLocations: |
+            ${{github.workspace}}/coverage/lcov.info:lcov
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     directory: ./coverage/
+      #     flags: unittests
+      #     name: codecov-umbrella
+      #     fail_ci_if_error: true
 
   build-library:
     runs-on: ubuntu-latest
