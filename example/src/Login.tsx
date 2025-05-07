@@ -29,7 +29,7 @@ interface LoginProps {
 export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   const [initialized, setInitialized] = useState(false);
   const [email, setEmail] = useState(
-    process.env.EXPO_PUBLIC_ITERABLE_API_KEY ?? ''
+    process.env.EXPO_PUBLIC_ITERABLE_EMAIL ?? ''
   );
 
   useEffect(() => {
