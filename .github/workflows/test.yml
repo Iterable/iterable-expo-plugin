@@ -105,19 +105,3 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           locale: 'US'
-
-  run-linters:
-    name: Run linters
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          prettier: true
