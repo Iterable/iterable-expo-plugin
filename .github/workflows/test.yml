@@ -32,8 +32,27 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run unit tests
+      - name: Run unit tests with coverage
         run: yarn test:coverage --maxWorkers=2
+
+      - name: Check coverage thresholds
+        run: |
+          COVERAGE_THRESHOLD=80
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "Coverage ($COVERAGE%) is below threshold ($COVERAGE_THRESHOLD%)"
+            exit 1
+          fi
+          echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true
 
   build-library:
     runs-on: ubuntu-latest
