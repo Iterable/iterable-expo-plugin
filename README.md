@@ -1,6 +1,8 @@
 ![@iterable/expo-plugin](./assets/Iterable-Logo.png "@iterable/expo-plugin")
 # @iterable/expo-plugin
 
+
+
 This config plugin automatically configures your Expo app to work with
 [@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
 the native code is generated through `expo prebuild`.
@@ -10,29 +12,29 @@ the native code is generated through `expo prebuild`.
 
 <!-- code_chunk_output -->
 
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
+- [🚀 Quick Start](#-quick-start)
+- [🔧 Configuration](#-configuration)
   - [Plugin Options](#plugin-options)
   - [Disabling New Architecture](#disabling-new-architecture)
   - [Adding push capabilities](#adding-push-capabilities)
   - [Adding Deeplinks](#adding-deeplinks)
   - [Configuring ProGuard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
-- [Requirements and Limitations](#requirements-and-limitations)
-- [Features](#features)
+- [✅ Requirements and Limitations](#-requirements-and-limitations)
+- [🎉 Features](#-features)
   - [Push Notifications](#push-notifications)
   - [Deep Links](#deep-links)
-- [Troubleshooting](#troubleshooting)
+- [⁉️ Troubleshooting](#️-troubleshooting)
   - [Native Module Not Found](#native-module-not-found)
   - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
-- [Contributing](#contributing)
-- [License](#license)
-- [Support](#support)
-- [Further Reading](#further-reading)
+- [👏 Contributing](#-contributing)
+- [📝 License](#-license)
+- [💬 Support](#-support)
+- [📚 Further Reading](#-further-reading)
 
 <!-- /code_chunk_output -->
 
 
-## Quick Start
+## 🚀 Quick Start
 
 1. Install the plugin and `@iterable/react-native-sdk` by running the following in your terminal:
     ```bash
@@ -74,7 +76,7 @@ the native code is generated through `expo prebuild`.
     }
     ```
 
-## Configuration
+## 🔧 Configuration
 
 Add the plugin to your `app.json` or `app.config.js`:
 
@@ -243,7 +245,7 @@ The overall code in your *app.json* file should look something like this:
 
 Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/articles/360035019712-Iterable-s-Android-SDK#step-4-configure-proguard) section of Iterables Android SDK setup docs.
 
-## Requirements and Limitations
+## ✅ Requirements and Limitations
 
 - New Architecture needs to be disabled, as `@iterable/react-native-sdk` does
   not support it.  See [Disabling New Architecture](#disabling-new-architecture)
@@ -260,7 +262,7 @@ Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/art
 - This plugin has been tested on Expo version 52+.  While it may work on
   previous versions, they are not supported.
 
-## Features
+## 🎉 Features
 
 ### Push Notifications
 
@@ -290,7 +292,7 @@ The plugin configures deep linking capabilities for both platforms.
 - Configures App Links
 - Sets up intent filters
 
-## Troubleshooting
+## ⁉️ Troubleshooting
 
 ### Native Module Not Found
 
@@ -320,23 +322,23 @@ Sometimes this error appears when running `npx expo prebuild --clean`.  It seems
 to be an intermittent bug within expo.  It usually works upon running the same
 command a second time, so just try again.
 
-## Contributing
+## 👏 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 for details.
 
-## Support
+## 💬 Support
 
 For support, please:
 1. Check the [documentation](https://github.com/Iterable/iterable-expo-plugin#readme)
 2. Open an [issue](https://github.com/Iterable/iterable-expo-plugin/issues)
 3. Contact [Iterable support](https://support.iterable.com/hc/en-us/requests/new)
 
-## Further Reading
+## 📚 Further Reading
 - [Installing Iterables React Native
   SDK](https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-7-add-support-for-deep-links)
 - [Expo docs](https://docs.expo.dev/)
