@@ -1,3 +1,4 @@
+// Mock fs before any imports
 // Mock console.warn to prevent warnings in test output
 import { ExpoConfig } from 'expo/config';
 import {
@@ -6,13 +7,28 @@ import {
   ModPlatform,
   ModProps,
 } from 'expo/config-plugins';
+import fs from 'fs';
+import path from 'path';
 
 import withIterable from '..';
 import type { ConfigPluginProps } from '../withIterable.types';
 import {
   NS_POD,
   NS_TARGET_NAME,
+  NS_MAIN_FILE_NAME,
+  NS_PLIST_FILE_NAME,
+  NS_ENTITLEMENTS_FILE_NAME,
 } from '../withPushNotifications/withIosPushNotifications.constants';
+
+jest.mock('fs', () => ({
+  existsSync: jest.fn(),
+  mkdirSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  readFile: jest.fn(),
+  promises: {
+    readFile: jest.fn(),
+  },
+}));
 
 const originalWarn = console.warn;
 console.warn = jest.fn();
@@ -81,6 +97,23 @@ const createMockConfigWithPodfile = (
     projectRoot: process.cwd(),
     platformProjectRoot: process.cwd(),
     modName: 'podfile',
+    platform: 'ios',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
+const createMockConfigWithDangerousMod = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults,
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName: 'dangerous',
     platform: 'ios',
     introspect: true,
     severity: 'info',
@@ -208,6 +241,83 @@ describe('withIterable', () => {
         (str.match(new RegExp(word, 'g')) || []).length;
       expect(count(contents, NS_TARGET_NAME)).toBe(1);
       expect(count(contents, NS_POD)).toBe(1);
+    });
+
+    it('should create the notification service folder if it does not exist', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      (fs.existsSync as jest.Mock).mockReturnValue(false);
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.ios.dangerous as Mod<any>;
+      await dangerousMod({
+        modResults: {},
+        modRequest: {
+          projectRoot: process.cwd(),
+          platformProjectRoot: process.cwd(),
+          modName: 'dangerous',
+          platform: 'ios',
+          introspect: true,
+        },
+        modRawConfig: { name: 'TestApp', slug: 'test-app' },
+        name: 'TestApp',
+        slug: 'test-app',
+      });
+
+      expect(fs.mkdirSync).toHaveBeenCalledWith(
+        path.resolve(process.cwd(), NS_TARGET_NAME)
+      );
+    });
+
+    it('should not create the notification service folder if it already exists', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.ios.dangerous as Mod<any>;
+      await dangerousMod(createMockConfigWithDangerousMod());
+
+      expect(fs.mkdirSync).not.toHaveBeenCalled();
+    });
+
+    it('should create all required files if they do not exist', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      (fs.existsSync as jest.Mock).mockReturnValue(false);
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.ios.dangerous as Mod<any>;
+      await dangerousMod(createMockConfigWithDangerousMod());
+
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        path.resolve(process.cwd(), NS_TARGET_NAME, NS_MAIN_FILE_NAME),
+        expect.any(String)
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        path.resolve(process.cwd(), NS_TARGET_NAME, NS_PLIST_FILE_NAME),
+        expect.any(String)
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        path.resolve(process.cwd(), NS_TARGET_NAME, NS_ENTITLEMENTS_FILE_NAME),
+        expect.any(String)
+      );
+    });
+
+    it('should not create files if they already exist', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        autoConfigurePushNotifications: true,
+      };
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      const result = withIterable(config, props) as WithIterableResult;
+      const dangerousMod = result.mods.ios.dangerous as Mod<any>;
+      await dangerousMod(createMockConfigWithDangerousMod());
+
+      expect(fs.writeFileSync).not.toHaveBeenCalled();
     });
   });
 
