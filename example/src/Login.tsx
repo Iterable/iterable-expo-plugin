@@ -7,6 +7,7 @@ import {
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -26,23 +27,34 @@ interface LoginProps {
   onLoggedIn: () => void;
 }
 
+/**
+ * Has the user set their Iterable API key in the .env.local file?
+ * See the [example README](https://github.com/Iterable/iterable-expo-plugin/blob/main/example/README.md) or the [.env file](https://github.com/Iterable/iterable-expo-plugin/blob/main/example/.env) for more details.
+ */
+const isApiKeySet =
+  !!process.env.EXPO_PUBLIC_ITERABLE_API_KEY &&
+  process.env.EXPO_PUBLIC_ITERABLE_API_KEY !== 'YOUR_ITERABLE_API_KEY';
+
 export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   const [initialized, setInitialized] = useState(false);
   const [email, setEmail] = useState(
     process.env.EXPO_PUBLIC_ITERABLE_EMAIL ?? ''
   );
 
-  useEffect(() => {
+  const onPress = () => {
+    Iterable.setEmail(email);
+    setTimeout(() => {
+      onLoggedIn();
+    }, 300);
+  };
+
+  const runInitialize = () => {
     const config = new IterableConfig();
 
     config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
-
     config.urlHandler = () => true;
-
     config.allowedProtocols = ['app', 'iterable'];
-
     config.logLevel = IterableLogLevel.info;
-
     config.inAppHandler = () => IterableInAppShowResponse.show;
 
     Iterable.initialize(
@@ -51,14 +63,18 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
     ).finally(() => {
       setInitialized(true);
     });
-  }, []);
-
-  const onPress = () => {
-    Iterable.setEmail(email);
-    setTimeout(() => {
-      onLoggedIn();
-    }, 300);
   };
+
+  useEffect(() => {
+    if (isApiKeySet) {
+      runInitialize();
+    } else {
+      Alert.alert(
+        'API Key not set',
+        'Please set your Iterable API key in the .env.local file.  See the example README or the .env file for more details.'
+      );
+    }
+  }, []);
 
   return (
     <View style={styles.loginScreenContainer}>
@@ -79,7 +95,11 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
               autoComplete="email"
             />
             <Pressable
-              style={email.length > 0 ? styles.button : styles.buttonDisabled}
+              style={
+                email.length > 0 && isApiKeySet
+                  ? styles.button
+                  : styles.buttonDisabled
+              }
               disabled={!email.length}
               onPressOut={onPress}
             >
