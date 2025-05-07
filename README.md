@@ -83,7 +83,6 @@ Add the plugin to your `app.json` or `app.config.js`:
   "expo": {
     "plugins": [
       ["@iterable/expo-plugin", {
-        "apiKey": "YOUR_ITERABLE_API_KEY",
         "appEnvironment": "development",
         "autoConfigurePushNotifications": true,
         "enableTimeSensitivePush": true,
@@ -98,7 +97,6 @@ Add the plugin to your `app.json` or `app.config.js`:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | string | `''` | Your Iterable project API key |
 | `appEnvironment` | `'development'` \| `'production'` | `'development'` | The environment of your app |
 | `autoConfigurePushNotifications` | boolean | `true` | Whether to automatically configure push notifications. Set to `false` if you want to configure push notifications manually.  <br><br> **WARNING**: Iterable cannot guarantee compatibility with custom push notification configurations. |
 | `enableTimeSensitivePush` | boolean | `true` | Whether to enable time-sensitive push notifications (iOS only) |
