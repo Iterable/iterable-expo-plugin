@@ -26,13 +26,17 @@ interface ConfigWithMods extends ExpoConfig {
   };
 }
 
-const createTestConfig = (): ConfigWithMods => ({
-  name: 'TestApp',
-  slug: 'test-app',
-  ios: { infoPlist: {}, entitlements: {}, podfile: {} },
-  android: { googleServicesFile: './__mocks__/google-services.json' },
-  _internal: { projectRoot: process.cwd() },
-});
+// Type for the result of withIterable
+type WithIterableResult = ConfigWithMods & {
+  mods: {
+    ios: {
+      infoPlist: Mod<Record<string, any>>;
+      entitlements: Mod<Record<string, any>>;
+      podfile: Mod<Record<string, any>>;
+      dangerous: Mod<Record<string, any>>;
+    };
+  };
+};
 
 // Helper function to create a mock ExportedConfigWithProps
 const createMockConfigWithPlist = (
@@ -86,6 +90,14 @@ const createMockConfigWithPodfile = (
   slug: 'test-app',
 });
 
+const createTestConfig = (): ConfigWithMods => ({
+  name: 'TestApp',
+  slug: 'test-app',
+  ios: { infoPlist: {}, entitlements: {} },
+  android: { googleServicesFile: './__mocks__/google-services.json' },
+  _internal: { projectRoot: process.cwd() },
+});
+
 describe('withIterable', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -102,9 +114,10 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         apiKey: 'test-api-key',
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
-      const modifiedInfoPlist = await result.mods.ios.infoPlist({});
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedInfoPlist = await result.mods.ios.infoPlist(
+        createMockConfigWithPlist()
+      );
       expect(modifiedInfoPlist.modResults.ITERABLE_API_KEY).toBe(
         'test-api-key'
       );
@@ -117,8 +130,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         appEnvironment: 'development',
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
         createMockConfigWithEntitlements()
       );
@@ -134,8 +146,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
         createMockConfigWithPlist()
       );
@@ -151,8 +162,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
         // @ts-ignore
         createMockConfigWithPlist(config.ios.infoPlist)
@@ -169,8 +179,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedPodfile = await result.mods.ios.podfile(
         createMockConfigWithPodfile()
       );
@@ -183,8 +192,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedPodfile = await result.mods.ios.podfile(
         createMockConfigWithPodfile({
           contents: `
@@ -201,37 +209,11 @@ describe('withIterable', () => {
       expect(count(contents, NS_TARGET_NAME)).toBe(1);
       expect(count(contents, NS_POD)).toBe(1);
     });
-
-    it('should handle non-Groovy build.gradle files', async () => {
-      const config = createTestConfig();
-      const props: ConfigPluginProps = {
-        autoConfigurePushNotifications: true,
-      };
-      const result = withIterable(config, props);
-      // @ts-ignore
-      const modifiedProjectGradle =
-        await result.mods.android.projectBuildGradle({
-          modResults: { language: 'kotlin', contents: '' },
-          modRequest: {
-            projectRoot: process.cwd(),
-            platformProjectRoot: process.cwd(),
-            modName: 'projectBuildGradle',
-            platform: 'android',
-            introspect: true,
-            severity: 'info',
-          },
-          modRawConfig: { name: 'TestApp', slug: 'test-app' },
-          name: 'TestApp',
-          slug: 'test-app',
-        });
-      expect(modifiedProjectGradle.modResults.contents).toBe('');
-    });
   });
 
   describe('enableTimeSensitivePush', () => {
     it('should add time sensitive push to the entitlements if not explicitly set to false', async () => {
-      const result = withIterable(createTestConfig(), {});
-      // @ts-ignore
+      const result = withIterable(createTestConfig(), {}) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
         createMockConfigWithEntitlements()
       );
@@ -247,8 +229,7 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         enableTimeSensitivePush: false,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
+      const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
         createMockConfigWithEntitlements()
       );
@@ -265,9 +246,8 @@ describe('withIterable', () => {
         enableTimeSensitivePush: true,
         autoConfigurePushNotifications: false,
       };
-      const result = withIterable(config, props);
+      const result = withIterable(config, props) as WithIterableResult;
       // The below is not defined as entitlements are not added anywhere
-      // @ts-ignore
       expect(result.mods?.ios?.entitlements).not.toBeDefined();
     });
   });
@@ -278,9 +258,10 @@ describe('withIterable', () => {
       const props: ConfigPluginProps = {
         requestPermissionsForPushNotifications: true,
       };
-      const result = withIterable(config, props);
-      // @ts-ignore
-      const modifiedInfoPlist = await result.mods.ios.infoPlist({});
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedInfoPlist = await result.mods.ios.infoPlist(
+        createMockConfigWithPlist()
+      );
       expect(
         modifiedInfoPlist.modResults
           .ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS

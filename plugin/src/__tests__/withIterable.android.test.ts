@@ -119,6 +119,43 @@ const createMockDangerousModConfigWithProps = (
   modResults,
 });
 
+const createTestConfig = (): ConfigWithMods => ({
+  name: 'TestApp',
+  slug: 'test-app',
+  android: {
+    googleServicesFile: './google-services.json',
+    package: 'com.test.app',
+    intentFilters: [
+      {
+        action: 'MAIN',
+        category: ['LAUNCHER'],
+        autoVerify: true,
+      },
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [
+          {
+            scheme: 'https',
+            host: 'links.example.com',
+            pathPrefix: '/a/',
+          },
+        ],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
+  },
+  _internal: { projectRoot: process.cwd() },
+});
+
+const createMockAndroidManifest = (): Record<string, any> => ({
+  manifest: {
+    application: [
+      { $: { 'android:name': '.MainApplication' }, activity: [{ $: {} }] },
+    ],
+  },
+});
+
 describe('withIterable', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -127,44 +164,6 @@ describe('withIterable', () => {
   afterAll(() => {
     // Restore console.warn after all tests
     console.warn = originalWarn;
-  });
-
-  const createTestConfig = (): ConfigWithMods => ({
-    name: 'TestApp',
-    slug: 'test-app',
-    ios: { infoPlist: {} },
-    android: {
-      googleServicesFile: './google-services.json',
-      package: 'com.test.app',
-      intentFilters: [
-        {
-          action: 'MAIN',
-          category: ['LAUNCHER'],
-          autoVerify: true,
-        },
-        {
-          action: 'VIEW',
-          autoVerify: true,
-          data: [
-            {
-              scheme: 'https',
-              host: 'links.example.com',
-              pathPrefix: '/a/',
-            },
-          ],
-          category: ['BROWSABLE', 'DEFAULT'],
-        },
-      ],
-    },
-    _internal: { projectRoot: process.cwd() },
-  });
-
-  const createMockAndroidManifest = (): Record<string, any> => ({
-    manifest: {
-      application: [
-        { $: { 'android:name': '.MainApplication' }, activity: [{ $: {} }] },
-      ],
-    },
   });
 
   it('should set the launch mode to singleTask if activities exist', async () => {
