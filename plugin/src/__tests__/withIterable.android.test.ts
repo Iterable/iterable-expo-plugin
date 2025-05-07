@@ -57,7 +57,7 @@ type WithIterableResult = ConfigWithMods & {
   };
 };
 
-const createMockMod = (
+const createMockConfig = (
   modName: string
 ): ExportedConfigWithProps<Record<string, any>> => ({
   modResults: {},
@@ -75,10 +75,10 @@ const createMockMod = (
 });
 
 // Helper function to create a mock ExportedConfigWithProps
-const createMockManifestConfigWithProps = (
+const createMockManifestConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  ...createMockMod('manifest'),
+  ...createMockConfig('manifest'),
   modResults,
 });
 
@@ -87,13 +87,13 @@ const getDefaultProjectBuildGradleContents = () => `
   }
   `;
 
-const createMockProjectBuildGradleConfigWithProps = (
+const createMockProjectBuildGradleConfig = (
   modResults: Record<string, any> = {
     contents: getDefaultProjectBuildGradleContents(),
     language: 'groovy',
   }
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  ...createMockMod('projectBuildGradle'),
+  ...createMockConfig('projectBuildGradle'),
   modResults,
 });
 
@@ -102,20 +102,20 @@ dependencies {
 }
 `;
 
-const createMockAppBuildGradleConfigWithProps = (
+const createMockAppBuildGradleConfig = (
   modResults: Record<string, any> = {
     contents: getDefaultAppBuildGradleContents(),
     language: 'groovy',
   }
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  ...createMockMod('appBuildGradle'),
+  ...createMockConfig('appBuildGradle'),
   modResults,
 });
 
-const createMockDangerousModConfigWithProps = (
+const createMockDangerousModConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  ...createMockMod('dangerous'),
+  ...createMockConfig('dangerous'),
   modResults,
 });
 
@@ -171,7 +171,7 @@ describe('withIterable', () => {
     const props: ConfigPluginProps = {};
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
-      createMockManifestConfigWithProps(createMockAndroidManifest())
+      createMockManifestConfig(createMockAndroidManifest())
     );
     const manifest = modifiedManifest.modResults.manifest;
     expect(manifest.application[0].activity).toEqual(
@@ -190,7 +190,7 @@ describe('withIterable', () => {
     const props: ConfigPluginProps = {};
     const result = withIterable(config, props) as WithIterableResult;
     const modifiedManifest = await result.mods.android.manifest(
-      createMockManifestConfigWithProps({
+      createMockManifestConfig({
         manifest: {
           application: [
             { $: { 'android:name': '.MainApplication' }, activity: [] },
@@ -218,7 +218,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
-        createMockManifestConfigWithProps(createMockAndroidManifest())
+        createMockManifestConfig(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
       expect(manifest.application[0]['meta-data']).toEqual(
@@ -243,7 +243,7 @@ describe('withIterable', () => {
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedProjectBuildGradle =
         await result.mods.android.projectBuildGradle(
-          createMockProjectBuildGradleConfigWithProps()
+          createMockProjectBuildGradleConfig()
         );
       const projectBuildGradle = modifiedProjectBuildGradle.modResults.contents;
       expect(projectBuildGradle).toContain(GOOGLE_SERVICES_CLASS_PATH);
@@ -256,7 +256,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       await result.mods.android.projectBuildGradle(
-        createMockProjectBuildGradleConfigWithProps({
+        createMockProjectBuildGradleConfig({
           contents: getDefaultProjectBuildGradleContents(),
           language: 'kotlin',
         })
@@ -274,7 +274,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedAppBuildGradle = await result.mods.android.appBuildGradle(
-        createMockAppBuildGradleConfigWithProps()
+        createMockAppBuildGradleConfig()
       );
       const { contents } = modifiedAppBuildGradle.modResults;
       expect(contents).toContain(
@@ -295,7 +295,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       await result.mods.android.appBuildGradle(
-        createMockAppBuildGradleConfigWithProps({
+        createMockAppBuildGradleConfig({
           contents: getDefaultAppBuildGradleContents(),
           language: 'kotlin',
         })
@@ -314,7 +314,7 @@ describe('withIterable', () => {
 
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedManifest = await result.mods.android.manifest(
-        createMockManifestConfigWithProps(createMockAndroidManifest())
+        createMockManifestConfig(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
       expect(manifest['uses-permission']).toEqual(
@@ -341,7 +341,7 @@ describe('withIterable', () => {
         },
       ];
       const modifiedManifest = await result.mods.android.manifest(
-        createMockManifestConfigWithProps(mockAndroidManifest)
+        createMockManifestConfig(mockAndroidManifest)
       );
       const manifest = modifiedManifest.modResults.manifest;
       const num = manifest['uses-permission'].reduce((previous, current) => {
@@ -369,7 +369,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await dangerousMod(createMockDangerousModConfigWithProps());
+      await dangerousMod(createMockDangerousModConfig());
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -384,7 +384,7 @@ describe('withIterable', () => {
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
       await dangerousMod({
-        ...createMockDangerousModConfigWithProps(),
+        ...createMockDangerousModConfig(),
         android: {
           googleServicesFile: './google-services.json',
         },
@@ -408,7 +408,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await dangerousMod(createMockDangerousModConfigWithProps());
+      await dangerousMod(createMockDangerousModConfig());
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -428,7 +428,7 @@ describe('withIterable', () => {
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
       await expect(
         dangerousMod({
-          ...createMockDangerousModConfigWithProps(),
+          ...createMockDangerousModConfig(),
           android: {
             googleServicesFile: './google-services.json',
           },
@@ -446,7 +446,7 @@ describe('withIterable', () => {
       const result = withIterable(config, props) as WithIterableResult;
       const manifestMod = result.mods.android.manifest as Mod<any>;
       const modifiedManifest = await manifestMod(
-        createMockManifestConfigWithProps(createMockAndroidManifest())
+        createMockManifestConfig(createMockAndroidManifest())
       );
       const manifest = modifiedManifest.modResults.manifest;
       expect(manifest.application[0]['meta-data']).toEqual(

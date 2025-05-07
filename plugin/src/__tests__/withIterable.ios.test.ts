@@ -77,90 +77,57 @@ type WithIterableResult = ConfigWithMods & {
   };
 };
 
+const createMockConfig = (
+  modName: string
+): ExportedConfigWithProps<Record<string, any>> => ({
+  modResults: {},
+  modRequest: {
+    projectRoot: process.cwd(),
+    platformProjectRoot: process.cwd(),
+    modName,
+    platform: 'ios',
+    introspect: true,
+    severity: 'info',
+  } as ModProps<Record<string, any>>,
+  modRawConfig: { name: 'TestApp', slug: 'test-app' },
+  name: 'TestApp',
+  slug: 'test-app',
+});
+
 // Helper function to create a mock ExportedConfigWithProps
-const createMockConfigWithPlist = (
+const createMockPlistConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockConfig('infoPlist'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'infoPlist',
-    platform: 'ios',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
-const createMockConfigWithEntitlements = (
+const createMockEntitlementsConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockConfig('entitlements'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'entitlements',
-    platform: 'ios',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
-const createMockConfigWithPodfile = (
+const createMockPodfileConfig = (
   modResults: Record<string, any> = { contents: '' }
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockConfig('podfile'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'podfile',
-    platform: 'ios',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
-const createMockConfigWithDangerousMod = (
+const createMockDangerousModConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockConfig('dangerous'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'dangerous',
-    platform: 'ios',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
-const createMockConfigWithXcodeMod = (
+const createMockXcodeConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockConfig('xcodeproj'),
   modResults,
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName: 'xcodeproj',
-    platform: 'ios',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
 });
 
 const createTestConfig = (): ConfigWithMods => ({
@@ -189,7 +156,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
-        createMockConfigWithPlist()
+        createMockPlistConfig()
       );
       expect(modifiedInfoPlist.modResults.ITERABLE_API_KEY).toBe(
         'test-api-key'
@@ -205,7 +172,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
-        createMockConfigWithEntitlements()
+        createMockEntitlementsConfig()
       );
       expect(modifiedEntitlements.modResults['aps-environment']).toBe(
         'development'
@@ -221,7 +188,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
-        createMockConfigWithPlist()
+        createMockPlistConfig()
       );
       expect(modifiedInfoPlist.modResults.UIBackgroundModes).toEqual(
         expect.arrayContaining(['remote-notification'])
@@ -238,7 +205,7 @@ describe('withIterable', () => {
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
         // @ts-ignore
-        createMockConfigWithPlist(config.ios.infoPlist)
+        createMockPlistConfig(config.ios.infoPlist)
       );
       expect(
         modifiedInfoPlist.modResults.UIBackgroundModes.filter(
@@ -254,7 +221,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedPodfile = await result.mods.ios.podfile(
-        createMockConfigWithPodfile()
+        createMockPodfileConfig()
       );
       expect(modifiedPodfile.modResults.contents).toContain(NS_TARGET_NAME);
       expect(modifiedPodfile.modResults.contents).toContain(NS_POD);
@@ -267,7 +234,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedPodfile = await result.mods.ios.podfile(
-        createMockConfigWithPodfile({
+        createMockPodfileConfig({
           contents: `
           target '${NS_TARGET_NAME}' do
             use_frameworks!
@@ -318,7 +285,7 @@ describe('withIterable', () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
-      await dangerousMod(createMockConfigWithDangerousMod());
+      await dangerousMod(createMockDangerousModConfig());
 
       expect(fs.mkdirSync).not.toHaveBeenCalled();
     });
@@ -331,7 +298,7 @@ describe('withIterable', () => {
       (fs.existsSync as jest.Mock).mockReturnValue(false);
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
-      await dangerousMod(createMockConfigWithDangerousMod());
+      await dangerousMod(createMockDangerousModConfig());
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         path.resolve(process.cwd(), NS_TARGET_NAME, NS_MAIN_FILE_NAME),
@@ -355,12 +322,12 @@ describe('withIterable', () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
-      await dangerousMod(createMockConfigWithDangerousMod());
+      await dangerousMod(createMockDangerousModConfig());
 
       expect(fs.writeFileSync).not.toHaveBeenCalled();
     });
 
-    it('should skip if target already exists', async () => {
+    it('should skip adding xcode project target if target already exists', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -372,26 +339,14 @@ describe('withIterable', () => {
         uuid: 'existing-target',
       });
 
-      await xcodeMod({
-        modResults: mockXcodeProject,
-        modRequest: {
-          projectRoot: process.cwd(),
-          platformProjectRoot: process.cwd(),
-          modName: 'xcodeproj',
-          platform: 'ios',
-          introspect: true,
-        },
-        modRawConfig: { name: 'TestApp', slug: 'test-app' },
-        name: 'TestApp',
-        slug: 'test-app',
-      });
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       expect(mockXcodeProject.addTarget).not.toHaveBeenCalled();
       expect(mockXcodeProject.addPbxGroup).not.toHaveBeenCalled();
       expect(mockXcodeProject.addBuildPhase).not.toHaveBeenCalled();
     });
 
-    it('should create new target and group if they do not exist', async () => {
+    it('should create new xcode project target and group if they do not exist', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -402,7 +357,7 @@ describe('withIterable', () => {
       (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
       (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
 
-      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       expect(mockXcodeProject.addTarget).toHaveBeenCalledWith(
         NS_TARGET_NAME,
@@ -417,7 +372,7 @@ describe('withIterable', () => {
       );
     });
 
-    it('should copy build settings from main target', async () => {
+    it('should copy xcode project build settings from main target', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -443,7 +398,7 @@ describe('withIterable', () => {
         config2: { buildSettings: { PRODUCT_NAME: `"${NS_TARGET_NAME}"` } },
       };
 
-      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       const targetConfig =
         mockXcodeProject.hash.project.objects.XCBuildConfiguration['config2']
@@ -461,7 +416,7 @@ describe('withIterable', () => {
       );
     });
 
-    it('should add build phases for sources and frameworks', async () => {
+    it('should add build phases for xcode project sources and frameworks', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -472,7 +427,7 @@ describe('withIterable', () => {
       (mockXcodeProject.pbxTargetByName as jest.Mock).mockReturnValue(null);
       (mockXcodeProject.pbxGroupByName as jest.Mock).mockReturnValue(null);
 
-      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       expect(mockXcodeProject.addBuildPhase).toHaveBeenCalledWith(
         [NS_MAIN_FILE_NAME],
@@ -488,7 +443,7 @@ describe('withIterable', () => {
       );
     });
 
-    it('should add groups to the notification service group if they have no name or path', async () => {
+    it('should add groups to the xcode project notification service group if they have no name or path', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -507,7 +462,7 @@ describe('withIterable', () => {
         group4: { name: undefined, path: undefined }, // Should be added
       };
 
-      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       // Verify addToPbxGroup was called only for groups without name and path
       expect(mockXcodeProject.addToPbxGroup).toHaveBeenCalledTimes(2);
@@ -521,7 +476,7 @@ describe('withIterable', () => {
       );
     });
 
-    it('should not add groups to the notification service group if they have name or path', async () => {
+    it('should not add groups to the xcode project notification service group if they have name or path', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
@@ -539,7 +494,7 @@ describe('withIterable', () => {
         group3: { name: 'Test', path: 'test/path' },
       };
 
-      await xcodeMod(createMockConfigWithXcodeMod(mockXcodeProject));
+      await xcodeMod(createMockXcodeConfig(mockXcodeProject));
 
       // Verify addToPbxGroup was not called
       expect(mockXcodeProject.addToPbxGroup).not.toHaveBeenCalled();
@@ -550,7 +505,7 @@ describe('withIterable', () => {
     it('should add time sensitive push to the entitlements if not explicitly set to false', async () => {
       const result = withIterable(createTestConfig(), {}) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
-        createMockConfigWithEntitlements()
+        createMockEntitlementsConfig()
       );
       expect(
         modifiedEntitlements.modResults[
@@ -566,7 +521,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
-        createMockConfigWithEntitlements()
+        createMockEntitlementsConfig()
       );
       expect(
         modifiedEntitlements.modResults[
@@ -595,7 +550,7 @@ describe('withIterable', () => {
       };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedInfoPlist = await result.mods.ios.infoPlist(
-        createMockConfigWithPlist()
+        createMockPlistConfig()
       );
       expect(
         modifiedInfoPlist.modResults
