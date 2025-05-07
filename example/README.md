@@ -12,11 +12,9 @@ Expo.
 - [@iterable/expo-plugin Example](#iterableexpo-plugin-example)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
-    - [Push Notifications (Optional)](#push-notifications-optional)
-    - [Deep Links (Optional)](#deep-links-optional)
   - [Running the App](#running-the-app)
-    - [iOS](#ios-2)
-    - [Android](#android-2)
+    - [iOS](#ios)
+    - [Android](#android)
   - [Troubleshooting](#troubleshooting)
     - [Common Issues](#common-issues)
     - [Development Tips](#development-tips)
@@ -51,76 +49,14 @@ Expo.
    - Replace `YOUR_ITERABLE_API_KEY` with your actual Iterable API key
    - If desired, uncomment `EXPO_PUBLIC_ITERABLE_EMAIL=YOUR_ITERABLE_EMAIL` and
      replace `YOUR_ITERABLE_EMAIL` with your actual Iterable email
-
-### Push Notifications (Optional)
-
-#### Android
-- [Configure push notifications for Android in Iterable](https://support.iterable.com/hc/en-us/articles/115000331943-Setting-up-Android-Push-Notifications)
-- Place your `google-services.json` file in the root of the *example*
-  directory
-- In `app.json`, add the path to the `google-services.json` file to
-  `expo.android.googleServicesFile`.  EG:
-  ```json
-  {
-    "expo": {
-      "android": {
-        "googleServicesFile": "./google-services.json"
-      }
-    }
-  }
-  ```
-#### iOS 
-- [Configure push notifications for iOS in Iterable](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-up-iOS-Push-Notifications)
-
-### Deep Links (Optional)
-
-#### Prerequisites
-- [Configure deep links for Iterable](https://support.iterable.com/hc/en-us/articles/115002651226-Configuring-Deep-Links-for-Email-or-SMS)
-
-#### Android
-
-Add [`intentFilters`](https://docs.expo.dev/linking/android-app-links/)
-specifying your link scheme to `app.json`.  EG:
-
-```json
-{
-  "expo": {
-    "android": {
-      "intentFilters": [
-        // ... other intent filters
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "links.example.com",
-              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
-              "pathPrefix": "/a/"
-            }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        }
-      ]
-    }
-  }
-}
-```
-
-#### iOS 
-- Set [`associatedDomains`](https://docs.expo.dev/linking/ios-universal-links/) in `app.json`.  EG:
-```json
-{
-  "expo": {
-    "ios": {
-      "associatedDomains": ["applinks:links.example.com"]
-    }
-  }
-}
-```
+4. Push Notifications (Optional)
+    - Follow the instructions in the
+      [README](https://github.com/Iterable/iterable-expo-plugin/blob/main/README.md#adding-push-capabilities)
+      to add push notification capabilities to the example app.
+5. Deep Links (Optional)
+    - Follow the instructions in the
+      [README](https://github.com/Iterable/iterable-expo-plugin/blob/main/README.md#deep-links-optional)
+      to add deep link support to the example app.
 
 ## Running the App
 
