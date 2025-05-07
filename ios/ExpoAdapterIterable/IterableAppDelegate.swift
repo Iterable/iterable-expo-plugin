@@ -35,14 +35,10 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
 
-    if Bundle.main.object(
-      forInfoDictionaryKey: "ITERABLE_ENABLE_IN_APP_MESSAGES") as? Bool == true
-    {
-      IterableAppIntegration.application(
-        application, didReceiveRemoteNotification: userInfo,
-        fetchCompletionHandler: completionHandler
-      )
-    }
+    IterableAppIntegration.application(
+      application, didReceiveRemoteNotification: userInfo,
+      fetchCompletionHandler: completionHandler
+    )
   }
 
   public func application(
