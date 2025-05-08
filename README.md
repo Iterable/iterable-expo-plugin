@@ -14,7 +14,7 @@ the native code is generated through `expo prebuild`.
 - [Configuration](#configuration)
   - [Plugin Options](#plugin-options)
   - [Disabling New Architecture](#disabling-new-architecture)
-  - [Adding push capabilities to android](#adding-push-capabilities-to-android)
+  - [Adding push capabilities](#adding-push-capabilities)
   - [Adding Deeplinks](#adding-deeplinks)
   - [Configuring ProGuard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
 - [Requirements and Limitations](#requirements-and-limitations)
@@ -83,7 +83,6 @@ Add the plugin to your `app.json` or `app.config.js`:
   "expo": {
     "plugins": [
       ["@iterable/expo-plugin", {
-        "apiKey": "YOUR_ITERABLE_API_KEY",
         "appEnvironment": "development",
         "autoConfigurePushNotifications": true,
         "enableTimeSensitivePush": true,
@@ -98,7 +97,6 @@ Add the plugin to your `app.json` or `app.config.js`:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | string | `''` | Your Iterable project API key |
 | `appEnvironment` | `'development'` \| `'production'` | `'development'` | The environment of your app |
 | `autoConfigurePushNotifications` | boolean | `true` | Whether to automatically configure push notifications. Set to `false` if you want to configure push notifications manually.  <br><br> **WARNING**: Iterable cannot guarantee compatibility with custom push notification configurations. |
 | `enableTimeSensitivePush` | boolean | `true` | Whether to enable time-sensitive push notifications (iOS only) |
@@ -116,20 +114,27 @@ so this needs to be disabled in your `app.json`:
 }
 ```
 
-### Adding push capabilities to android
+### Adding push capabilities
 
-Add the path to your google-services.json file to the app.json file under
-`expo.android.googleServicesFile`.  EG: If the google services file was added to
-the root of the app, the expo file would look like this:
-```json
-{
-  "expo": {
-    "android": {
-      "googleServicesFile": "./google-services.json"
+#### iOS 
+- [Configure push notifications for iOS in Iterable](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-up-iOS-Push-Notifications)
+
+#### Android
+
+- [Configure push notifications for Android in Iterable](https://support.iterable.com/hc/en-us/articles/115000331943-Setting-up-Android-Push-Notifications)
+- Place your `google-services.json` file in the root of the *example*
+  directory
+- In `app.json`, add the path to the `google-services.json` file to
+  `expo.android.googleServicesFile`.  EG:
+  ```json
+  {
+    "expo": {
+      "android": {
+        "googleServicesFile": "./google-services.json"
+      }
     }
   }
-}
-```
+  ```
 
 ### Adding Deeplinks 
 

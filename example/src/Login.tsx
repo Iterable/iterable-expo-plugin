@@ -1,4 +1,3 @@
-import { getApiKey } from '@iterable/expo-plugin';
 import {
   Iterable,
   IterableConfig,
@@ -27,27 +26,19 @@ interface LoginProps {
   onLoggedIn: () => void;
 }
 
+/**
+ * Has the user set their Iterable API key in the .env.local file?
+ * See the [example README](https://github.com/Iterable/iterable-expo-plugin/blob/main/example/README.md) or the [.env file](https://github.com/Iterable/iterable-expo-plugin/blob/main/example/.env) for more details.
+ */
+const isApiKeySet =
+  !!process.env.EXPO_PUBLIC_ITERABLE_API_KEY &&
+  process.env.EXPO_PUBLIC_ITERABLE_API_KEY !== 'YOUR_ITERABLE_API_KEY';
+
 export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   const [initialized, setInitialized] = useState(false);
-  const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    const config = new IterableConfig();
-
-    config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
-
-    config.urlHandler = () => true;
-
-    config.allowedProtocols = ['app', 'iterable'];
-
-    config.logLevel = IterableLogLevel.info;
-
-    config.inAppHandler = () => IterableInAppShowResponse.show;
-
-    Iterable.initialize(getApiKey(), config).finally(() => {
-      setInitialized(true);
-    });
-  }, []);
+  const [email, setEmail] = useState(
+    process.env.EXPO_PUBLIC_ITERABLE_EMAIL ?? ''
+  );
 
   const onPress = () => {
     Iterable.setEmail(email);
@@ -55,6 +46,46 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
       onLoggedIn();
     }, 300);
   };
+
+  const runInitialize = () => {
+    if (!isApiKeySet) return;
+
+    const config = new IterableConfig();
+
+    config.inAppDisplayInterval = 1.0; // Min gap between in-apps. No need to set this in production.
+    config.urlHandler = () => true;
+    config.allowedProtocols = ['app', 'iterable'];
+    config.logLevel = IterableLogLevel.info;
+    config.inAppHandler = () => IterableInAppShowResponse.show;
+
+    Iterable.initialize(
+      process.env.EXPO_PUBLIC_ITERABLE_API_KEY as string,
+      config
+    ).finally(() => {
+      setInitialized(true);
+    });
+  };
+
+  useEffect(() => {
+    runInitialize();
+  }, []);
+
+  if (!isApiKeySet) {
+    return (
+      <View style={styles.loginScreenContainer}>
+        <Text style={styles.warningTitle}>ERROR: API Key not set</Text>
+        <Text style={styles.warningText}>
+          Please set your Iterable API key in the
+          <Text style={styles.emphasisTest}> .env.local</Text> file.
+        </Text>
+        <Text style={styles.warningText}>
+          See the
+          <Text style={styles.emphasisTest}> example README</Text> or the
+          <Text style={styles.emphasisTest}> .env</Text> file for more details.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.loginScreenContainer}>
@@ -75,7 +106,11 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
               autoComplete="email"
             />
             <Pressable
-              style={email.length > 0 ? styles.button : styles.buttonDisabled}
+              style={
+                email.length > 0 && isApiKeySet
+                  ? styles.button
+                  : styles.buttonDisabled
+              }
               disabled={!email.length}
               onPressOut={onPress}
             >
@@ -191,5 +226,27 @@ const styles = StyleSheet.create({
     letterSpacing: -0.25,
     lineHeight: 28,
     marginBottom: 12,
+  },
+  warningTitle: {
+    color: colors.textDestructive,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 20,
+    marginTop: 100,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  warningText: {
+    color: colors.textPrimary,
+    fontSize: 16,
+    fontWeight: '400',
+    lineHeight: 20,
+    marginBottom: 12,
+    textAlign: 'center',
+    paddingHorizontal: 40,
+  },
+  emphasisTest: {
+    fontStyle: 'italic',
+    fontWeight: '500',
   },
 });

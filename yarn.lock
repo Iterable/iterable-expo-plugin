@@ -2249,9 +2249,13 @@ __metadata:
     react-native: "npm:0.76.9"
     typescript: "npm:^5.3.3"
   peerDependencies:
+    "@iterable/react-native-sdk": ^2.0.0-beta.1
     expo: "*"
     react: "*"
     react-native: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 

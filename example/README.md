@@ -4,51 +4,59 @@ This is an example app demonstrating how to use `@iterable/expo-plugin` with
 Expo.
 
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=3 orderedList=false} -->
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=3 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Running the App](#running-the-app)
-  - [iOS](#ios)
-  - [Android](#android)
-- [Troubleshooting](#troubleshooting)
-  - [Common Issues](#common-issues)
-  - [Development Tips](#development-tips)
+- [@iterable/expo-plugin Example](#iterableexpo-plugin-example)
+  - [Prerequisites](#prerequisites)
+  - [Setup](#setup)
+  - [Running the App](#running-the-app)
+    - [iOS](#ios)
+    - [Android](#android)
+  - [Troubleshooting](#troubleshooting)
+    - [Common Issues](#common-issues)
+    - [Development Tips](#development-tips)
 
 <!-- /code_chunk_output -->
 
+
+
 ## Prerequisites
 
-- Node.js 18 or newer
+- Node.js version specified in `.nvmrc`
 - Xcode 15 or newer (for iOS)
 - Android Studio (for Android)
 - CocoaPods (for iOS)
 
 ## Setup
 
-1. Install dependencies in the root:
+1. Install dependencies in the *root* directory:
     ```bash
     # If starting in the example folder 
     cd ..
     yarn install
     ```
-2. Install dependencies in the example folder:
+2. Install dependencies in the *example* directory:
     ```bash
     cd example
     yarn install
     ```
 3. Configure your Iterable API key:
-   - Open `app.json`
-   - Replace `YOUR_API_KEY` with your actual Iterable API key
-
-4. For Android push notifications:
-   - Place your `google-services.json` file in the root of the example directory
-   - Update the path in `app.json` if needed
-
-5. For iOS push notifications:
-   - Make sure you have the necessary certificates and provisioning profiles
+   - Create a file called `.env.local` in the *example* directory
+   - Copy the contents of `.env` to the new `.env.local`
+   - Replace `YOUR_ITERABLE_API_KEY` with your actual Iterable API key
+   - If desired, uncomment `EXPO_PUBLIC_ITERABLE_EMAIL=YOUR_ITERABLE_EMAIL` and
+     replace `YOUR_ITERABLE_EMAIL` with your actual Iterable email
+4. Push Notifications (Optional)
+    - Follow the instructions in the
+      [README](https://github.com/Iterable/iterable-expo-plugin/blob/main/README.md#adding-push-capabilities)
+      to add push notification capabilities to the example app.
+5. Deep Links (Optional)
+    - Follow the instructions in the
+      [README](https://github.com/Iterable/iterable-expo-plugin/blob/main/README.md#deep-links-optional)
+      to add deep link support to the example app.
 
 ## Running the App
 

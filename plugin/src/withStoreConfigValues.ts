@@ -15,7 +15,7 @@ import { type ConfigPluginPropsWithDefaults } from './withIterable.types';
  */
 type JsKey = keyof Pick<
   ConfigPluginPropsWithDefaults,
-  'apiKey' | 'requestPermissionsForPushNotifications'
+  'requestPermissionsForPushNotifications'
 >;
 
 /**
@@ -32,7 +32,6 @@ type NativeKey = string;
  * Info.plist file or the AndroidManifest.xml file.
  */
 const nativeKeyMap: Record<JsKey, NativeKey> = {
-  apiKey: 'ITERABLE_API_KEY',
   requestPermissionsForPushNotifications:
     'ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS',
 };
