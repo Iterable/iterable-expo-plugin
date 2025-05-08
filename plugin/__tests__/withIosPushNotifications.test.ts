@@ -32,9 +32,7 @@ describe('withIosPushNotifications', () => {
   describe('appEnvironment', () => {
     it('should add the correct app environment to the entitlements', async () => {
       const config = createTestConfig();
-      const props: ConfigPluginProps = {
-        appEnvironment: 'development',
-      };
+      const props: ConfigPluginProps = { appEnvironment: 'development' };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
         createMockEntitlementsConfig()
@@ -60,9 +58,7 @@ describe('withIosPushNotifications', () => {
 
     it('should not add time sensitive push to the entitlements if explicitly set to false', async () => {
       const config = createTestConfig();
-      const props: ConfigPluginProps = {
-        enableTimeSensitivePush: false,
-      };
+      const props: ConfigPluginProps = { enableTimeSensitivePush: false };
       const result = withIterable(config, props) as WithIterableResult;
       const modifiedEntitlements = await result.mods.ios.entitlements(
         createMockEntitlementsConfig()
