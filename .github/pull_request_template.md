@@ -10,13 +10,13 @@ Please explain the changes you made
 
 Screenshots if the PR has visual changes.
 
-| android | ios |
-|--------|--------|
+| android            | ios            |
+| ------------------ | -------------- |
 | ANDROID_SCREENSHOT | IOS_SCREENSHOT |
 
 ## 🧐 Testing
 
-Please explain the steps needed to verify your change. 
+Please explain the steps needed to verify your change.
 
 ## 📝 Documentation
 
