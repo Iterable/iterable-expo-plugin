@@ -21,7 +21,10 @@
     "@iterable/expo-plugin",
     "ExpoAdapterIterable"
   ],
-  "repository": "https://github.com/Iterable/iterable-expo-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iterable/iterable-expo-plugin.git"
+  },
   "bugs": {
     "url": "https://github.com/Iterable/iterable-expo-plugin/issues"
   },
