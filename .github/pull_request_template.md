@@ -16,7 +16,7 @@ Screenshots if the PR has visual changes.
 
 ## 🧐 Testing
 
-Please explain the steps needed to verify your change.
+Please explain the steps needed to verify your change. 
 
 ## 📝 Documentation
 
