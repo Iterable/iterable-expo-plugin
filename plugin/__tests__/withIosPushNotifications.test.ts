@@ -1,5 +1,8 @@
+/* eslint-disable import/first */
+jest.mock('fs', () => require('memfs').fs);
+
 import { Mod, XcodeProject } from 'expo/config-plugins';
-import fs from 'fs';
+import { fs, vol } from 'memfs';
 import path from 'path';
 
 import {
@@ -20,14 +23,6 @@ import {
   NS_POD,
   NS_TARGET_NAME,
 } from '../src/withPushNotifications/withIosPushNotifications.constants';
-
-jest.mock('fs', () => ({
-  existsSync: jest.fn(),
-  mkdirSync: jest.fn(),
-  writeFileSync: jest.fn(),
-  readFile: jest.fn(),
-  promises: { readFile: jest.fn() },
-}));
 
 jest.mock('xcode', () => ({
   XcodeProject: jest.fn().mockImplementation(() => ({
@@ -51,8 +46,21 @@ jest.mock('xcode', () => ({
 }));
 
 describe('withIosPushNotifications', () => {
+  beforeEach(() => {
+    // Reset the memory file system before each test
+    vol.reset();
+    vol.fromJSON({});
+    // Create the project root directory
+    fs.mkdirSync(process.cwd(), { recursive: true });
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.unmock('fs');
+    vol.reset();
   });
 
   describe('appEnvironment', () => {
@@ -103,7 +111,6 @@ describe('withIosPushNotifications', () => {
         autoConfigurePushNotifications: false,
       };
       const result = withIterable(config, props) as WithIterableResult;
-      // The below is not defined as entitlements are not added anywhere
       expect(result.mods?.ios?.entitlements).not.toBeDefined();
     });
   });
@@ -183,13 +190,12 @@ describe('withIosPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
       await dangerousMod(createMockIosDangerousModConfig());
 
-      expect(fs.mkdirSync).toHaveBeenCalledWith(
-        path.resolve(process.cwd(), NS_TARGET_NAME)
+      expect(fs.existsSync(path.resolve(process.cwd(), NS_TARGET_NAME))).toBe(
+        true
       );
     });
 
@@ -198,12 +204,18 @@ describe('withIosPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      // Create the directory first
+      fs.mkdirSync(path.resolve(process.cwd(), NS_TARGET_NAME), {
+        recursive: true,
+      });
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
       await dangerousMod(createMockIosDangerousModConfig());
 
-      expect(fs.mkdirSync).not.toHaveBeenCalled();
+      // Verify the directory still exists
+      expect(fs.existsSync(path.resolve(process.cwd(), NS_TARGET_NAME))).toBe(
+        true
+      );
     });
 
     it('should create all required files if they do not exist', async () => {
@@ -211,23 +223,29 @@ describe('withIosPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
       await dangerousMod(createMockIosDangerousModConfig());
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        path.resolve(process.cwd(), NS_TARGET_NAME, NS_MAIN_FILE_NAME),
-        expect.any(String)
+      const mainFilePath = path.resolve(
+        process.cwd(),
+        NS_TARGET_NAME,
+        NS_MAIN_FILE_NAME
       );
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        path.resolve(process.cwd(), NS_TARGET_NAME, NS_PLIST_FILE_NAME),
-        expect.any(String)
+      const plistFilePath = path.resolve(
+        process.cwd(),
+        NS_TARGET_NAME,
+        NS_PLIST_FILE_NAME
       );
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        path.resolve(process.cwd(), NS_TARGET_NAME, NS_ENTITLEMENTS_FILE_NAME),
-        expect.any(String)
+      const entitlementsFilePath = path.resolve(
+        process.cwd(),
+        NS_TARGET_NAME,
+        NS_ENTITLEMENTS_FILE_NAME
       );
+
+      expect(fs.existsSync(mainFilePath)).toBe(true);
+      expect(fs.existsSync(plistFilePath)).toBe(true);
+      expect(fs.existsSync(entitlementsFilePath)).toBe(true);
     });
 
     it('should not create files if they already exist', async () => {
@@ -235,12 +253,30 @@ describe('withIosPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      // Create the directory and files first
+      const dirPath = path.resolve(process.cwd(), NS_TARGET_NAME);
+      fs.mkdirSync(dirPath, { recursive: true });
+      fs.writeFileSync(path.resolve(dirPath, NS_MAIN_FILE_NAME), '');
+      fs.writeFileSync(path.resolve(dirPath, NS_PLIST_FILE_NAME), '');
+      fs.writeFileSync(path.resolve(dirPath, NS_ENTITLEMENTS_FILE_NAME), '');
+
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.ios.dangerous as Mod<any>;
       await dangerousMod(createMockIosDangerousModConfig());
 
-      expect(fs.writeFileSync).not.toHaveBeenCalled();
+      // Verify the files still exist and haven't been modified
+      expect(
+        fs.readFileSync(path.resolve(dirPath, NS_MAIN_FILE_NAME), 'utf8')
+      ).toBe('');
+      expect(
+        fs.readFileSync(path.resolve(dirPath, NS_PLIST_FILE_NAME), 'utf8')
+      ).toBe('');
+      expect(
+        fs.readFileSync(
+          path.resolve(dirPath, NS_ENTITLEMENTS_FILE_NAME),
+          'utf8'
+        )
+      ).toBe('');
     });
 
     it('should skip adding xcode project target if target already exists', async () => {
