@@ -1,56 +1,56 @@
-name: Build and Commit
+# name: Build and Commit
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
 
-permissions:
-  contents: write # Required for committing changes
+# permissions:
+#   contents: write # Required for committing changes
 
-jobs:
-  build-and-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for proper versioning
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+# jobs:
+#   build-and-commit:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0 # Fetch all history for proper versioning
+#           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'yarn'
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install
+#       - name: Install dependencies
+#         run: yarn install
 
-      - name: Build package
-        run: yarn prepare
+#       - name: Build package
+#         run: yarn prepare
 
-      - name: Configure Git
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'github-actions@github.com'
+#       - name: Configure Git
+#         run: |
+#           git config --global user.name 'GitHub Actions'
+#           git config --global user.email 'github-actions@github.com'
 
-      - name: Commit build results
-        run: |
-          git add build/ -f
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
+#       - name: Commit build results
+#         run: |
+#           git add build/ -f
+#           if git diff --quiet && git diff --staged --quiet; then
+#             echo "No changes to commit"
+#             exit 0
+#           fi
 
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            git commit -m "chore: update build files [skip ci]"
-            git push origin HEAD:refs/heads/${{ github.head_ref }}
-          else
-            git commit -m "chore: update build files [skip ci]"
-            git push origin HEAD:refs/heads/${{ github.ref_name }}
-          fi
+#           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+#             git commit -m "chore: update build files [skip ci]"
+#             git push origin HEAD:refs/heads/${{ github.head_ref }}
+#           else
+#             git commit -m "chore: update build files [skip ci]"
+#             git push origin HEAD:refs/heads/${{ github.ref_name }}
+#           fi
