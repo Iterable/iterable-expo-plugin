@@ -2,8 +2,8 @@
   "name": "@iterable/expo-plugin",
   "version": "0.1.0",
   "description": "Config plugin for @iterable/react-native-sdk",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/withIterable.js",
+  "types": "build/withIterable.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -21,7 +21,10 @@
     "@iterable/expo-plugin",
     "ExpoAdapterIterable"
   ],
-  "repository": "https://github.com/Iterable/iterable-expo-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iterable/iterable-expo-plugin.git"
+  },
   "bugs": {
     "url": "https://github.com/Iterable/iterable-expo-plugin/issues"
   },
