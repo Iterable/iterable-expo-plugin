@@ -1,4 +1,4 @@
-import { createTestConfig } from '../__mocks__/testUtils';
+import { createTestConfig } from '../__mocks__';
 import withIterable from '../src/withIterable';
 import { ConfigPluginProps } from '../src/withIterable.types';
 import { withStoreConfigValues } from '../src/withStoreConfigValues';
