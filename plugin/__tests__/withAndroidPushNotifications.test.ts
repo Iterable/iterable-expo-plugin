@@ -4,6 +4,33 @@
 const originalWarn = console.warn;
 console.warn = jest.fn();
 
+// Mock fs promises
+const mockCopyFile = jest.fn();
+jest.mock('fs', () => {
+  const memfs = require('memfs').fs;
+  const path = require('path');
+  return {
+    ...memfs,
+    promises: {
+      ...memfs.promises,
+      copyFile: async (src: string, dest: string) => {
+        // First check if the source file exists
+        if (!memfs.existsSync(src)) {
+          throw new Error('file does not exist');
+        }
+        // Create the destination directory if it doesn't exist
+        const destDir = path.dirname(dest);
+        if (!memfs.existsSync(destDir)) {
+          memfs.mkdirSync(destDir, { recursive: true });
+        }
+
+        memfs.copyFileSync(src, dest);
+        return mockCopyFile(src, dest);
+      },
+    },
+  };
+});
+
 jest.mock('expo/config-plugins', () => {
   const original = jest.requireActual('expo/config-plugins');
   return {
@@ -15,8 +42,8 @@ jest.mock('expo/config-plugins', () => {
 });
 
 import { Mod, WarningAggregator } from 'expo/config-plugins';
-import fs from 'fs';
-import path from 'path';
+import { fs, vol } from 'memfs';
+import * as path from 'path';
 
 import {
   createMockAndroidDangerousModConfig,
@@ -33,19 +60,26 @@ import withIterable from '../src/withIterable';
 import type { ConfigPluginProps } from '../src/withIterable.types';
 import { GOOGLE_SERVICES_CLASS_PATH } from '../src/withPushNotifications/withAndroidPushNotifications.constants';
 
-// Mock fs promises
-jest.mock('fs', () => ({
-  promises: {
-    copyFile: jest.fn().mockResolvedValue(undefined),
-  },
-}));
-
 describe('withAndroidPushNotifications', () => {
+  const projectRoot = '/app';
+
+  beforeEach(() => {
+    // Reset the memory file system before each test
+    vol.reset();
+    vol.fromJSON({});
+    // Create the project root directory
+    fs.mkdirSync(projectRoot, { recursive: true });
+    // Reset mock functions
+    mockCopyFile.mockReset();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   afterAll(() => {
+    jest.unmock('fs');
+    vol.reset();
     // Restore console.warn after all tests
     console.warn = originalWarn;
   });
@@ -197,21 +231,42 @@ describe('withAndroidPushNotifications', () => {
     });
 
     it('should copy google-services.json when path is defined', async () => {
-      const config = createTestConfig();
+      const config = {
+        ...createTestConfig(),
+        _internal: { projectRoot },
+        android: {
+          ...createTestConfig().android,
+          googleServicesFile: '__mocks__/google-services.json',
+        },
+      };
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
+      // Create the source file in the project root
+      const srcPath = path.resolve(
+        projectRoot,
+        '__mocks__/google-services.json'
+      );
+      fs.mkdirSync(path.dirname(srcPath), { recursive: true });
+      fs.writeFileSync(srcPath, '{}');
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
       await dangerousMod({
         ...createMockAndroidDangerousModConfig(),
+        modRequest: {
+          projectRoot,
+          platformProjectRoot: path.resolve(projectRoot, 'android'),
+          modName: 'dangerous',
+          platform: 'android',
+          introspect: true,
+        },
         android: {
-          googleServicesFile: './google-services.json',
+          googleServicesFile: '__mocks__/google-services.json',
         },
       });
-      expect(fs.promises.copyFile).toHaveBeenCalledWith(
-        path.resolve(process.cwd(), './google-services.json'),
-        path.resolve(process.cwd(), 'app/google-services.json')
+      expect(mockCopyFile).toHaveBeenCalledWith(
+        srcPath,
+        path.resolve(projectRoot, 'android/app/google-services.json')
       );
     });
 
@@ -233,7 +288,7 @@ describe('withAndroidPushNotifications', () => {
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
       );
-      expect(fs.promises.copyFile).not.toHaveBeenCalled();
+      expect(mockCopyFile).not.toHaveBeenCalled();
     });
 
     it('should throw error when google-services.json does not exist', async () => {
@@ -241,9 +296,7 @@ describe('withAndroidPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      (fs.promises.copyFile as jest.Mock).mockRejectedValueOnce(
-        new Error('File not found')
-      );
+      mockCopyFile.mockRejectedValueOnce(new Error('File not found'));
       const result = withIterable(config, props) as WithIterableResult;
       const dangerousMod = result.mods.android.dangerous as Mod<any>;
       await expect(
