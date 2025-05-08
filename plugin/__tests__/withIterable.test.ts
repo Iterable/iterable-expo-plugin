@@ -1,3 +1,4 @@
+import { createTestConfig } from '../__mocks__/testUtils';
 import withIterable from '../src/withIterable';
 import { ConfigPluginProps } from '../src/withIterable.types';
 import { withStoreConfigValues } from '../src/withStoreConfigValues';
@@ -19,12 +20,6 @@ jest.mock('../src/withDeepLinks', () => ({
 }));
 
 describe('withIterable', () => {
-  const mockConfig = {
-    name: 'TestApp',
-    slug: 'test-app',
-    _internal: { projectRoot: process.cwd() },
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -35,6 +30,7 @@ describe('withIterable', () => {
   });
 
   it('should set default values when no props are provided', () => {
+    const mockConfig = createTestConfig();
     // @ts-expect-error
     const result = withIterable(mockConfig);
 
@@ -48,6 +44,7 @@ describe('withIterable', () => {
   });
 
   it('should use provided props when available', () => {
+    const mockConfig = createTestConfig();
     const props: ConfigPluginProps = {
       appEnvironment: 'production',
       autoConfigurePushNotifications: false,
@@ -62,6 +59,7 @@ describe('withIterable', () => {
   });
 
   it('should handle partial props', () => {
+    const mockConfig = createTestConfig();
     const props: ConfigPluginProps = {
       appEnvironment: 'production',
       // Other props should use defaults
