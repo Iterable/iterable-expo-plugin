@@ -35,12 +35,6 @@ jobs:
           fi
           echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
 
-      - id: coverage
-        name: Generate coverage badge
-        run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
-
       - name: Upload coverage to Code Climate
         uses: paambaati/codeclimate-action@v9.0.0
         env:
@@ -56,6 +50,12 @@ jobs:
         with:
           hide-comment: false
           coverage-summary-path: ./coverage/coverage-summary.json
+
+      - id: coverage
+        name: Generate coverage badge
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
 
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v4
