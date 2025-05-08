@@ -1,7 +1,7 @@
 ![@iterable/expo-plugin](./assets/Iterable-Logo.png "@iterable/expo-plugin")
 # @iterable/expo-plugin
 
-[![Code Climate coverage](https://codeclimate.com/github/Iterable/iterable-expo-plugin/badges/coverage.svg)](https://codeclimate.com/github/Iterable/iterable-expo-plugin)
+[![Coverage](https://img.shields.io/badge/coverage-80%25-brightgreen)](https://github.com/Iterable/iterable-expo-plugin/actions/workflows/test.yml)
 
 This config plugin automatically configures your Expo app to work with
 [@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
