@@ -1,4 +1,4 @@
-name: CI
+name: Unit Tests
 on:
   push:
     branches:
@@ -17,8 +17,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    outputs:
-      coverage: ${{ steps.coverage.outputs.coverage }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,29 +37,14 @@ jobs:
           fi
           echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
 
-      - name: Upload coverage to Code Climate
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE_KEY }}
-        with:
-          coverageCommand: yarn test:coverage --coverageReporters lcov
-          coverageLocations: |
-            ${{github.workspace}}/coverage/lcov.info:lcov
-
-      - name: Add coverage to QLTY
+      - name: Upload coverage to QLTY
         uses: qltysh/qlty-action/coverage@v1
         with:
           token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: coverage/lcov.info
-      - name: Test coverage comment
+      - name: Add test coverage comment
         id: coverageComment
         uses: MishaKav/jest-coverage-comment@main
         with:
           hide-comment: false
           coverage-summary-path: ./coverage/coverage-summary.json
-
-      - id: coverage
-        name: Generate coverage badge
-        run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"

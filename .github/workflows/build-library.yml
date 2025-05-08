@@ -1,4 +1,4 @@
-name: CI
+name: Lint and Build Library
 on:
   push:
     branches:
@@ -16,29 +16,16 @@ permissions:
   security-events: write # Required for security scanning
 
 jobs:
-  # dependency-review:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Dependency Review
-  #       uses: actions/dependency-review-action@v3
-  #       with:
-  #         fail-on-severity: high
-
-  # security-scan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-
-  #     - name: Run Snyk to check for vulnerabilities
-  #       uses: snyk/actions/node@master
-  #       env:
-  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  #       with:
-  #         args: --severity-threshold=high
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: high
 
   type-check:
     runs-on: ubuntu-latest
