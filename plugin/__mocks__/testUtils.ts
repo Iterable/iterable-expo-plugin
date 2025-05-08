@@ -97,6 +97,11 @@ export const createMockPlistConfig = (
   modResults,
 });
 
+/**
+ * Creates a mock config object for the Android manifest file.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the Android manifest file.
+ */
 export const createMockManifestConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
@@ -114,4 +119,17 @@ export const createMockAndroidManifest = (): Record<string, any> => ({
       { $: { 'android:name': '.MainApplication' }, activity: [{ $: {} }] },
     ],
   },
+});
+
+/**
+ * Creates a test config object.  This should be passed as the first argument
+ * to the config plugin functions.
+ * @returns A test config object.
+ */
+export const createTestConfig = (): ConfigWithMods => ({
+  name: 'TestApp',
+  slug: 'test-app',
+  ios: { infoPlist: {}, entitlements: {} },
+  android: { googleServicesFile: './__mocks__/google-services.json' },
+  _internal: { projectRoot: process.cwd() },
 });
