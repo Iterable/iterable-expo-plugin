@@ -1,7 +1,7 @@
 ![@iterable/expo-plugin](./assets/Iterable-Logo.png "@iterable/expo-plugin")
 # @iterable/expo-plugin
 
-
+[![code coverage](https://github.com/Iterable/iterable-expo-plugin/actions/workflows/test.yml/badge.svg)](https://github.com/Iterable/iterable-expo-plugin/actions/workflows/test.yml)
 
 This config plugin automatically configures your Expo app to work with
 [@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
