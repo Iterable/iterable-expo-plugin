@@ -55,7 +55,7 @@ jobs:
         name: Generate coverage badge
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
-          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "coverage=$COVERAGE" >> "$GITHUB_OUTPUT"
 
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v4
