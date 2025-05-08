@@ -1,7 +1,6 @@
-import { Mod } from 'expo/config-plugins';
+import { Mod, XcodeProject } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
-import { XcodeProject } from 'xcode';
 
 import {
   createMockEntitlementsConfig,
