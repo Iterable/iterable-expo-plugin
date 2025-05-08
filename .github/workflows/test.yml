@@ -10,6 +10,10 @@ on:
     types:
       - checks_requested
 
+permissions:
+  contents: read # Required for checking out code
+  checks: write # Required for updating check status
+
 jobs:
   test:
     runs-on: ubuntu-latest

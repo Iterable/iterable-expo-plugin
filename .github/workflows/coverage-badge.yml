@@ -12,6 +12,10 @@ on:
     types:
       - completed
 
+permissions:
+  contents: write # Required for updating the coverage badge
+  checks: write # Required for updating check status
+
 jobs:
   update-badge:
     runs-on: ubuntu-latest
@@ -31,6 +35,7 @@ jobs:
         run: yarn test:coverage --coverageReporters json-summary
 
       - name: Generate coverage badge
+        id: coverage
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
           echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
