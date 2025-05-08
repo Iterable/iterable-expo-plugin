@@ -13,6 +13,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      coverage: ${{ steps.coverage.outputs.coverage }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,7 +35,8 @@ jobs:
           fi
           echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
 
-      - name: Generate coverage badge
+      - id: coverage
+        name: Generate coverage badge
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
           echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
