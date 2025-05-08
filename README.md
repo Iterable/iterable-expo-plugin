@@ -4,7 +4,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/your-username/your-gist-id/raw/coverage.json)](https://github.com/Iterable/iterable-expo-plugin/actions/workflows/test.yml)
-[![Code Climate coverage](https://codeclimate.com/github/Iterable/iterable-expo-plugin/badges/coverage.svg)](https://codeclimate.com/github/Iterable/iterable-expo-plugin)
+[![Code
+Coverage](https://qlty.sh/badges/7b2b3c7b-27c0-4fed-af07-57b151b30a59/test_coverage.svg)](https://qlty.sh/gh/Iterable/projects/iterable-expo-plugin)
+[![Maintainability](https://qlty.sh/badges/7b2b3c7b-27c0-4fed-af07-57b151b30a59/maintainability.svg)](https://qlty.sh/gh/Iterable/projects/iterable-expo-plugin)
 
 This config plugin automatically configures your Expo app to work with
 [@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
