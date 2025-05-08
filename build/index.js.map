@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,8BAA8B;AAC9B,OAAO,yBAAyB,MAAM,6BAA6B,CAAC;AAEpE,eAAe,yBAAyB,CAAC","sourcesContent":["// Reexport the native module.\nimport ExpoAdapterIterableModule from './ExpoAdapterIterableModule';\n\nexport default ExpoAdapterIterableModule;\n"]}
