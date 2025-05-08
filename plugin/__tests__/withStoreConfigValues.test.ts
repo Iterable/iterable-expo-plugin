@@ -4,19 +4,11 @@ import {
   createMockAndroidManifest,
   createMockManifestConfig,
   createMockPlistConfig,
-  type ConfigWithMods,
+  createTestConfig,
   type WithIterableResult,
 } from '../__mocks__/testUtils';
 import withIterable from '../src/withIterable';
 import { type ConfigPluginProps } from '../src/withIterable.types';
-
-const createTestConfig = (): ConfigWithMods => ({
-  name: 'TestApp',
-  slug: 'test-app',
-  ios: { infoPlist: {}, entitlements: {} },
-  android: { googleServicesFile: './__mocks__/google-services.json' },
-  _internal: { projectRoot: process.cwd() },
-});
 
 describe('withStoreConfigValues', () => {
   it('should store `ITERABLE_REQUEST_PERMISSIONS_FOR_PUSH_NOTIFICATIONS` in Info.plist', async () => {
