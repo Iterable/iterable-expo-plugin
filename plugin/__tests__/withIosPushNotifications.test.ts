@@ -29,6 +29,22 @@ import {
 } from '../src/withPushNotifications/withIosPushNotifications.constants';
 
 describe('withIosPushNotifications', () => {
+  describe('appEnvironment', () => {
+    it('should add the correct app environment to the entitlements', async () => {
+      const config = createTestConfig();
+      const props: ConfigPluginProps = {
+        appEnvironment: 'development',
+      };
+      const result = withIterable(config, props) as WithIterableResult;
+      const modifiedEntitlements = await result.mods.ios.entitlements(
+        createMockEntitlementsConfig()
+      );
+      expect(modifiedEntitlements.modResults['aps-environment']).toBe(
+        'development'
+      );
+    });
+  });
+
   describe('enableTimeSensitivePush', () => {
     it('should add time sensitive push to the entitlements if not explicitly set to false', async () => {
       const result = withIterable(createTestConfig(), {}) as WithIterableResult;
