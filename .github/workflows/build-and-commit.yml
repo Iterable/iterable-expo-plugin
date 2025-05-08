@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for proper versioning
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,4 +42,15 @@ jobs:
       - name: Commit build results
         run: |
           git add build/ -f
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update build files [skip ci]" && git push origin HEAD:${{ github.ref_name }})
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git commit -m "chore: update build files [skip ci]"
+            git push origin HEAD:refs/heads/${{ github.head_ref }}
+          else
+            git commit -m "chore: update build files [skip ci]"
+            git push origin HEAD:refs/heads/${{ github.ref_name }}
+          fi
