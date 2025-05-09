@@ -24,6 +24,24 @@ import {
 const fs = require('fs');
 const path = require('path');
 
+// Types for better type safety
+type BuildSettings = {
+  SWIFT_VERSION?: string;
+  CODE_SIGN_STYLE?: string;
+  CODE_SIGN_IDENTITY?: string;
+  OTHER_CODE_SIGN_FLAGS?: string;
+  DEVELOPMENT_TEAM?: string;
+  PROVISIONING_PROFILE_SPECIFIER?: string;
+  PRODUCT_NAME?: string;
+};
+
+// Utility function for file operations
+const createFileIfNotExists = (filePath: string, content: string): void => {
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, content);
+  }
+};
+
 /**
  * Adds anything that would be added by going to Xcode > Signing & Capabilities
  * and clicking "+ Capability"
@@ -89,46 +107,54 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
     (newConfig) => {
       const { projectRoot, platformProjectRoot } = newConfig.modRequest;
       const srcPath = path.resolve(projectRoot, platformProjectRoot);
-
-      // create a new folder
       const newFolderPath = path.resolve(srcPath, NS_TARGET_NAME);
+
+      // Create folder if it doesn't exist
       if (!fs.existsSync(newFolderPath)) {
         fs.mkdirSync(newFolderPath);
       }
 
-      // add the notification service file
-      const notificationServicePath = path.resolve(
-        srcPath,
-        NS_TARGET_NAME,
-        NS_MAIN_FILE_NAME
-      );
-      if (!fs.existsSync(notificationServicePath)) {
-        fs.writeFileSync(notificationServicePath, NS_MAIN_FILE_CONTENT);
-      }
+      // Create all required files
+      const files = [
+        { name: NS_MAIN_FILE_NAME, content: NS_MAIN_FILE_CONTENT },
+        { name: NS_PLIST_FILE_NAME, content: NS_PLIST_CONTENT },
+        { name: NS_ENTITLEMENTS_FILE_NAME, content: NS_ENTITLEMENTS_CONTENT },
+      ];
 
-      // add the notification plist file
-      const notificationPlistPath = path.resolve(
-        srcPath,
-        NS_TARGET_NAME,
-        NS_PLIST_FILE_NAME
-      );
-      if (!fs.existsSync(notificationPlistPath)) {
-        fs.writeFileSync(notificationPlistPath, NS_PLIST_CONTENT);
-      }
-
-      // add the notifications entitlements file
-      const entitlementsPath = path.resolve(
-        srcPath,
-        NS_TARGET_NAME,
-        NS_ENTITLEMENTS_FILE_NAME
-      );
-      if (!fs.existsSync(entitlementsPath)) {
-        fs.writeFileSync(entitlementsPath, NS_ENTITLEMENTS_CONTENT);
-      }
+      files.forEach(({ name, content }) => {
+        createFileIfNotExists(path.resolve(newFolderPath, name), content);
+      });
 
       return newConfig;
     },
   ]);
+};
+
+/**
+ * Extracts build settings from Xcode project
+ */
+const extractBuildSettings = (
+  xcconfigs: Record<string, any>
+): BuildSettings => {
+  const settings: BuildSettings = {};
+
+  for (const configUUID of Object.keys(xcconfigs)) {
+    const buildSettings = xcconfigs[configUUID].buildSettings;
+    if (buildSettings?.SWIFT_VERSION) {
+      Object.assign(settings, {
+        SWIFT_VERSION: buildSettings.SWIFT_VERSION,
+        CODE_SIGN_STYLE: buildSettings.CODE_SIGN_STYLE,
+        CODE_SIGN_IDENTITY: buildSettings.CODE_SIGN_IDENTITY,
+        OTHER_CODE_SIGN_FLAGS: buildSettings.OTHER_CODE_SIGN_FLAGS,
+        DEVELOPMENT_TEAM: buildSettings.DEVELOPMENT_TEAM,
+        PROVISIONING_PROFILE_SPECIFIER:
+          buildSettings.PROVISIONING_PROFILE_SPECIFIER,
+      });
+      break;
+    }
+  }
+
+  return settings;
 };
 
 /**
@@ -145,37 +171,15 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
       return newConfig;
     }
 
-    // Initialize with an empty object if these top-level objects are non-existent.
-    // This guarantees that the extension targets will have a destination.
+    // Initialize project objects
     const objects = xcodeProject.hash.project.objects;
     objects.PBXTargetDependency = objects.PBXTargetDependency || {};
     objects.PBXContainerItemProxy = objects.PBXContainerItemProxy || {};
 
-    const groups = objects.PBXGroup;
-    const xcconfigs = objects.XCBuildConfiguration;
-
-    // Retrieve Swift version and code signing settings from main target to apply to dependency targets.
-    let swiftVersion;
-    let codeSignStyle;
-    let codeSignIdentity;
-    let otherCodeSigningFlags;
-    let developmentTeam;
-    let provisioningProfile;
-    for (const configUUID of Object.keys(xcconfigs)) {
-      const buildSettings = xcconfigs[configUUID].buildSettings;
-      if (!swiftVersion && buildSettings && buildSettings.SWIFT_VERSION) {
-        swiftVersion = buildSettings.SWIFT_VERSION;
-        codeSignStyle = buildSettings.CODE_SIGN_STYLE;
-        codeSignIdentity = buildSettings.CODE_SIGN_IDENTITY;
-        otherCodeSigningFlags = buildSettings.OTHER_CODE_SIGN_FLAGS;
-        developmentTeam = buildSettings.DEVELOPMENT_TEAM;
-        provisioningProfile = buildSettings.PROVISIONING_PROFILE_SPECIFIER;
-        break;
-      }
-    }
+    const buildSettings = extractBuildSettings(objects.XCBuildConfiguration);
 
     if (!xcodeProject.pbxGroupByName(NS_TARGET_NAME)) {
-      // Add the Notification Service Extension target.
+      // Add the Notification Service Extension target
       const richPushTarget = xcodeProject.addTarget(
         NS_TARGET_NAME,
         'app_extension',
@@ -183,53 +187,38 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
         `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`
       );
 
-      // Add the relevant files to the PBX group.
+      // Add files to PBX group
       const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
         NS_FILES,
         NS_TARGET_NAME,
         NS_TARGET_NAME
       );
 
-      for (const groupUUID of Object.keys(groups)) {
-        if (
-          typeof groups[groupUUID] === 'object' &&
-          groups[groupUUID].name === undefined &&
-          groups[groupUUID].path === undefined
-        ) {
+      // Add group to project
+      Object.keys(objects.PBXGroup).forEach((groupUUID) => {
+        const group = objects.PBXGroup[groupUUID];
+        if (typeof group === 'object' && !group.name && !group.path) {
           xcodeProject.addToPbxGroup(
             itblNotificationServiceGroup.uuid,
             groupUUID
           );
         }
-      }
+      });
 
-      for (const configUUID of Object.keys(xcconfigs)) {
-        const buildSettings = xcconfigs[configUUID].buildSettings;
-        if (
-          buildSettings &&
-          buildSettings.PRODUCT_NAME === `"${NS_TARGET_NAME}"`
-        ) {
-          buildSettings.SWIFT_VERSION = swiftVersion;
-          buildSettings.CODE_SIGN_ENTITLEMENTS = `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`;
-          if (codeSignStyle) {
-            buildSettings.CODE_SIGN_STYLE = codeSignStyle;
-          }
-          if (codeSignIdentity) {
-            buildSettings.CODE_SIGN_IDENTITY = codeSignIdentity;
-          }
-          if (otherCodeSigningFlags) {
-            buildSettings.OTHER_CODE_SIGN_FLAGS = otherCodeSigningFlags;
-          }
-          if (developmentTeam) {
-            buildSettings.DEVELOPMENT_TEAM = developmentTeam;
-          }
-          if (provisioningProfile) {
-            buildSettings.PROVISIONING_PROFILE_SPECIFIER = provisioningProfile;
-          }
+      // Update build settings
+      Object.keys(objects.XCBuildConfiguration).forEach((configUUID) => {
+        const configSettings =
+          objects.XCBuildConfiguration[configUUID].buildSettings;
+        if (configSettings?.PRODUCT_NAME === `"${NS_TARGET_NAME}"`) {
+          Object.assign(configSettings, {
+            SWIFT_VERSION: buildSettings.SWIFT_VERSION,
+            CODE_SIGN_ENTITLEMENTS: `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`,
+            ...buildSettings,
+          });
         }
-      }
+      });
 
-      // Set up target build phase scripts.
+      // Add build phases
       xcodeProject.addBuildPhase(
         [NS_MAIN_FILE_NAME],
         'PBXSourcesBuildPhase',
