@@ -1,29 +1,13 @@
-import {
-  ConfigPlugin,
-  withDangerousMod,
-  withEntitlementsPlist,
-  withInfoPlist,
-  withPlugins,
-  withPodfile,
-  withXcodeProject,
-  XcodeProject,
-} from 'expo/config-plugins';
+import { XcodeProject } from 'expo/config-plugins';
 
-import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
-  NS_ENTITLEMENTS_CONTENT,
   NS_ENTITLEMENTS_FILE_NAME,
   NS_FILES,
-  NS_MAIN_FILE_CONTENT,
   NS_MAIN_FILE_NAME,
-  NS_PLIST_CONTENT,
-  NS_PLIST_FILE_NAME,
-  NS_POD,
   NS_TARGET_NAME,
 } from './withIosPushNotifications.constants';
 
 const fs = require('fs');
-const path = require('path');
 
 /**
  * Create a file if it doesn't exist.
