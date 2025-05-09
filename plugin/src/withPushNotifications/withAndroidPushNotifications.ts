@@ -134,7 +134,7 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
     async (newConfig) => {
       const srcPath = path.resolve(
         newConfig.modRequest.projectRoot,
-        newConfig?.android?.googleServicesFile as string
+        newConfig.android?.googleServicesFile ?? ''
       );
       const destPath = path.resolve(
         newConfig.modRequest.platformProjectRoot,
