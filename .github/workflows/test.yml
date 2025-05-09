@@ -1,0 +1,50 @@
+name: Unit Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  merge_group:
+    types:
+      - checks_requested
+
+permissions:
+  contents: read # Required for checking out code
+  checks: write # Required for updating check status
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run unit tests with coverage
+        run: yarn test:coverage --maxWorkers=2
+
+      - name: Check coverage thresholds
+        run: |
+          COVERAGE_THRESHOLD=80
+          COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct')
+          if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "Coverage ($COVERAGE%) is below threshold ($COVERAGE_THRESHOLD%)"
+            exit 1
+          fi
+          echo "Coverage ($COVERAGE%) is above threshold ($COVERAGE_THRESHOLD%)"
+
+      - name: Upload coverage to QLTY
+        uses: qltysh/qlty-action/coverage@v1
+        with:
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          files: coverage/lcov.info
+      - name: Add test coverage comment
+        id: coverageComment
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          hide-comment: false
+          coverage-summary-path: ./coverage/coverage-summary.json
