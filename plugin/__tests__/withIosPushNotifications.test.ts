@@ -149,7 +149,7 @@ describe('withIosPushNotifications', () => {
       ).toEqual(1);
     });
 
-    it('should add the notification to the podfile', async () => {
+    it('should add the notification to the podfile if it does not exist', async () => {
       const config = createTestConfig();
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
