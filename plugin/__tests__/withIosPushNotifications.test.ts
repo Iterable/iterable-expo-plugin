@@ -13,7 +13,7 @@ import {
   createMockXcodeConfig,
   createTestConfig,
   type WithIterableResult,
-} from '../__mocks__/testUtils';
+} from '../__mocks__';
 import withIterable from '../src/withIterable';
 import type { ConfigPluginProps } from '../src/withIterable.types';
 import {
