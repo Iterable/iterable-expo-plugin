@@ -20,27 +20,13 @@ import {
   NS_POD,
   NS_TARGET_NAME,
 } from './withIosPushNotifications.constants';
+import {
+  createFileIfNotExists,
+  extractBuildSettings,
+} from './withIosPushNotifications.utils';
 
 const fs = require('fs');
 const path = require('path');
-
-// Types for better type safety
-type BuildSettings = {
-  SWIFT_VERSION?: string;
-  CODE_SIGN_STYLE?: string;
-  CODE_SIGN_IDENTITY?: string;
-  OTHER_CODE_SIGN_FLAGS?: string;
-  DEVELOPMENT_TEAM?: string;
-  PROVISIONING_PROFILE_SPECIFIER?: string;
-  PRODUCT_NAME?: string;
-};
-
-// Utility function for file operations
-const createFileIfNotExists = (filePath: string, content: string): void => {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, content);
-  }
-};
 
 /**
  * Adds anything that would be added by going to Xcode > Signing & Capabilities
@@ -128,33 +114,6 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
       return newConfig;
     },
   ]);
-};
-
-/**
- * Extracts build settings from Xcode project
- */
-const extractBuildSettings = (
-  xcconfigs: Record<string, any>
-): BuildSettings => {
-  const settings: BuildSettings = {};
-
-  for (const configUUID of Object.keys(xcconfigs)) {
-    const buildSettings = xcconfigs[configUUID].buildSettings;
-    if (buildSettings?.SWIFT_VERSION) {
-      Object.assign(settings, {
-        SWIFT_VERSION: buildSettings.SWIFT_VERSION,
-        CODE_SIGN_STYLE: buildSettings.CODE_SIGN_STYLE,
-        CODE_SIGN_IDENTITY: buildSettings.CODE_SIGN_IDENTITY,
-        OTHER_CODE_SIGN_FLAGS: buildSettings.OTHER_CODE_SIGN_FLAGS,
-        DEVELOPMENT_TEAM: buildSettings.DEVELOPMENT_TEAM,
-        PROVISIONING_PROFILE_SPECIFIER:
-          buildSettings.PROVISIONING_PROFILE_SPECIFIER,
-      });
-      break;
-    }
-  }
-
-  return settings;
 };
 
 /**
