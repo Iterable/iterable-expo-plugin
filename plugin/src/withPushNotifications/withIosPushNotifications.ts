@@ -6,14 +6,12 @@ import {
   withPlugins,
   withPodfile,
   withXcodeProject,
-  XcodeProject,
 } from 'expo/config-plugins';
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
   NS_ENTITLEMENTS_CONTENT,
   NS_ENTITLEMENTS_FILE_NAME,
-  NS_FILES,
   NS_MAIN_FILE_CONTENT,
   NS_MAIN_FILE_NAME,
   NS_PLIST_CONTENT,
@@ -25,8 +23,7 @@ import {
   addBuildPhases,
   addNotificationServiceGroup,
   addNotificationServiceTarget,
-  createFileIfNotExists,
-  extractBuildSettings,
+  createFileIfNoneExists,
   updateBuildSettings,
 } from './withIosPushNotifications.utils';
 
@@ -107,13 +104,16 @@ const withAddNSFiles: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
 
       // Create all required files
       const files = [
+        // notification service file
         { name: NS_MAIN_FILE_NAME, content: NS_MAIN_FILE_CONTENT },
+        // notification service plist file
         { name: NS_PLIST_FILE_NAME, content: NS_PLIST_CONTENT },
+        // notification service entitlements file
         { name: NS_ENTITLEMENTS_FILE_NAME, content: NS_ENTITLEMENTS_CONTENT },
       ];
 
       files.forEach(({ name, content }) => {
-        createFileIfNotExists(path.resolve(newFolderPath, name), content);
+        createFileIfNoneExists(path.resolve(newFolderPath, name), content);
       });
 
       return newConfig;
@@ -135,12 +135,11 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
       return newConfig;
     }
 
-    // Initialize project objects
+    // Initialize with an empty object if these top-level objects are non-existent.
+    // This guarantees that the extension targets will have a destination.
     const objects = xcodeProject.hash.project.objects;
     objects.PBXTargetDependency = objects.PBXTargetDependency || {};
     objects.PBXContainerItemProxy = objects.PBXContainerItemProxy || {};
-
-    const buildSettings = extractBuildSettings(objects.XCBuildConfiguration);
 
     if (!xcodeProject.pbxGroupByName(NS_TARGET_NAME)) {
       const richPushTarget = addNotificationServiceTarget(
@@ -149,7 +148,7 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
       );
 
       addNotificationServiceGroup(xcodeProject);
-      updateBuildSettings(xcodeProject, buildSettings);
+      updateBuildSettings(xcodeProject);
       addBuildPhases(xcodeProject, richPushTarget.uuid);
     }
 

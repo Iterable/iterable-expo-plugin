@@ -14,7 +14,7 @@ const fs = require('fs');
  * @param filePath - The path to the file
  * @param content - The content to write to the file
  */
-export const createFileIfNotExists = (
+export const createFileIfNoneExists = (
   filePath: string,
   content: string
 ): void => {
@@ -34,35 +34,28 @@ type BuildSettings = {
   DEVELOPMENT_TEAM?: string;
   PROVISIONING_PROFILE_SPECIFIER?: string;
   PRODUCT_NAME?: string;
+  CODE_SIGN_ENTITLEMENTS?: string;
 };
 
 /**
- * Extract build settings from Xcode project
+ * Retrieve Swift version and code signing settings from main target to apply to
+ * dependency targets.
  * @param xcconfigs - Xcode project configuration
  * @returns Build settings
  */
 export const extractBuildSettings = (
   xcconfigs: Record<string, any>
 ): BuildSettings => {
-  const settings: BuildSettings = {};
-
+  let swiftVersion;
   for (const configUUID of Object.keys(xcconfigs)) {
-    const buildSettings = xcconfigs[configUUID].buildSettings;
-    if (buildSettings?.SWIFT_VERSION) {
-      Object.assign(settings, {
-        SWIFT_VERSION: buildSettings.SWIFT_VERSION,
-        CODE_SIGN_STYLE: buildSettings.CODE_SIGN_STYLE,
-        CODE_SIGN_IDENTITY: buildSettings.CODE_SIGN_IDENTITY,
-        OTHER_CODE_SIGN_FLAGS: buildSettings.OTHER_CODE_SIGN_FLAGS,
-        DEVELOPMENT_TEAM: buildSettings.DEVELOPMENT_TEAM,
-        PROVISIONING_PROFILE_SPECIFIER:
-          buildSettings.PROVISIONING_PROFILE_SPECIFIER,
-      });
-      break;
+    const buildSettings = xcconfigs[configUUID]?.buildSettings;
+    if (!swiftVersion && buildSettings && buildSettings.SWIFT_VERSION) {
+      swiftVersion = buildSettings.SWIFT_VERSION;
+      return buildSettings;
     }
   }
 
-  return settings;
+  return { SWIFT_VERSION: swiftVersion };
 };
 
 /**
@@ -89,27 +82,54 @@ export const addNotificationServiceTarget = (
  * @returns The group
  */
 export const addNotificationServiceGroup = (xcodeProject: XcodeProject) => {
-  const group = xcodeProject.addPbxGroup(
+  const objects = xcodeProject.hash.project.objects;
+  const groups = objects.PBXGroup;
+
+  // Add the relevant files to the PBX group.
+  const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
     NS_FILES,
     NS_TARGET_NAME,
     NS_TARGET_NAME
   );
 
-  // Add group to project's root group
-  Object.keys(xcodeProject.hash.project.objects.PBXGroup).forEach(
-    (groupUUID) => {
-      const targetGroup = xcodeProject.hash.project.objects.PBXGroup[groupUUID];
-      if (
-        typeof targetGroup === 'object' &&
-        !targetGroup.name &&
-        !targetGroup.path
-      ) {
-        xcodeProject.addToPbxGroup(group.uuid, groupUUID);
-      }
+  for (const groupUUID of Object.keys(groups)) {
+    if (
+      typeof groups[groupUUID] === 'object' &&
+      groups[groupUUID].name === undefined &&
+      groups[groupUUID].path === undefined
+    ) {
+      xcodeProject.addToPbxGroup(itblNotificationServiceGroup.uuid, groupUUID);
     }
-  );
+  }
 
-  return group;
+  return itblNotificationServiceGroup;
+};
+
+/**
+ * Apply the build settings to the notification service target
+ * @param currentBuildSettings - The current build settings
+ * @param newBuildSettings - The new build settings
+ */
+const applyBuildSettings = (
+  currentBuildSettings: BuildSettings,
+  newBuildSettings: BuildSettings
+) => {
+  currentBuildSettings.CODE_SIGN_ENTITLEMENTS = `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`;
+
+  const valuesToUpdate = [
+    'SWIFT_VERSION',
+    'CODE_SIGN_STYLE',
+    'CODE_SIGN_IDENTITY',
+    'OTHER_CODE_SIGN_FLAGS',
+    'DEVELOPMENT_TEAM',
+    'PROVISIONING_PROFILE_SPECIFIER',
+  ] as (keyof BuildSettings)[];
+
+  valuesToUpdate.forEach((value) => {
+    if (newBuildSettings[value]) {
+      currentBuildSettings[value] = newBuildSettings[value];
+    }
+  });
 };
 
 /**
@@ -117,24 +137,16 @@ export const addNotificationServiceGroup = (xcodeProject: XcodeProject) => {
  * @param xcodeProject - The Xcode project
  * @param buildSettings - The build settings
  */
-export const updateBuildSettings = (
-  xcodeProject: XcodeProject,
-  buildSettings: any
-) => {
-  Object.keys(xcodeProject.hash.project.objects.XCBuildConfiguration).forEach(
-    (configUUID) => {
-      const configSettings =
-        xcodeProject.hash.project.objects.XCBuildConfiguration[configUUID]
-          .buildSettings;
-      if (configSettings?.PRODUCT_NAME === `"${NS_TARGET_NAME}"`) {
-        Object.assign(configSettings, {
-          SWIFT_VERSION: buildSettings.SWIFT_VERSION,
-          CODE_SIGN_ENTITLEMENTS: `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`,
-          ...buildSettings,
-        });
-      }
+export const updateBuildSettings = (xcodeProject: XcodeProject) => {
+  const xcconfigs = xcodeProject.hash.project.objects.XCBuildConfiguration;
+  const newBuildSettings = extractBuildSettings(xcconfigs);
+
+  for (const configUUID of Object.keys(xcconfigs)) {
+    const buildSettings = xcconfigs[configUUID].buildSettings;
+    if (buildSettings && buildSettings.PRODUCT_NAME === `"${NS_TARGET_NAME}"`) {
+      applyBuildSettings(buildSettings, newBuildSettings);
     }
-  );
+  }
 };
 
 /**
