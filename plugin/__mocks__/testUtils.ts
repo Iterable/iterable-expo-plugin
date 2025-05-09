@@ -63,6 +63,11 @@ const createConfigFunction =
  */
 export const createMockIosConfig = createConfigFunction('ios');
 
+/**
+ * Creates a mock config object for the Android platform.
+ * @param modName - The name of the module to create the mock config for.
+ * @returns A mock config object for the Android platform.
+ */
 export const createMockAndroidConfig = createConfigFunction('android');
 
 /**
@@ -138,6 +143,18 @@ export const createMockIosDangerousModConfig = (
 });
 
 /**
+ * Creates a mock config object for the dangerous mod for android.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the dangerous mod.
+ */
+export const createMockAndroidDangerousModConfig = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockAndroidConfig('dangerous'),
+  modResults,
+});
+
+/**
  * Creates a mock config object for the Xcode project.
  * @param modResults - The results of the module to create the mock config for.
  * @returns A mock config object for the Xcode project.
@@ -146,6 +163,46 @@ export const createMockXcodeConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
   ...createMockIosConfig('xcodeproj'),
+  modResults,
+});
+
+export const getDefaultProjectBuildGradleContents = () => `
+  dependencies { 
+  }
+  `;
+
+/**
+ * Creates a mock config object for the project build.gradle file.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the project build.gradle file.
+ */
+export const createMockProjectBuildGradleConfig = (
+  modResults: Record<string, any> = {
+    contents: getDefaultProjectBuildGradleContents(),
+    language: 'groovy',
+  }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockAndroidConfig('projectBuildGradle'),
+  modResults,
+});
+
+export const getDefaultAppBuildGradleContents = () => `
+dependencies { 
+}
+`;
+
+/**
+ * Creates a mock config object for the app build.gradle file.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the app build.gradle file.
+ */
+export const createMockAppBuildGradleConfig = (
+  modResults: Record<string, any> = {
+    contents: getDefaultAppBuildGradleContents(),
+    language: 'groovy',
+  }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockAndroidConfig('appBuildGradle'),
   modResults,
 });
 
@@ -158,6 +215,28 @@ export const createTestConfig = (): ConfigWithMods => ({
   name: 'TestApp',
   slug: 'test-app',
   ios: { infoPlist: {}, entitlements: {} },
-  android: { googleServicesFile: './__mocks__/google-services.json' },
+  android: {
+    googleServicesFile: './__mocks__/google-services.json',
+    package: 'com.test.app',
+    intentFilters: [
+      {
+        action: 'MAIN',
+        category: ['LAUNCHER'],
+        autoVerify: true,
+      },
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [
+          {
+            scheme: 'https',
+            host: 'links.example.com',
+            pathPrefix: '/a/',
+          },
+        ],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
+  },
   _internal: { projectRoot: process.cwd() },
 });

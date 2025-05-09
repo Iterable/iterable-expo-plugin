@@ -202,15 +202,9 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
     async (newConfig) => {
-      if (!newConfig.android?.googleServicesFile) {
-        throw new Error(
-          'Path to google-services.json is not defined. Please specify the `expo.android.googleServicesFile` field in app.json.'
-        );
-      }
-
       const srcPath = path.resolve(
         newConfig.modRequest.projectRoot,
-        newConfig.android.googleServicesFile
+        newConfig.android?.googleServicesFile ?? ''
       );
       const destPath = path.resolve(
         newConfig.modRequest.platformProjectRoot,
@@ -229,9 +223,10 @@ const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
   ]);
 };
 
-export const withAndroidPushNotifications: ConfigPlugin<
-  ConfigPluginPropsWithDefaults
-> = (config, props) => {
+const withGoogleServices: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
+  config,
+  props
+) => {
   if (!config.android?.googleServicesFile) {
     WarningAggregator.addWarningAndroid(
       '@iterable/expo-plugin',
@@ -239,10 +234,19 @@ export const withAndroidPushNotifications: ConfigPlugin<
     );
     return config;
   }
+
   return withPlugins(config, [
-    [withAppPermissions, props],
     [withFirebase, props],
     [withCopyAndroidGoogleServices, props],
+  ]);
+};
+
+export const withAndroidPushNotifications: ConfigPlugin<
+  ConfigPluginPropsWithDefaults
+> = (config, props) => {
+  return withPlugins(config, [
+    [withAppPermissions, props],
+    [withGoogleServices, props],
   ]);
 };
 
