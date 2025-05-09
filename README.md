@@ -10,7 +10,6 @@ This config plugin automatically configures your Expo app to work with
 [@iterable/react-native-sdk](https://github.com/Iterable/react-native-sdk) when
 the native code is generated through `expo prebuild`.
 
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=3 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -35,8 +34,6 @@ the native code is generated through `expo prebuild`.
 - [📚 Further Reading](#-further-reading)
 
 <!-- /code_chunk_output -->
-
-
 
 ## 🚀 Quick Start
 
