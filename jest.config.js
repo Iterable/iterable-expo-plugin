@@ -1,3 +1,4 @@
+/** @type {import('jest').Config} */
 module.exports = {
   // Coverage does not work with expo-module-scripts, so we use jest-expo instead
   preset: 'jest-expo',

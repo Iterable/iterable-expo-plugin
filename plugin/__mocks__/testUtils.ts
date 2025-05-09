@@ -63,27 +63,7 @@ const createConfigFunction =
  */
 export const createMockIosConfig = createConfigFunction('ios');
 
-/**
- * Creates a mock config object for the Android platform.
- * @param modName - The name of the module to create the mock config for.
- * @returns A mock config object for the Android platform.
- */
-export const createMockConfig = (
-  modName: string
-): ExportedConfigWithProps<Record<string, any>> => ({
-  modResults: {},
-  modRequest: {
-    projectRoot: process.cwd(),
-    platformProjectRoot: process.cwd(),
-    modName,
-    platform: 'android',
-    introspect: true,
-    severity: 'info',
-  } as ModProps<Record<string, any>>,
-  modRawConfig: { name: 'TestApp', slug: 'test-app' },
-  name: 'TestApp',
-  slug: 'test-app',
-});
+export const createMockAndroidConfig = createConfigFunction('android');
 
 /**
  * Creates a mock config object for the Info.plist file.
@@ -105,7 +85,7 @@ export const createMockPlistConfig = (
 export const createMockManifestConfig = (
   modResults: Record<string, any> = {}
 ): ExportedConfigWithProps<Record<string, any>> => ({
-  ...createMockConfig('manifest'),
+  ...createMockAndroidConfig('manifest'),
   modResults,
 });
 
@@ -119,6 +99,54 @@ export const createMockAndroidManifest = (): Record<string, any> => ({
       { $: { 'android:name': '.MainApplication' }, activity: [{ $: {} }] },
     ],
   },
+});
+
+/**
+ * Creates a mock config object for the entitlements file.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the entitlements file.
+ */
+export const createMockEntitlementsConfig = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockIosConfig('entitlements'),
+  modResults,
+});
+
+/**
+ * Creates a mock config object for the podfile file.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the podfile file.
+ */
+export const createMockPodfileConfig = (
+  modResults: Record<string, any> = { contents: '' }
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockIosConfig('podfile'),
+  modResults,
+});
+
+/**
+ * Creates a mock config object for the dangerous mod for iOS.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the dangerous mod.
+ */
+export const createMockIosDangerousModConfig = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockIosConfig('dangerous'),
+  modResults,
+});
+
+/**
+ * Creates a mock config object for the Xcode project.
+ * @param modResults - The results of the module to create the mock config for.
+ * @returns A mock config object for the Xcode project.
+ */
+export const createMockXcodeConfig = (
+  modResults: Record<string, any> = {}
+): ExportedConfigWithProps<Record<string, any>> => ({
+  ...createMockIosConfig('xcodeproj'),
+  modResults,
 });
 
 /**
