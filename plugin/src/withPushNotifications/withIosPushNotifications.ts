@@ -6,6 +6,7 @@ import {
   withPlugins,
   withPodfile,
   withXcodeProject,
+  XcodeProject,
 } from 'expo/config-plugins';
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
@@ -21,8 +22,12 @@ import {
   NS_TARGET_NAME,
 } from './withIosPushNotifications.constants';
 import {
+  addBuildPhases,
+  addNotificationServiceGroup,
+  addNotificationServiceTarget,
   createFileIfNotExists,
   extractBuildSettings,
+  updateBuildSettings,
 } from './withIosPushNotifications.utils';
 
 const fs = require('fs');
@@ -138,59 +143,14 @@ const withXcodeUpdates: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
     const buildSettings = extractBuildSettings(objects.XCBuildConfiguration);
 
     if (!xcodeProject.pbxGroupByName(NS_TARGET_NAME)) {
-      // Add the Notification Service Extension target
-      const richPushTarget = xcodeProject.addTarget(
-        NS_TARGET_NAME,
-        'app_extension',
-        NS_TARGET_NAME,
-        `${newConfig.ios?.bundleIdentifier}.${NS_TARGET_NAME}`
+      const richPushTarget = addNotificationServiceTarget(
+        xcodeProject,
+        newConfig.ios?.bundleIdentifier as string
       );
 
-      // Add files to PBX group
-      const itblNotificationServiceGroup = xcodeProject.addPbxGroup(
-        NS_FILES,
-        NS_TARGET_NAME,
-        NS_TARGET_NAME
-      );
-
-      // Add group to project
-      Object.keys(objects.PBXGroup).forEach((groupUUID) => {
-        const group = objects.PBXGroup[groupUUID];
-        if (typeof group === 'object' && !group.name && !group.path) {
-          xcodeProject.addToPbxGroup(
-            itblNotificationServiceGroup.uuid,
-            groupUUID
-          );
-        }
-      });
-
-      // Update build settings
-      Object.keys(objects.XCBuildConfiguration).forEach((configUUID) => {
-        const configSettings =
-          objects.XCBuildConfiguration[configUUID].buildSettings;
-        if (configSettings?.PRODUCT_NAME === `"${NS_TARGET_NAME}"`) {
-          Object.assign(configSettings, {
-            SWIFT_VERSION: buildSettings.SWIFT_VERSION,
-            CODE_SIGN_ENTITLEMENTS: `${NS_TARGET_NAME}/${NS_ENTITLEMENTS_FILE_NAME}`,
-            ...buildSettings,
-          });
-        }
-      });
-
-      // Add build phases
-      xcodeProject.addBuildPhase(
-        [NS_MAIN_FILE_NAME],
-        'PBXSourcesBuildPhase',
-        'Sources',
-        richPushTarget.uuid
-      );
-
-      xcodeProject.addBuildPhase(
-        ['UserNotifications.framework'],
-        'PBXFrameworksBuildPhase',
-        'Frameworks',
-        richPushTarget.uuid
-      );
+      addNotificationServiceGroup(xcodeProject);
+      updateBuildSettings(xcodeProject, buildSettings);
+      addBuildPhases(xcodeProject, richPushTarget.uuid);
     }
 
     return newConfig;
