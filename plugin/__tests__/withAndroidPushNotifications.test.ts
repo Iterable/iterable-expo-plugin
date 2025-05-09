@@ -221,9 +221,7 @@ describe('withAndroidPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props) as WithIterableResult;
-      const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await dangerousMod(createMockAndroidDangerousModConfig());
+      withIterable(config, props);
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
@@ -281,9 +279,7 @@ describe('withAndroidPushNotifications', () => {
       const props: ConfigPluginProps = {
         autoConfigurePushNotifications: true,
       };
-      const result = withIterable(config, props) as WithIterableResult;
-      const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await dangerousMod(createMockAndroidDangerousModConfig());
+      withIterable(config, props);
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
