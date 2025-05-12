@@ -1,0 +1,32 @@
+# This is a CODEOWNERS file. It defines who is responsible for different parts of the codebase.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, they will be requested for review when someone opens a pull request.
+* @Iterable/mobile 
+
+# Plugin source code
+/plugin/ @Iterable/mobile 
+
+# Runtime code
+/src/ @Iterable/mobile 
+
+# Example app
+/example/ @Iterable/mobile 
+
+# Configuration files
+/.github/ @Iterable/mobile 
+/tsconfig.json @Iterable/mobile 
+/.eslintrc.js @Iterable/mobile 
+/.prettierrc @Iterable/mobile 
+/.editorconfig @Iterable/mobile 
+/.nvmrc @Iterable/mobile 
+
+# Documentation
+/README.md @Iterable/mobile 
+/CHANGELOG.md @Iterable/mobile 
+/LICENSE @Iterable/mobile 
+
+# Build and test configuration
+/jest.config.js @Iterable/mobile 
+/expo-module.config.json @Iterable/mobile  
