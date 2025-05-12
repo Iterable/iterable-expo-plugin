@@ -3,27 +3,30 @@
 
 # These owners will be the default owners for everything in the repo.
 # Unless a later match takes precedence, they will be requested for review when someone opens a pull request.
-* @iterable/mobile-sdk-team
+* @Iterable/mobile 
 
 # Plugin source code
-/plugin/ @iterable/mobile-sdk-team
+/plugin/ @Iterable/mobile 
+
+# Runtime code
+/src/ @Iterable/mobile 
 
 # Example app
-/example/ @iterable/mobile-sdk-team
+/example/ @Iterable/mobile 
 
 # Configuration files
-/.github/ @iterable/mobile-sdk-team
-/tsconfig.json @iterable/mobile-sdk-team
-/.eslintrc.js @iterable/mobile-sdk-team
-/.prettierrc @iterable/mobile-sdk-team
-/.editorconfig @iterable/mobile-sdk-team
-/.nvmrc @iterable/mobile-sdk-team
+/.github/ @Iterable/mobile 
+/tsconfig.json @Iterable/mobile 
+/.eslintrc.js @Iterable/mobile 
+/.prettierrc @Iterable/mobile 
+/.editorconfig @Iterable/mobile 
+/.nvmrc @Iterable/mobile 
 
 # Documentation
-/README.md @iterable/mobile-sdk-team
-/CHANGELOG.md @iterable/mobile-sdk-team
-/LICENSE @iterable/mobile-sdk-team
+/README.md @Iterable/mobile 
+/CHANGELOG.md @Iterable/mobile 
+/LICENSE @Iterable/mobile 
 
 # Build and test configuration
-/jest.config.js @iterable/mobile-sdk-team
-/expo-module.config.json @iterable/mobile-sdk-team 
+/jest.config.js @Iterable/mobile 
+/expo-module.config.json @Iterable/mobile  
