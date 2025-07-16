@@ -18,7 +18,8 @@
       "associatedDomains": [
         "applinks:iterable.com",
         "applinks:links.anotherone.com"
-      ]
+      ],
+      "appleTeamId": "BP98Z28R86"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +27,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "expo.modules.adapters.iterable.example",
+      "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
           "action": "MAIN",
@@ -41,7 +43,6 @@
             {
               "scheme": "https",
               "host": "links.example.com",
-              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
               "pathPrefix": "/a/"
             }
           ],

@@ -11,7 +11,7 @@
     "open:android": "open -a \"Android Studio\" android"
   },
   "dependencies": {
-    "@iterable/react-native-sdk": "^2.0.1",
+    "@iterable/react-native-sdk": "^2.0.2",
     "@react-navigation/native": "^7.0.19",
     "@react-navigation/stack": "^7.2.3",
     "expo": "^53.0.19",
