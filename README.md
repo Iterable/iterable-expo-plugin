@@ -274,9 +274,14 @@ Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/art
 
 ## ✅ Requirements and Limitations
 
-- New Architecture needs to be disabled, as `@iterable/react-native-sdk` does
-  not support it. See [Disabling New Architecture](#disabling-new-architecture)
-  for instructions on how to disable it.
+- From v2.0.2,`@iterable/react-native-sdk` supports React Native's New
+  Architecture](https://reactnative.dev/architecture/landing-page) through the
+  Interop Layer.  We are in the process of updating the SDK to fully support the
+  New Architecture, and suggest using the legacy architecture in the meantime.
+  *TLDR;* Use the  New Architecture at your own risk -- you may encounter
+  significant issues.
+  - See [Disabling New Architecture](#disabling-new-architecture) for
+    instructions on how to disable new architecture in your app. 
 - Your expo app needs to be run as a [development
   build](https://docs.expo.dev/develop/development-builds/introduction/) instead
   of through Expo Go. Both
