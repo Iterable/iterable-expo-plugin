@@ -1,6 +1,6 @@
 {
   "name": "@iterable/expo-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Config plugin for @iterable/react-native-sdk",
   "main": "build/withIterable.js",
   "types": "build/withIterable.d.ts",
