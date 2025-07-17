@@ -41,6 +41,7 @@
             {
               "scheme": "https",
               "host": "links.example.com",
+              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
               "pathPrefix": "/a/"
             }
           ],
