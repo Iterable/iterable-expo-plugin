@@ -232,7 +232,7 @@ describe('withAndroidPushNotifications', () => {
       withIterable(config, props);
       expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
         '@iterable/expo-plugin',
-        'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
+        'The path to your google-services.json file is not defined, so push notifications may not work.  Please add the path to your google-services.json file in the `expo.android.googleServicesFile` field in your app.json.'
       );
       expect(mockCopyFile).not.toHaveBeenCalled();
     });
