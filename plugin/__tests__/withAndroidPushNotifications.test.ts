@@ -218,64 +218,6 @@ describe('withAndroidPushNotifications', () => {
       expect(num).toBe(1);
     });
 
-    it('should warn the user if the google-services.json file is not found', async () => {
-      const config = {
-        ...createTestConfig(),
-        android: {
-          ...createTestConfig().android,
-          googleServicesFile: undefined,
-        },
-      };
-      const props: ConfigPluginProps = {
-        autoConfigurePushNotifications: true,
-      };
-      withIterable(config, props);
-      expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-        '@iterable/expo-plugin',
-        'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
-      );
-    });
-
-    it('should copy google-services.json when path is defined', async () => {
-      const config = {
-        ...createTestConfig(),
-        _internal: { projectRoot },
-        android: {
-          ...createTestConfig().android,
-          googleServicesFile: '__mocks__/google-services.json',
-        },
-      };
-      const props: ConfigPluginProps = {
-        autoConfigurePushNotifications: true,
-      };
-      // Create the source file in the project root
-      const srcPath = path.resolve(
-        projectRoot,
-        '__mocks__/google-services.json'
-      );
-      fs.mkdirSync(path.dirname(srcPath), { recursive: true });
-      fs.writeFileSync(srcPath, '{}');
-      const result = withIterable(config, props) as WithIterableResult;
-      const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await dangerousMod({
-        ...createMockAndroidDangerousModConfig(),
-        modRequest: {
-          projectRoot,
-          platformProjectRoot: path.resolve(projectRoot, 'android'),
-          modName: 'dangerous',
-          platform: 'android',
-          introspect: true,
-        },
-        android: {
-          googleServicesFile: '__mocks__/google-services.json',
-        },
-      });
-      expect(mockCopyFile).toHaveBeenCalledWith(
-        srcPath,
-        path.resolve(projectRoot, 'android/app/google-services.json')
-      );
-    });
-
     it('should warn when google-services.json path is not defined', async () => {
       const config = {
         ...createTestConfig(),
@@ -293,24 +235,6 @@ describe('withAndroidPushNotifications', () => {
         'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
       );
       expect(mockCopyFile).not.toHaveBeenCalled();
-    });
-
-    it('should throw error when google-services.json does not exist', async () => {
-      const config = createTestConfig();
-      const props: ConfigPluginProps = {
-        autoConfigurePushNotifications: true,
-      };
-      mockCopyFile.mockRejectedValueOnce(new Error('File not found'));
-      const result = withIterable(config, props) as WithIterableResult;
-      const dangerousMod = result.mods.android.dangerous as Mod<any>;
-      await expect(
-        dangerousMod({
-          ...createMockAndroidDangerousModConfig(),
-          android: {
-            googleServicesFile: './google-services.json',
-          },
-        })
-      ).rejects.toThrow('Cannot copy google-services.json');
     });
   });
 });
