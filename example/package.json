@@ -8,7 +8,14 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "open:ios": "xed ios",
-    "open:android": "open -a \"Android Studio\" android"
+    "open:android": "open -a \"Android Studio\" android",
+    "eas": "eas",
+    "build:development": "eas build --profile development --platform all",
+    "build:preview": "eas build --profile preview --platform all",
+    "build:production": "eas build --profile production --platform all",
+    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios",
+    "submit": "eas submit --platform all"
   },
   "dependencies": {
     "@iterable/react-native-sdk": "^2.0.2",
@@ -16,6 +23,7 @@
     "@react-navigation/stack": "^7.2.3",
     "expo": "^53.0.19",
     "expo-build-properties": "~0.14.8",
+    "expo-dev-client": "~5.2.4",
     "expo-system-ui": "~5.0.10",
     "react": "19.0.0",
     "react-native": "0.79.5",
@@ -26,6 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "eas-cli": "^16.17.4",
     "typescript": "^5.3.3"
   },
   "private": true,

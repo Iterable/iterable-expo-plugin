@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "expo-plugin-example",
-    "slug": "expo-plugin-example",
+    "slug": "iterable-expo-plugin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,8 +17,13 @@
       "bundleIdentifier": "expo.modules.adapters.iterable.example",
       "associatedDomains": [
         "applinks:iterable.com",
+        "applinks:links.anotherone.com",
+        "applinks:iterable.com",
         "applinks:links.anotherone.com"
-      ]
+      ],
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +46,6 @@
             {
               "scheme": "https",
               "host": "links.example.com",
-              // Deep links coming from Iterable are prefixed by "/a/", so include this as the "pathPrefix".
               "pathPrefix": "/a/"
             }
           ],
@@ -73,6 +77,12 @@
           "requestPermissionsForPushNotifications": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5bf45a1e-280f-4e44-9d93-db8f09a4274d"
+      }
+    },
+    "owner": "iterable"
   }
 }
