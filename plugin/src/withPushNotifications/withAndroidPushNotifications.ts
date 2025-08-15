@@ -128,7 +128,6 @@ export const withAndroidPushNotifications: ConfigPlugin<
       '@iterable/expo-plugin',
       'The path to your google-services.json file is not defined, so push notifications may not work.  Please add the path to your google-services.json file in the `expo.android.googleServicesFile` field in your app.json.'
     );
-    return config;
   }
 
   return withPlugins(config, [
