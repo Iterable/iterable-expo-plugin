@@ -3,16 +3,12 @@ import {
   WarningAggregator,
   withAndroidManifest,
   withAppBuildGradle,
-  withDangerousMod,
   withPlugins,
   withProjectBuildGradle,
 } from 'expo/config-plugins';
-import fs from 'fs';
-import path from 'path';
 
 import { ConfigPluginPropsWithDefaults } from '../withIterable.types';
 import {
-  DEFAULT_GOOGLE_SERVICES_PATH,
   FIREBASE_BOM_CLASS_PATH,
   FIREBASE_BOM_VERSION,
   FIREBASE_MESSAGING_CLASS_PATH,
@@ -124,59 +120,12 @@ const withAppPermissions: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
   });
 };
 
-/**
- * Copy `google-services.json`
- * TODO: Add this step to the docs
- */
-const withCopyAndroidGoogleServices: ConfigPlugin = (config) => {
-  return withDangerousMod(config, [
-    'android',
-    async (newConfig) => {
-      const srcPath = path.resolve(
-        newConfig.modRequest.projectRoot,
-        newConfig.android?.googleServicesFile ?? ''
-      );
-      const destPath = path.resolve(
-        newConfig.modRequest.platformProjectRoot,
-        DEFAULT_GOOGLE_SERVICES_PATH
-      );
-
-      try {
-        await fs.promises.copyFile(srcPath, destPath);
-      } catch {
-        throw new Error(
-          `Cannot copy google-services.json, because the file ${srcPath} doesn't exist. Please provide a valid path in \`app.json\`.`
-        );
-      }
-      return newConfig;
-    },
-  ]);
-};
-
-const withGoogleServices: ConfigPlugin<ConfigPluginPropsWithDefaults> = (
-  config,
-  props
-) => {
-  if (!config.android?.googleServicesFile) {
-    WarningAggregator.addWarningAndroid(
-      '@iterable/expo-plugin',
-      'Path to google-services.json is not defined, so push notifications will not be enabled.  To enable push notifications, please specify the `expo.android.googleServicesFile` field in app.json.'
-    );
-    return config;
-  }
-
-  return withPlugins(config, [
-    [withFirebase, props],
-    [withCopyAndroidGoogleServices, props],
-  ]);
-};
-
 export const withAndroidPushNotifications: ConfigPlugin<
   ConfigPluginPropsWithDefaults
 > = (config, props) => {
   return withPlugins(config, [
     [withAppPermissions, props],
-    [withGoogleServices, props],
+    [withFirebase, props],
   ]);
 };
 
