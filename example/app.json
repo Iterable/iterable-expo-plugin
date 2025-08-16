@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "expo-plugin-example",
-    "slug": "expo-plugin-example",
+    "slug": "iterable-expo-plugin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -73,6 +73,24 @@
           "requestPermissionsForPushNotifications": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5bf45a1e-280f-4e44-9d93-db8f09a4274d",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "IterableExpoRichPush",
+                  "bundleIdentifier": "expo.modules.adapters.iterable.example.IterableExpoRichPush"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "owner": "iterable"
   }
 }

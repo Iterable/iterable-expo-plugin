@@ -11,28 +11,38 @@ This config plugin automatically configures your Expo app to work with
 the native code is generated through `expo prebuild`.
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=3 orderedList=false} -->
-
 <!-- code_chunk_output -->
-
-- [🚀 Quick Start](#-quick-start)
-- [🔧 Configuration](#-configuration)
-  - [Plugin Options](#plugin-options)
-  - [Disabling New Architecture](#disabling-new-architecture)
-  - [Adding push capabilities](#adding-push-capabilities)
-  - [Adding Deeplinks](#adding-deeplinks)
-  - [Configuring ProGuard](#configuring-proguardhttpsreactnativedevdocssigned-apk-androidenabling-proguard-to-reduce-the-size-of-the-apk-optional)
-- [✅ Requirements and Limitations](#-requirements-and-limitations)
-- [🎉 Features](#-features)
-  - [Push Notifications](#push-notifications)
-  - [Deep Links](#deep-links)
-- [⁉️ Troubleshooting](#️-troubleshooting)
-  - [Native Module Not Found](#native-module-not-found)
-  - [Failed to delete [ios|android] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
-- [👏 Contributing](#-contributing)
-- [📝 License](#-license)
-- [💬 Support](#-support)
-- [📚 Further Reading](#-further-reading)
-
+- [@iterable/expo-plugin](#iterableexpo-plugin)
+  - [🚀 Quick Start](#-quick-start)
+  - [🔧 Configuration](#-configuration)
+    - [Plugin Options](#plugin-options)
+    - [Disabling New Architecture](#disabling-new-architecture)
+    - [Adding push capabilities](#adding-push-capabilities)
+      - [iOS](#ios)
+      - [Android](#android)
+    - [Adding Deeplinks](#adding-deeplinks)
+      - [iOS](#ios-1)
+      - [Android](#android-1)
+    - [Configuring ProGuard](#configuring-proguard)
+    - [Configuring for EAS Builds](#configuring-for-eas-builds)
+      - [iOS EAS Build Configuration](#ios-eas-build-configuration)
+      - [Finding Your EAS Project ID](#finding-your-eas-project-id)
+      - [Troubleshooting EAS Build Issues](#troubleshooting-eas-build-issues)
+  - [✅ Requirements and Limitations](#-requirements-and-limitations)
+  - [🎉 Features](#-features)
+    - [Push Notifications](#push-notifications)
+      - [iOS](#ios-2)
+      - [Android](#android-2)
+    - [Deep Links](#deep-links)
+      - [iOS](#ios-3)
+      - [Android](#android-3)
+  - [⁉️ Troubleshooting](#️-troubleshooting)
+    - [Native Module Not Found](#native-module-not-found)
+    - [Failed to delete \[ios|android\] code: ENOTEMPTY: directory not empty](#failed-to-delete-iosandroid-code-enotempty-directory-not-empty)
+  - [👏 Contributing](#-contributing)
+  - [📝 License](#-license)
+  - [💬 Support](#-support)
+  - [📚 Further Reading](#-further-reading)
 <!-- /code_chunk_output -->
 
 ## 🚀 Quick Start
@@ -271,6 +281,96 @@ The overall code in your _app.json_ file should look something like this:
 ```
 
 Learn more in the [Configure Proguard](https://support.iterable.com/hc/en-us/articles/360035019712-Iterable-s-Android-SDK#step-4-configure-proguard) section of Iterables Android SDK setup docs.
+
+### Configuring for EAS Builds
+
+When building your app with EAS Build, you may encounter signing errors related to the `IterableExpoRichPush` notification service extension target that this plugin creates. This target needs to be properly configured in your `app.json` file for EAS builds to succeed.
+
+#### iOS EAS Build Configuration
+
+To resolve signing issues with the `IterableExpoRichPush` target, you need to add the app extension configuration to your `app.json` file. Add the following to your `expo.extra.eas` configuration:
+
+```json
+{
+  "expo": {
+    "ios": { 
+      "bundleIdentifier": "your.app.bundle.id" 
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "IterableExpoRichPush",
+                  "bundleIdentifier": "your.app.bundle.id.IterableExpoRichPush"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**Example Configuration:**
+If your EAS project ID is `abc123` and your bundle identifier is `com.myapp`:
+
+```json
+{
+  "expo": {
+    "ios": { 
+      "bundleIdentifier": "com.myapp" 
+    },
+    "extra": {
+      "eas": {
+        "projectId": "abc123",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "IterableExpoRichPush",
+                  "bundleIdentifier": "com.myapp.IterableExpoRichPush"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Finding Your EAS Project ID
+
+To find your EAS project ID, run:
+```bash
+eas project:info
+```
+
+#### Troubleshooting EAS Build Issues
+
+If you encounter the error "Signing for 'IterableExpoRichPush' requires a development team" after adding the above configuration:
+
+1. Ensure your EAS credentials are properly configured:
+   ```bash
+   eas credentials
+   ```
+
+2. Verify that your Apple Developer account has the necessary capabilities for push notifications
+
+3. Try clearing the build cache:
+   ```bash
+   eas build --platform ios --profile development --clear-cache
+   ```
+
+4. If issues persist, ensure your bundle identifier follows the correct pattern: `your.main.bundle.id.IterableExpoRichPush`
 
 ## ✅ Requirements and Limitations
 
