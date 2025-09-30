@@ -149,17 +149,19 @@ jobs:
         include:
           - language: swift
             build-mode: manual
-    #
-    #    build-library:
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/setup
+    build_library:
+      runs-on: ubuntu-latest
+      steps:
 
-      - name: Build package
-        run: yarn prepare
+        - name: Checkout
+          uses: actions/checkout@v4
+
+        - name: Setup
+          uses: ./.github/actions/setup
+
+        - name: Build package
+          run: yarn prepare
 
           #      - name: Clean DerivedData folder
           #        run: |
@@ -189,36 +191,36 @@ jobs:
           #          NO_FLIPPER: 1
 
           # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-          # If you wish to specify custom queries, you can do so here or in a config file.
-          # By default, queries listed here will override any specified in a config file.
-          # Prefix the list here with "+" to use these queries and those in the config file.
+        - name: Initialize CodeQL
+          uses: github/codeql-action/init@v3
+          with:
+            languages: ${{ matrix.language }}
+            build-mode: ${{ matrix.build-mode }}
+            # If you wish to specify custom queries, you can do so here or in a config file.
+            # By default, queries listed here will override any specified in a config file.
+            # Prefix the list here with "+" to use these queries and those in the config file.
 
-          # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-          queries: ${{ matrix.language && 'security-extended, security-and-quality' }}
+            # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+            queries: ${{ matrix.language && 'security-extended, security-and-quality' }}
 
-      - if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          cd example/ios
-          
-          xcodebuild clean build \
-          -workspace IterableExpoPlugin.xcworkspace \
-          -scheme IterableExpoPluginExample \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
-          APPLICATION_EXTENSION_API_ONLY=NO
+        - if: matrix.build-mode == 'manual'
+          shell: bash
+          run: |
+            cd example/ios
+            
+            xcodebuild clean build \
+            -workspace IterableExpoPlugin.xcworkspace \
+            -scheme IterableExpoPluginExample \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
+            APPLICATION_EXTENSION_API_ONLY=NO
 
-        #        yarn add -D @iterable-expo-plugin/cli
-        continue-on-error: true
+          #        yarn add -D @iterable-expo-plugin/cli
+          continue-on-error: true
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{matrix.language}}"
+        - name: Perform CodeQL Analysis
+          uses: github/codeql-action/analyze@v3
+          with:
+            category: "/language:${{matrix.language}}"
