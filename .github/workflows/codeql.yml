@@ -100,7 +100,7 @@ jobs:
         run: yarn prepare
 
       - name: Install sdk
-        run: npx expo install @iterable/expo-plugin @iterable/react-native-sdk
+        run: npx expo install @iterable/expo-plugin
 
       - name: Rebuild proj
         run: npx expo prebuild --clean
@@ -179,7 +179,7 @@ jobs:
         run: yarn prepare
 
       - name: Install sdk
-        run: npx expo install @iterable/expo-plugin @iterable/react-native-sdk
+        run: npx expo install @iterable/expo-plugin
 
       - name: Rebuild proj
         run: npx expo prebuild --clean
