@@ -99,6 +99,16 @@ jobs:
       - name: Build package
         run: yarn prepare
 
+      - name: Install sdk
+        run: npx expo install @iterable/expo-plugin @iterable/react-native-sdk
+
+      - name: Rebuild proj
+        run: npx expo prebuild --clean
+
+      - name: Android
+        run: npx expo run:android
+
+
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
       # or others). This is typically only required for manual builds.
@@ -167,6 +177,15 @@ jobs:
 
       - name: Build package
         run: yarn prepare
+
+      - name: Install sdk
+        run: npx expo install @iterable/expo-plugin @iterable/react-native-sdk
+
+      - name: Rebuild proj
+        run: npx expo prebuild --clean
+
+      - name: Android
+        run: npx expo run:ios
 
           #      - name: Clean DerivedData folder
           #        run: |
