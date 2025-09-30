@@ -106,7 +106,7 @@ jobs:
 #        run: npx expo prebuild
 
       - name: Android
-        run: npx expo run:android
+        run: npx expo run:android --non-interactive
 
 
       # Add any setup steps before running the `github/codeql-action/init` action.
@@ -185,7 +185,7 @@ jobs:
 #        run: npx expo prebuild
 
       - name: Android
-        run: npx expo run:ios
+        run: npx expo run:ios --non-interactive
 
           #      - name: Clean DerivedData folder
           #        run: |
