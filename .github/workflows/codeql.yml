@@ -150,36 +150,44 @@ jobs:
           - language: swift
             build-mode: manual
 
+  build-library:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout iterable-expo-plugin
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Clean DerivedData folder
-        run: |
-          rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Cache cocoapods
-        if: env.turbo_cache_hit != 1
-        id: cocoapods-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/ios/Pods
-          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cocoapods-
+      - name: Build package
+        run: yarn prepare
 
-      - name: Install cocoapods
-        if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
-        run: |
-          cd example/ios &&
-          NO_FLIPPER=1 pod install --repo-update &&
-          cd ..
-        env:
-          NO_FLIPPER: 1
+        #      - name: Clean DerivedData folder
+        #        run: |
+        #          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+        #
+        #      - name: Setup
+        #        uses: ./.github/actions/setup
+        #
+        #      - name: Cache cocoapods
+        #        if: env.turbo_cache_hit != 1
+        #        id: cocoapods-cache
+        #        uses: actions/cache@v4
+        #        with:
+        #          path: |
+        #            **/ios/Pods
+        #          key: ${{ runner.os }}-cocoapods-${{ hashFiles('example/ios/Podfile.lock') }}
+        #          restore-keys: |
+        #            ${{ runner.os }}-cocoapods-
+        #
+        #      - name: Install cocoapods
+        #        if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
+        #        run: |
+        #          cd example/ios &&
+        #          NO_FLIPPER=1 pod install --repo-update &&
+        #          cd ..
+        #        env:
+        #          NO_FLIPPER: 1
 
         # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -187,7 +195,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-            # If you wish to specify custom queries, you can do so here or in a config file.
+          # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.
 
