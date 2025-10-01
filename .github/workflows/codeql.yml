@@ -126,9 +126,7 @@ jobs:
           queries: ${{ matrix.language && 'security-extended, security-and-quality' }}
 
       - if: matrix.build-mode == 'manual'
-        run: |
-#          yarn prepare \
-          npx expo run:android
+        run: npx expo run:android
 
 #        shell: bash
 #        run: |
