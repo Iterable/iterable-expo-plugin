@@ -93,6 +93,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install root deps
+        run: |
+          yarn install
+
+      - name: Install example deps
+        run: |
+          cd example
+          yarn install
+
+      - name: Build package
+        run: yarn prepare
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
       # or others). This is typically only required for manual builds.
@@ -149,7 +163,7 @@ jobs:
       matrix:
         include:
           - language: swift
-            build-mode: none
+            build-mode: autobuild
 
     steps:
 
