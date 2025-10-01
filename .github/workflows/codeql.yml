@@ -86,7 +86,7 @@ jobs:
       matrix:
         include:
           - language: java
-            build-mode: manual
+            build-mode: none
 
     steps:
 
@@ -149,7 +149,7 @@ jobs:
       matrix:
         include:
           - language: swift
-            build-mode: manual
+            build-mode: none
 
     steps:
 
@@ -199,18 +199,18 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          cd example/ios
-          
-          xcodebuild clean build \
-          -workspace IterableExpoPlugin.xcworkspace \
-          -scheme IterableExpoPluginExample \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
-          APPLICATION_EXTENSION_API_ONLY=NO
-          
-          #        yarn add -D @iterable-expo-plugin/cli
+#          cd example/ios
+#
+#          xcodebuild clean build \
+#          -workspace IterableExpoPlugin.xcworkspace \
+#          -scheme IterableExpoPluginExample \
+#          CODE_SIGN_IDENTITY="" \
+#          CODE_SIGNING_REQUIRED=NO \
+#          CODE_SIGNING_ALLOWED=NO \
+#          BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
+#          APPLICATION_EXTENSION_API_ONLY=NO
+#
+#          #        yarn add -D @iterable-expo-plugin/cli
         continue-on-error: true
 
       - name: Perform CodeQL Analysis
