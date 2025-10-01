@@ -126,7 +126,13 @@ jobs:
           queries: ${{ matrix.language && 'security-extended, security-and-quality' }}
 
       - if: matrix.build-mode == 'manual'
-        run: yarn prepare
+        run: |
+          yarn prepare
+          
+          npx expo prebuild --clean --yes
+
+          npx expo run:android
+
 #        shell: bash
 #        run: |
 #          echo 'If you are using a "manual" build mode for one or more of the' \
