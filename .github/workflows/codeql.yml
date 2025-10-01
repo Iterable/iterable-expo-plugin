@@ -127,10 +127,7 @@ jobs:
 
       - if: matrix.build-mode == 'manual'
         run: |
-          yarn prepare \ 
-          
-          yes | npx expo build $CI=1 \
-
+#          yarn prepare \
           npx expo run:android
 
 #        shell: bash
