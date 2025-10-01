@@ -147,6 +147,13 @@ jobs:
         run: yarn install --immutable
         shell: bash
 
+      - name: Run Android Emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: '30'
+          target: 'default'
+          script: 'android/build.gradle'
+
       - if: matrix.build-mode == 'manual'
         run: |
           yarn prepare \ 
