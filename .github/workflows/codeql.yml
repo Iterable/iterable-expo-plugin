@@ -129,7 +129,7 @@ jobs:
         run: |
           yarn prepare \ 
           
-          npx expo prebuild --skip-dependency-update react-native,react --force \
+          yes | npx expo prebuild --skip-dependency-update react-native,react \
 
           npx expo run:android
 
