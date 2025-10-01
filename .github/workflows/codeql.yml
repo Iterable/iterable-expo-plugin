@@ -127,9 +127,9 @@ jobs:
 
       - if: matrix.build-mode == 'manual'
         run: |
-          yarn prepare
+          yarn prepare \ 
           
-          npx expo prebuild --clean --yes
+          npx expo prebuild --clean --yes \
 
           npx expo run:android
 
