@@ -93,14 +93,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install root deps
-        run: |
-          yarn install
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
 
-      - name: Install example deps
-        run: |
-          cd example
-          yarn install
+      - name: Cache dependencies
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            example/.yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/package.json', '!node_modules/**') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+        shell: bash
+
+      - name: Run Android Emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: '30'
+          target: 'default'
+          script: 'android/build.gradle'
+
+#      - name: Install root deps
+#        run: |
+#          yarn install
+#
+#      - name: Install example deps
+#        run: |
+#          cd example
+#          yarn install
 
 
       # Add any setup steps before running the `github/codeql-action/init` action.
@@ -126,9 +155,9 @@ jobs:
         run: |
           yarn prepare \ 
           
-          yarn build \
+          npx expo prebuild --no-install \
 
-#          npx expo run:android
+          npx expo run:android
 
 #        shell: bash
 #        run: |
