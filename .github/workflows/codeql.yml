@@ -146,6 +146,11 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
         shell: bash
+      - name: Install android
+        uses: android-actions/setup-android@v3
+
+      - name: Verify adb
+        run: adb devices
 
       - if: matrix.build-mode == 'manual'
         run: |
