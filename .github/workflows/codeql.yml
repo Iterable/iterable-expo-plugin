@@ -150,8 +150,9 @@ jobs:
       - name: Run Android Emulator
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
-          api-level: '30'
-          target: 'default'
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
           script: 'android/build.gradle'
 
       - if: matrix.build-mode == 'manual'
@@ -160,6 +161,10 @@ jobs:
           
           npx expo prebuild --no-install \
 
+          adb kill-server \
+          
+          adb start-server \
+          
           npx expo run:android
 
 #        shell: bash
