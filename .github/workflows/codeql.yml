@@ -86,7 +86,7 @@ jobs:
       matrix:
         include:
           - language: java
-            build-mode: none
+            build-mode: manual
 
     steps:
 
@@ -105,8 +105,7 @@ jobs:
           cd example
           yarn install
 
-      - name: Build package
-        run: yarn prepare
+
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
       # or others). This is typically only required for manual builds.
@@ -127,14 +126,18 @@ jobs:
           queries: ${{ matrix.language && 'security-extended, security-and-quality' }}
 
       - if: matrix.build-mode == 'manual'
-        shell: bash
-        run: |
-          echo 'If you are using a "manual" build mode for one or more of the' \
-            'languages you are analyzing, replace this with the commands to build' \
-            'your code, for example:'
-          echo '  make bootstrap'
-          echo '  make release'
-          exit 1
+        run: yarn prepare
+#        shell: bash
+#        run: |
+#          echo 'If you are using a "manual" build mode for one or more of the' \
+#            'languages you are analyzing, replace this with the commands to build' \
+#            'your code, for example:'
+#          echo '  make bootstrap'
+#          echo '  make release'
+#          exit 1
+
+
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
