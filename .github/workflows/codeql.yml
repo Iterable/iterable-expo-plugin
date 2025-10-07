@@ -100,10 +100,6 @@ jobs:
         run: |
           yarn prepare
 
-      - name: Setup app space
-        run: |
-          npx expo prebuild --clean
-
       - name: Debug path issue
         run: |
           ls -la ${{ github.workspace }}/example
@@ -131,6 +127,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          npx expo prebuild --clean
           yarn install
           cd example
           yarn install
@@ -177,10 +174,6 @@ jobs:
         run: |
           yarn prepare
 
-      - name: Setup app space
-        run: |
-          npx expo prebuild --clean
-
       - name: Debug path issue
         run: |
           ls -la ${{ github.workspace }}/example
@@ -202,6 +195,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          npx expo prebuild --clean
           yarn install
           cd example
           yarn install
