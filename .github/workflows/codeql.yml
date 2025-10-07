@@ -122,9 +122,8 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          pwd
-          cd /home/runner/work/iterable-expo-plugin/iterable-expo-plugin/example/android
           ./gradlew build
+        working-directory: example/android
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -180,8 +179,9 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          cd /home/runner/work/iterable-expo-plugin/iterable-expo-plugin/example/ios
           xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
+        working-directory: example/ios
+
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
