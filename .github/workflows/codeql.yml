@@ -96,18 +96,18 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build library
-        run: |
-          yarn install
-
-      - name: Setup app space
-        run: |
-          yarn prepare
-
-      - name: Debug path issue
-        run: |
-          ls -la ${{ github.workspace }}/example
-          ls -la ${{ github.workspace }}/example/android
+#      - name: Build library
+#        run: |
+#          yarn install
+#
+#      - name: Setup app space
+#        run: |
+#          npx expo prebuild --clean
+#
+#      - name: Debug path issue
+#        run: |
+#          ls -la ${{ github.workspace }}/example
+#          ls -la ${{ github.workspace }}/example/android
       
       
 
@@ -133,8 +133,13 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          yarn prepare
+          yarn install
+          cd example
+          yarn install
+          cd android
           ./gradlew clean
-        working-directory: ${{ github.workspace }}/example/android
+#        working-directory: ${{ github.workspace }}/example/android
 
         continue-on-error: true
 
@@ -172,14 +177,14 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build library
-        run: |
-          yarn prepare
-
-      - name: Debug path issue
-        run: |
-          ls -la ${{ github.workspace }}
-          ls -la ${{ github.workspace }}/example
+#      - name: Build library
+#        run: |
+#          yarn install
+#
+#      - name: Debug path issue
+#        run: |
+#          ls -la ${{ github.workspace }}
+#          ls -la ${{ github.workspace }}/example
 
 # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -196,9 +201,14 @@ jobs:
 
       - if: matrix.build-mode == 'manual'
         shell: bash
-        run: |       
+        run: |
+          yarn prepare
+          yarn install
+          cd example
+          yarn install
+          cd ios
           xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
-        working-directory: ${{ github.workspace }}/example/ios
+#        working-directory: ${{ github.workspace }}/example/ios
 
         continue-on-error: true
 
