@@ -122,6 +122,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          pwd
           cd /home/runner/work/iterable-expo-plugin/iterable-expo-plugin/example/android
           ./gradlew build
 
