@@ -96,8 +96,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build library
-        run: yarn prepare
+      - name: Build library and prepare the example app
+        run: |
+          yarn install 
+          yarn prepare
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -121,8 +123,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          npx expo prebuild --clean
-          npx expo run:android
+          yarn android
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -158,8 +159,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build Library
-        run: yarn prepare
+      - name: Build library and prepare the example app
+        run: |
+          yarn install 
+          yarn prepare
 
         # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -177,8 +180,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          npx expo prebuild -- clean
-          npx expo run:ios
+          yarn ios
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
