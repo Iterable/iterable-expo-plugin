@@ -96,20 +96,18 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-#      - name: Build library
-#        run: |
-#          yarn install
-#
-#      - name: Setup app space
-#        run: |
-#          npx expo prebuild --clean
-#
-#      - name: Debug path issue
-#        run: |
-#          ls -la ${{ github.workspace }}/example
-#          ls -la ${{ github.workspace }}/example/android
-      
-      
+      - name: Build library
+        run: |
+          yarn prepare
+
+      - name: Setup app space
+        run: |
+          npx expo prebuild --clean
+
+      - name: Debug path issue
+        run: |
+          ls -la ${{ github.workspace }}/example
+          ls -la ${{ github.workspace }}/example/android
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -133,14 +131,11 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          yarn prepare
           yarn install
           cd example
           yarn install
-          npx expo prebuild --clean
           cd android
           ./gradlew clean
-#        working-directory: ${{ github.workspace }}/example/android
 
         continue-on-error: true
 
@@ -178,14 +173,18 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-#      - name: Build library
-#        run: |
-#          yarn install
-#
-#      - name: Debug path issue
-#        run: |
-#          ls -la ${{ github.workspace }}
-#          ls -la ${{ github.workspace }}/example
+      - name: Build library
+        run: |
+          yarn prepare
+
+      - name: Setup app space
+        run: |
+          npx expo prebuild --clean
+
+      - name: Debug path issue
+        run: |
+          ls -la ${{ github.workspace }}/example
+          ls -la ${{ github.workspace }}/example/android
 
 # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -203,14 +202,11 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          yarn prepare
           yarn install
           cd example
           yarn install
-          npx expo prebuild --clean
           cd ios
           xcodebuild -workspace expopluginexample.xcworkspace -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
-#        working-directory: ${{ github.workspace }}/example/ios
 
         continue-on-error: true
 
