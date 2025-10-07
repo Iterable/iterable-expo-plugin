@@ -122,6 +122,11 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          echo ${{ github.workspace }}
+          
+          MY_WORK_DIR=${{ github.workspace }}
+          echo "MY_WORK_DIR=$MY_WORK_DIR" >> $GITHUB_ENV
+          
           cd $GITHUB_ENV/example/android
           ./gradlew build
 
@@ -180,6 +185,11 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
+          echo ${{ github.workspace }}
+          
+          MY_WORK_DIR=${{ github.workspace }}
+          echo "MY_WORK_DIR=$MY_WORK_DIR" >> $GITHUB_ENV
+          
           cd $GITHUB_ENV/example/ios
           xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 
