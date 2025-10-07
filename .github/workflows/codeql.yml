@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  analyze:
+  Analyze_JSandTS:
     name: Analyze (${{ matrix.language }})
     runs-on: ${{ (matrix.language == 'javascript') || 'ubuntu-latest' }}
     permissions:
@@ -67,7 +67,7 @@ jobs:
           category: "/language:${{matrix.language}}"
 
 
-  analyze2:
+  Build_Analyze_Android_Example:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
@@ -96,10 +96,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build library and prepare the example app
+      - name: Build library
         run: |
           yarn install 
-          yarn prepare
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -123,14 +122,17 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          yarn android
+          cd example
+          yarn prepare
+          cd android
+          ./gradlew build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
 
-  analyze3:
+  Build_Analyze_iOS_Example:
     name: Analyze (${{ matrix.language }})
     timeout-minutes: 120
 
@@ -159,10 +161,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build library and prepare the example app
+      - name: Build library
         run: |
           yarn install 
-          yarn prepare
 
         # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -180,7 +181,10 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          yarn ios
+          cd example
+          yarn prepare
+          cd ios
+          xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
