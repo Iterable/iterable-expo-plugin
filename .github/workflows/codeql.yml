@@ -122,8 +122,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          cd ${{ github.workspace }}/example/android
-          ./gradlew build
+          ${{ github.workspace }}/example/android/gradlew clean
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -179,8 +178,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |       
-          cd ${{ github.workspace }}/example/ios
-          xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
+          ${{ github.workspace }}/example/ios xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
