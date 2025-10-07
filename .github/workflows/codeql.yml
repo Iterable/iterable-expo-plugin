@@ -122,10 +122,10 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          npx expo prebuild --clean
           yarn install
           cd example
           yarn install
+          npx expo prebuild --clean
           cd android
           ./gradlew clean
 
@@ -185,10 +185,10 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          npx expo prebuild --clean
           yarn install
           cd example
           yarn install
+          npx expo prebuild --clean
           cd ios
           xcodebuild -workspace expopluginexample.xcworkspace -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 
