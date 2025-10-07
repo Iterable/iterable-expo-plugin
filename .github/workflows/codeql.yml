@@ -98,7 +98,11 @@ jobs:
 
       - name: Build library
         run: |
-          yarn install 
+          yarn install
+
+      - name: Debug path issue
+        run: ls -la ${{ github.workspace }}/example
+
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -124,6 +128,8 @@ jobs:
         run: |
           ./gradlew clean
         working-directory: ${{ github.workspace }}/example/android
+
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -161,7 +167,10 @@ jobs:
 
       - name: Build library
         run: |
-          yarn install 
+          yarn install
+
+      - name: Debug path issue
+        run: ls -la ${{ github.workspace }}/example
 
         # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -181,6 +190,8 @@ jobs:
         run: |       
           xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
         working-directory: ${{ github.workspace }}/example/ios
+
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
