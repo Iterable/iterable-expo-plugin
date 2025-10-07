@@ -209,7 +209,7 @@ jobs:
           yarn install
           npx expo prebuild --clean
           cd ios
-          xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
+          xcodebuild -workspace expopluginexample.xcworkspace -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 #        working-directory: ${{ github.workspace }}/example/ios
 
         continue-on-error: true
