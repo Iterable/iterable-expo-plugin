@@ -122,7 +122,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          cd example/android
+          cd ./example/android
           ./gradlew build
 
       - name: Perform CodeQL Analysis
@@ -179,7 +179,7 @@ jobs:
       - if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          cd example/ios
+          cd ./example/ios
           xcodebuild -workspace expopluginexample.xcodeproj -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
 
       - name: Perform CodeQL Analysis
