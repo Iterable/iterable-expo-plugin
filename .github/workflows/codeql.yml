@@ -105,8 +105,11 @@ jobs:
           yarn prepare
 
       - name: Debug path issue
-        run: ls -la ${{ github.workspace }}/example
-
+        run: |
+          ls -la ${{ github.workspace }}/example
+          ls -la ${{ github.workspace }}/example/android
+      
+      
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -171,16 +174,14 @@ jobs:
 
       - name: Build library
         run: |
-          yarn install
-
-      - name: Setup app space
-        run: |
           yarn prepare
 
       - name: Debug path issue
-        run: ls -la ${{ github.workspace }}/example
+        run: |
+          ls -la ${{ github.workspace }}
+          ls -la ${{ github.workspace }}/example
 
-        # Initializes the CodeQL tools for scanning.
+# Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
