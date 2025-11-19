@@ -1481,20 +1481,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iterable/react-native-sdk@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@iterable/react-native-sdk@npm:2.0.2"
+"@iterable/react-native-sdk@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@iterable/react-native-sdk@npm:2.1.0"
   peerDependencies:
     "@react-navigation/native": "*"
     react: "*"
     react-native: "*"
     react-native-safe-area-context: "*"
-    react-native-vector-icons: "*"
     react-native-webview: "*"
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/d1d6485dd3b982642df9569a4793aae0ff71191f8f6faffadbb580594db8e9cf2089f8a9b668d09c7b53e93ecbcd9d054833a8b82e0bb2a1d0d9a68a269d5967
+  checksum: 10c0/925492e228c786df0c2193a3bc0a9c8a590fe16a096bc76cc7e82f49c12c6eb62ec5a67a895e15a013f3473c839f04411a484975ffca218e60b92f71fed4cb06
   languageName: node
   linkType: hard
 
@@ -3309,7 +3308,7 @@ __metadata:
   resolution: "expo-plugin-example@workspace:."
   dependencies:
     "@babel/core": "npm:^7.25.2"
-    "@iterable/react-native-sdk": "npm:^2.0.2"
+    "@iterable/react-native-sdk": "npm:^2.1.0"
     "@react-navigation/native": "npm:^7.0.19"
     "@react-navigation/stack": "npm:^7.2.3"
     "@types/react": "npm:~19.0.10"
