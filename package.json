@@ -44,7 +44,7 @@
     "@typescript-eslint/eslint-plugin": "8.28.0",
     "@typescript-eslint/parser": "8.28.0",
     "commitlint": "^19.6.1",
-    "eslint": "8.57.1",
+    "eslint": "9.26.0",
     "eslint-config-expo": "~9.2.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jest": "^28.11.0",
