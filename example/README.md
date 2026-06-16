@@ -97,6 +97,13 @@ npx expo run:android
    - Check that `google-services.json` is properly placed (Android)
    - Verify certificates and provisioning profiles (iOS)
 
+4. **iOS build fails on `fmt` / `FMT_STRING` / `library 'fmt' not found` (Xcode 26.4+)**
+   - This is a known React Native + Xcode 26.4 compatibility issue
+   - `@iterable/expo-plugin` injects a Podfile workaround automatically during prebuild
+   - Rebuild native code: `npx expo prebuild --clean`, then `cd ios && pod install && cd ..`
+   - If you still see the error, confirm your generated `ios/Podfile` contains the
+     `@iterable/expo-plugin: fmt workaround for Xcode 26.4` comment inside `post_install`
+
 ### Development Tips
 
 - Use `yarn start` to start the Metro bundler
