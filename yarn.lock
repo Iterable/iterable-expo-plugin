@@ -2669,7 +2669,7 @@ __metadata:
   dependencies:
     "@commitlint/config-conventional": "npm:^19.6.0"
     "@evilmartians/lefthook": "npm:^1.5.0"
-    "@iterable/react-native-sdk": "npm:^2.0.2"
+    "@iterable/react-native-sdk": "npm:^3.0.0"
     "@react-native/eslint-config": "npm:^0.79.5"
     "@release-it/conventional-changelog": "npm:^9.0.2"
     "@types/jest": "npm:^29.5.14"
@@ -2702,20 +2702,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@iterable/react-native-sdk@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@iterable/react-native-sdk@npm:2.0.2"
+"@iterable/react-native-sdk@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@iterable/react-native-sdk@npm:3.0.0"
   peerDependencies:
     "@react-navigation/native": "*"
     react: "*"
     react-native: "*"
     react-native-safe-area-context: "*"
-    react-native-vector-icons: "*"
     react-native-webview: "*"
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/d1d6485dd3b982642df9569a4793aae0ff71191f8f6faffadbb580594db8e9cf2089f8a9b668d09c7b53e93ecbcd9d054833a8b82e0bb2a1d0d9a68a269d5967
+  checksum: 10c0/986244429e63646cd641a7f7be1a7c93be05f12000d80d1fa5cebce29bc4d87566e72766d1a3f57fe7f5c0a579a8c7d4b5b238cc815c8be161aef0a022314cfc
   languageName: node
   linkType: hard
 
