@@ -406,6 +406,11 @@ The plugin automatically configures push notifications for both iOS and Android 
 - Sets up notification service extension
 - Configures required entitlements
 - Handles notification permissions
+- Routes notification delegate callbacks by payload so Iterable can coexist with other push providers (e.g. `expo-notifications`, Firebase, OneSignal)
+
+**Multiple push providers:** iOS allows only one `UNUserNotificationCenter` delegate. The plugin installs a `NotificationDelegateRouter` that forwards non-Iterable pushes (identified by the absence of an `itbl` key in the payload) to whichever delegate was registered before Iterable (typically Expo). Iterable pushes are handled by the Iterable SDK as before.
+
+**Known limitation:** Router installation is deferred to the next main-queue turn so Expo can register its delegate first. If another plugin uses the same deferred-install pattern, delegate ordering is undefined.
 
 #### Android
 

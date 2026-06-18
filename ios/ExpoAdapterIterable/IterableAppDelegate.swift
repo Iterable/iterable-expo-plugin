@@ -11,7 +11,10 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
   ) -> Bool {
     ITBInfo()
 
-    UNUserNotificationCenter.current().delegate = self
+    // Defer install so Expo (e.g. expo-notifications) assigns its delegate first.
+    DispatchQueue.main.async {
+      NotificationDelegateRouter.shared.install()
+    }
 
     /**
       * Request permissions for push notifications if the flag is not set to false.
@@ -34,6 +37,10 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
     _ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
   ) {
+    guard userInfo["itbl"] is [AnyHashable: Any] else {
+      completionHandler(.noData)
+      return
+    }
 
     IterableAppIntegration.application(
       application, didReceiveRemoteNotification: userInfo,
@@ -93,24 +100,5 @@ public class IterableAppDelegate: ExpoAppDelegateSubscriber, UIApplicationDelega
         ITBInfo("Already authorized")
       }
     }
-  }
-}
-
-/// * Handle incoming push notifications and enable push notification tracking.
-/// * @see Step 3.5.5 of https://support.iterable.com/hc/en-us/articles/360045714132-Installing-Iterable-s-React-Native-SDK#step-3-5-set-up-support-for-push-notifications
-extension IterableAppDelegate: UNUserNotificationCenterDelegate {
-  public func userNotificationCenter(
-    _: UNUserNotificationCenter, willPresent _: UNNotification,
-    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-  ) {
-    completionHandler([.badge, .banner, .list, .sound])
-  }
-
-  public func userNotificationCenter(
-    _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
-    withCompletionHandler completionHandler: @escaping () -> Void
-  ) {
-    IterableAppIntegration.userNotificationCenter(
-      center, didReceive: response, withCompletionHandler: completionHandler)
   }
 }
