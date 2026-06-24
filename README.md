@@ -16,7 +16,7 @@ the native code is generated through `expo prebuild`.
   - [🚀 Quick Start](#-quick-start)
   - [🔧 Configuration](#-configuration)
     - [Plugin Options](#plugin-options)
-    - [Disabling New Architecture](#disabling-new-architecture)
+    - [New Architecture](#new-architecture)
     - [Adding push capabilities](#adding-push-capabilities)
       - [iOS](#ios)
       - [Android](#android)
@@ -129,15 +129,14 @@ Add the plugin to your `app.json` or `app.config.js`:
 | `enableTimeSensitivePush`                | boolean                           | `true`          | Whether to enable time-sensitive push notifications (iOS only)                                                                                                                                                                          |
 | `requestPermissionsForPushNotifications` | boolean                           | `false`         | Whether to request permissions for push notifications (iOS only)                                                                                                                                                                        |
 
-### Disabling New Architecture
+### New Architecture
 
-`@iterable/react-native-sdk` is _NOT_ compatible with Reacts New Architecture,
-so this needs to be disabled in your `app.json`:
+Expo SDK 55 requires React Native's [New Architecture](https://reactnative.dev/architecture/landing-page). Ensure `newArchEnabled` is set to `true` in your `app.json`:
 
 ```json
 {
   "expo": {
-    "newArchEnabled": false
+    "newArchEnabled": true
   }
 }
 ```
@@ -374,14 +373,9 @@ If you encounter the error "Signing for 'IterableExpoRichPush' requires a develo
 
 ## ✅ Requirements and Limitations
 
-- From v2.0.2,`@iterable/react-native-sdk` supports React Native's New
-  Architecture](https://reactnative.dev/architecture/landing-page) through the
-  Interop Layer.  We are in the process of updating the SDK to fully support the
-  New Architecture, and suggest using the legacy architecture in the meantime.
-  *TLDR;* Use the  New Architecture at your own risk -- you may encounter
-  significant issues.
-  - See [Disabling New Architecture](#disabling-new-architecture) for
-    instructions on how to disable new architecture in your app. 
+- From v2.0.2, `@iterable/react-native-sdk` supports React Native's New
+  Architecture. Expo SDK 55 requires the New
+  Architecture; see [New Architecture](#new-architecture) for configuration.
 - Your expo app needs to be run as a [development
   build](https://docs.expo.dev/develop/development-builds/introduction/) instead
   of through Expo Go. Both
@@ -391,8 +385,8 @@ If you encounter the error "Signing for 'IterableExpoRichPush' requires a develo
 - `@iterable/iterable-expo-plugin` is intended for managed workflows, and will
   overwrite the files in your `ios` and `android` directories. Any manual
   changes to those directories will be overwritten on the next build.
-- This plugin has been tested on Expo version 52+. While it may work on
-  previous versions, they are not supported.
+- This plugin has been tested on Expo SDK 55. While it may work on previous
+  versions, they are not supported.
 
 ## 🎉 Features
 
