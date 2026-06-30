@@ -1,6 +1,7 @@
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import { withDeepLinks } from './withDeepLinks';
+import { withIosFmtWorkaround } from './withIosFmtWorkaround';
 import {
   type ConfigPluginProps,
   type ConfigPluginPropsWithDefaults,
@@ -24,6 +25,7 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
     [withStoreConfigValues, propsWithDefaults],
     [withPushNotifications, propsWithDefaults],
     [withDeepLinks, propsWithDefaults],
+    withIosFmtWorkaround,
   ]);
 };
 

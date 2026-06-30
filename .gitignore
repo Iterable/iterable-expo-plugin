@@ -60,6 +60,8 @@ yarn-error.log
 example/ios/
 example/android/
 example/google-services.json
+.yarn/install-state.gz
+example/.yarn/install-state.gz
 
 # Coverage
 coverage/

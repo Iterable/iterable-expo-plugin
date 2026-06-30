@@ -5,12 +5,13 @@
   "main": "build/withIterable.js",
   "types": "build/withIterable.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module build && yarn build:plugin",
+    "build:plugin": "tsc -p plugin",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:coverage": "jest test --coverage --config jest.config.js",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && yarn build:plugin",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
@@ -36,7 +37,7 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^19.6.0",
     "@evilmartians/lefthook": "^1.5.0",
-    "@iterable/react-native-sdk": "^2.0.2",
+    "@iterable/react-native-sdk": "^3.0.0",
     "@react-native/eslint-config": "^0.79.5",
     "@release-it/conventional-changelog": "^9.0.2",
     "@types/jest": "^29.5.14",
@@ -60,7 +61,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@iterable/react-native-sdk": "^2.0.2",
+    "@iterable/react-native-sdk": "^3.0.0",
     "expo": "*",
     "react": "*",
     "react-native": "*"
