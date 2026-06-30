@@ -61,7 +61,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@iterable/react-native-sdk": "^2.0.2",
+    "@iterable/react-native-sdk": "^3.0.0",
     "expo": "*",
     "react": "*",
     "react-native": "*"
