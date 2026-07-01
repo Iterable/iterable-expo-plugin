@@ -19,6 +19,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Expo SDK 55 requires React Native's New Architecture
 - Tested with Expo SDK 55
 
+## [1.1.0] - 2026-06-24
+
+### Changed
+- Updated to Expo SDK 55 (React Native 0.83.2, React 19.2.0)
+- Updated `@iterable/react-native-sdk` peer dependency to `^3.0.0`
+- Updated minimum Node.js version to 20.19.4
+
 ## [1.0.1] - 2025-07-16
 
 ### Changed
