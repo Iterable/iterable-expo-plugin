@@ -379,10 +379,10 @@ If you encounter the error "Signing for 'IterableExpoRichPush' requires a develo
 - Your expo app needs to be run as a [development
   build](https://docs.expo.dev/develop/development-builds/introduction/) instead
   of through Expo Go. Both
-  `@iterable/iterable-expo-plugin` and `@iterable/react-native-sdk` will **NOT** work in Expo Go
+  `@iterable/expo-plugin` and `@iterable/react-native-sdk` will **NOT** work in Expo Go
   as they are reliant on native code, which Expo Go [does not
   support](https://expo.dev/blog/expo-go-vs-development-builds#expo-go-limitations).
-- `@iterable/iterable-expo-plugin` is intended for managed workflows, and will
+- `@iterable/expo-plugin` is intended for managed workflows, and will
   overwrite the files in your `ios` and `android` directories. Any manual
   changes to those directories will be overwritten on the next build.
 - This plugin has been tested on Expo SDK 55. While it may work on previous
