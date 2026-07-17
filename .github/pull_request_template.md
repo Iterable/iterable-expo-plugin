@@ -1,23 +1,19 @@
-## 🎟️ JIRA ticket(s)
+# 📝 Summary
+> _This should be a 150 characters summary of the changes on this PR_
 
-- [MOB-1234](https://iterable.atlassian.net/browse/MOB-1234)
+###### 🎟️ Jira Ticket: [SDK-XXXX](https://iterable.atlassian.net/browse/SDK-XXXX)
 
-## 🏕 Description
+## 📖 Description
+> Please provide a description of what this pull request does.
 
-Please explain the changes you made
+## 🧪 How to test?
+> How to test the changes added?
 
-## 📷 Screenshots
+## 📹 Loom recording if applicable
+> If it helps the reviewer, add a short Loom going over the changes or showcasing the change in behavior.
 
-Screenshots if the PR has visual changes.
+#### 🐞 Github Issues solved
+> If this solves any open GH Issues, please link them here.
 
-| android            | ios            |
-| ------------------ | -------------- |
-| ANDROID_SCREENSHOT | IOS_SCREENSHOT |
-
-## 🧐 Testing
-
-Please explain the steps needed to verify your change.
-
-## 📝 Documentation
-
-How have you documented these changes?
+#### 📚 Docs PR if applicable
+> Open a PR on the [Docs Repo](https://github.com/Iterable/iterable-docs) documenting the changes.
