@@ -1,3 +1,5 @@
+import { createHmac } from 'crypto';
+
 import { DEMO_JWT_TTL_SECONDS, signDemoJwt } from './signDemoJwt';
 
 function decodeJwtPayload(token: string): {
@@ -50,5 +52,18 @@ describe('signDemoJwt', () => {
       nowSeconds,
     });
     expect(valid.split('.')[2]).not.toBe(invalid.split('.')[2]);
+  });
+
+  it('matches Node crypto HMAC-SHA256', async () => {
+    const token = await signDemoJwt({ email, secret, nowSeconds });
+    const [header, payload, signature] = token.split('.');
+    expect(header).toBeDefined();
+    expect(payload).toBeDefined();
+    expect(signature).toBeDefined();
+    const signingInput = `${header}.${payload}`;
+    const expected = createHmac('sha256', secret)
+      .update(signingInput)
+      .digest('base64url');
+    expect(signature).toBe(expected);
   });
 });

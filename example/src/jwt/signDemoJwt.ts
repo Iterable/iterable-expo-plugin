@@ -7,6 +7,8 @@
  * base64 without padding, payload `{ email, iat, exp }` (no userId).
  */
 
+import { hmacSha256 } from './hmacSha256';
+
 export const DEMO_JWT_TTL_SECONDS = 86_400;
 
 const BASE64_ALPHABET =
@@ -30,31 +32,9 @@ export async function signDemoJwt({
   const header = base64UrlEncodeUtf8('{"alg":"HS256","typ":"JWT"}');
   const payload = base64UrlEncodeUtf8(JSON.stringify({ email, iat, exp }));
   const signingInput = `${header}.${payload}`;
-  const signature = base64UrlEncode(await hmacSha256(secret, signingInput));
+  const signature = base64UrlEncode(hmacSha256(secret, signingInput));
 
   return `${signingInput}.${signature}`;
-}
-
-async function hmacSha256(secret: string, data: string): Promise<Uint8Array> {
-  const cryptoApi = globalThis.crypto;
-  if (cryptoApi?.subtle == null) {
-    throw new Error('Web Crypto is not available for demo JWT signing');
-  }
-
-  const encoder = new TextEncoder();
-  const key = await cryptoApi.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const signature = await cryptoApi.subtle.sign(
-    'HMAC',
-    key,
-    encoder.encode(data)
-  );
-  return new Uint8Array(signature);
 }
 
 function base64UrlEncodeUtf8(value: string): string {
