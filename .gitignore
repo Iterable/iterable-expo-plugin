@@ -68,6 +68,7 @@ coverage/
 
 # Agent tooling
 .agent/
+.artifacts/
 .claude/
 .cursor/
 .opencode/
