@@ -19,6 +19,7 @@ import {
 
 import { colors } from './constants';
 import {
+  alertJwtPrefetchFailure,
   applyJwtToConfig,
   getDemoAuthToken,
   isJwtConfigured,
@@ -48,14 +49,14 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   emailRef.current = email;
 
   const onPress = async () => {
-    try {
-      if (isJwtConfigured()) {
+    if (isJwtConfigured()) {
+      try {
         const token = await getDemoAuthToken(email);
         Iterable.setEmail(email, token);
-      } else {
-        Iterable.setEmail(email);
+      } catch {
+        alertJwtPrefetchFailure();
       }
-    } catch {
+    } else {
       Iterable.setEmail(email);
     }
     setTimeout(() => {

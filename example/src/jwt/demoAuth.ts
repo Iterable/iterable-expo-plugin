@@ -8,22 +8,33 @@ import { Alert } from 'react-native';
 
 import { signDemoJwt } from './signDemoJwt';
 
-const PLACEHOLDER_JWT_SECRET = 'YOUR_ITERABLE_JWT_SECRET';
+export const PLACEHOLDER_JWT_SECRET = 'YOUR_ITERABLE_JWT_SECRET';
 
-export function isJwtEnabled(): boolean {
-  return process.env.EXPO_PUBLIC_ITERABLE_JWT_ENABLED === 'true';
+export type JwtDemoEnv = {
+  enabled?: string;
+  secret?: string;
+};
+
+export function isJwtEnabled(
+  enabled: string | undefined = process.env.EXPO_PUBLIC_ITERABLE_JWT_ENABLED
+): boolean {
+  return enabled === 'true';
 }
 
-export function getJwtSecret(): string | undefined {
-  const secret = process.env.EXPO_PUBLIC_ITERABLE_JWT_SECRET;
+export function resolveJwtSecret(
+  secret: string | undefined = process.env.EXPO_PUBLIC_ITERABLE_JWT_SECRET
+): string | undefined {
   if (!secret || secret === PLACEHOLDER_JWT_SECRET) {
     return undefined;
   }
   return secret;
 }
 
-export function isJwtConfigured(): boolean {
-  return isJwtEnabled() && getJwtSecret() !== undefined;
+export function isJwtConfigured(
+  enabled: string | undefined = process.env.EXPO_PUBLIC_ITERABLE_JWT_ENABLED,
+  secret: string | undefined = process.env.EXPO_PUBLIC_ITERABLE_JWT_SECRET
+): boolean {
+  return isJwtEnabled(enabled) && resolveJwtSecret(secret) !== undefined;
 }
 
 /**
@@ -39,8 +50,10 @@ export function isJwtConfigured(): boolean {
  * return response.text();
  * ```
  */
-export async function getDemoAuthToken(email: string): Promise<string> {
-  const secret = getJwtSecret();
+export async function getDemoAuthToken(
+  email: string,
+  secret: string | undefined = resolveJwtSecret()
+): Promise<string> {
   if (!secret) {
     throw new Error('JWT secret is not configured');
   }
@@ -56,11 +69,25 @@ export function jwtFailureReasonLabel(
   return IterableAuthFailureReason[failureReason] ?? 'Unknown error';
 }
 
+export function alertJwtFailure(reason: string): void {
+  Alert.alert('JWT authentication failed', reason);
+}
+
+export function alertJwtPrefetchFailure(): void {
+  alertJwtFailure(
+    jwtFailureReasonLabel(IterableAuthFailureReason.AUTH_TOKEN_GENERATION_ERROR)
+  );
+}
+
 export function applyJwtToConfig(
   config: IterableConfig,
-  getEmail: () => string
+  getEmail: () => string,
+  env: JwtDemoEnv = {
+    enabled: process.env.EXPO_PUBLIC_ITERABLE_JWT_ENABLED,
+    secret: process.env.EXPO_PUBLIC_ITERABLE_JWT_SECRET,
+  }
 ): void {
-  if (!isJwtEnabled()) {
+  if (!isJwtEnabled(env.enabled)) {
     return;
   }
 
@@ -71,15 +98,12 @@ export function applyJwtToConfig(
   };
 
   config.onJwtError = (authFailure: IterableAuthFailure) => {
-    Alert.alert(
-      'JWT authentication failed',
-      jwtFailureReasonLabel(authFailure.failureReason)
-    );
+    alertJwtFailure(jwtFailureReasonLabel(authFailure.failureReason));
   };
 
-  if (!isJwtConfigured()) {
+  if (!isJwtConfigured(env.enabled, env.secret)) {
     return;
   }
 
-  config.authHandler = () => getDemoAuthToken(getEmail());
+  config.authHandler = () => getDemoAuthToken(getEmail(), env.secret);
 }
