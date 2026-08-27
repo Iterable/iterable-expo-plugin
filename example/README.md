@@ -12,6 +12,7 @@ Expo.
 - [@iterable/expo-plugin Example](#iterableexpo-plugin-example)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
+  - [JWT authentication (optional)](#jwt-authentication-optional)
   - [Running the App](#running-the-app)
     - [iOS](#ios)
     - [Android](#android)
@@ -47,6 +48,7 @@ Expo.
    - Create a file called `.env.local` in the *example* directory
    - Copy the contents of `.env` to the new `.env.local`
    - Replace `YOUR_ITERABLE_API_KEY` with your actual Iterable API key
+     (a non-JWT **mobile** key unless you follow [JWT authentication](#jwt-authentication-optional))
    - If desired, uncomment `EXPO_PUBLIC_ITERABLE_EMAIL=YOUR_ITERABLE_EMAIL` and
      replace `YOUR_ITERABLE_EMAIL` with your actual Iterable email
 4. Push Notifications (Optional)
@@ -57,6 +59,36 @@ Expo.
     - Follow the instructions in the
       [README](https://github.com/Iterable/iterable-expo-plugin/blob/main/README.md#deep-links-optional)
       to add deep link support to the example app.
+
+## JWT authentication (optional)
+
+Email login with a non-JWT API key is the default. The example can also exercise
+a JWT-enabled **mobile** API key using a **JavaScript demo signer** in
+`example/src/jwt/`. This is demo-only.
+
+**Never embed the Iterable JWT secret in a production app.** `EXPO_PUBLIC_*`
+values are inlined into the JavaScript bundle. Production apps must return a
+token from `authHandler` that was fetched from a backend that holds the secret.
+
+To try the JWT path:
+
+1. Create a JWT-enabled **mobile** API key:
+   1. Sign into your Iterable account
+   2. Go to [Integrations > API Keys](https://app.iterable.com/settings/apiKeys)
+   3. Click **New API Key**
+   4. Name: a descriptive name
+   5. Type: **Mobile**
+   6. JWT authentication: **checked**
+   7. Create the key and copy both the API key and the JWT secret
+2. In `.env.local`:
+   - Set `EXPO_PUBLIC_ITERABLE_API_KEY` to that JWT-enabled mobile key
+   - Uncomment and set `EXPO_PUBLIC_ITERABLE_JWT_ENABLED=true`
+   - Uncomment and set `EXPO_PUBLIC_ITERABLE_JWT_SECRET` to the JWT secret
+3. Rebuild / reload the example app
+
+The demo `authHandler` is structured so you can replace the local signer with a
+`fetch` to your backend. See the comment on `getDemoAuthToken` in
+`example/src/jwt/demoAuth.ts`.
 
 ## Running the App
 
