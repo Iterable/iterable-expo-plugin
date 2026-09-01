@@ -65,3 +65,11 @@ example/.yarn/install-state.gz
 
 # Coverage
 coverage/
+
+# Agent tooling
+.agent/
+.artifacts/
+.claude/
+.cursor/
+.opencode/
+.pi/

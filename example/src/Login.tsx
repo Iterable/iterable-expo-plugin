@@ -4,7 +4,7 @@ import {
   IterableInAppShowResponse,
   IterableLogLevel,
 } from '@iterable/react-native-sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -18,6 +18,12 @@ import {
 } from 'react-native';
 
 import { colors } from './constants';
+import {
+  alertJwtPrefetchFailure,
+  applyJwtToConfig,
+  getDemoAuthToken,
+  isJwtConfigured,
+} from './jwt/demoAuth';
 
 interface LoginProps {
   /**
@@ -39,9 +45,20 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
   const [email, setEmail] = useState(
     process.env.EXPO_PUBLIC_ITERABLE_EMAIL ?? ''
   );
+  const emailRef = useRef(email);
+  emailRef.current = email;
 
-  const onPress = () => {
-    Iterable.setEmail(email);
+  const onPress = async () => {
+    if (isJwtConfigured()) {
+      try {
+        const token = await getDemoAuthToken(email);
+        Iterable.setEmail(email, token);
+      } catch {
+        alertJwtPrefetchFailure();
+      }
+    } else {
+      Iterable.setEmail(email);
+    }
     setTimeout(() => {
       onLoggedIn();
     }, 300);
@@ -57,6 +74,7 @@ export const Login = ({ onLoggedIn = () => {} }: LoginProps) => {
     config.allowedProtocols = ['app', 'iterable'];
     config.logLevel = IterableLogLevel.info;
     config.inAppHandler = () => IterableInAppShowResponse.show;
+    applyJwtToConfig(config, () => emailRef.current);
 
     Iterable.initialize(
       process.env.EXPO_PUBLIC_ITERABLE_API_KEY as string,
