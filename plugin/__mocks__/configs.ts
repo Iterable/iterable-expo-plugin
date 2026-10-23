@@ -166,6 +166,17 @@ export const createMockXcodeConfig = (
   modResults,
 });
 
+export const getDefaultPodfileContents = () => `
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+    )
+  end
+`;
+
 export const getDefaultProjectBuildGradleContents = () => `
   dependencies { 
   }

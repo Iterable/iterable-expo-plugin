@@ -1,5 +1,7 @@
 import { ConfigPlugin, withPodfile } from 'expo/config-plugins';
 
+import { injectAfterReactNativePostInstall } from './withIosPodfile.utils';
+
 /** Marker comment used to avoid injecting the workaround more than once. */
 export const FMT_WORKAROUND_MARKER =
   '# @iterable/expo-plugin: fmt workaround for Xcode 26.4';
@@ -26,26 +28,11 @@ const FMT_WORKAROUND_RUBY = `
 
 export const withIosFmtWorkaround: ConfigPlugin = (config) => {
   return withPodfile(config, (newConfig) => {
-    const { contents } = newConfig.modResults;
-
-    if (contents.includes(FMT_WORKAROUND_MARKER)) {
-      return newConfig;
-    }
-
-    const postInstallMatch = contents.match(
-      /(react_native_post_install\([\s\S]*?\n\s*\))/
-    );
-
-    if (!postInstallMatch) {
-      console.warn(
-        '@iterable/expo-plugin: Could not inject fmt workaround into Podfile — react_native_post_install block not found'
-      );
-      return newConfig;
-    }
-
-    newConfig.modResults.contents = contents.replace(
-      postInstallMatch[0],
-      `${postInstallMatch[0]}${FMT_WORKAROUND_RUBY}`
+    newConfig.modResults.contents = injectAfterReactNativePostInstall(
+      newConfig.modResults.contents,
+      FMT_WORKAROUND_MARKER,
+      FMT_WORKAROUND_RUBY,
+      'fmt workaround'
     );
 
     return newConfig;

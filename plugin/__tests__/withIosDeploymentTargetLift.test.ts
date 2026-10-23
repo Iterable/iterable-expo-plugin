@@ -1,55 +1,41 @@
 import {
   createMockPodfileConfig,
   createTestConfig,
+  getDefaultPodfileContents,
   type WithIterableResult,
 } from '../__mocks__';
 import { DEPLOYMENT_TARGET_LIFT_MARKER } from '../src/withIosDeploymentTargetLift';
+import { FMT_WORKAROUND_MARKER } from '../src/withIosFmtWorkaround';
 import withIterable from '../src/withIterable';
 
-const EXPO_PODFILE_SNIPPET = `
-  post_install do |installer|
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
-    )
-  end
-`;
-
 describe('withIosDeploymentTargetLift', () => {
-  it('injects the deployment target lift after react_native_post_install', async () => {
-    const result = withIterable(createTestConfig(), {}) as WithIterableResult;
-    const modifiedPodfile = await result.mods.ios.podfile(
-      createMockPodfileConfig({ contents: EXPO_PODFILE_SNIPPET })
-    );
-
-    expect(modifiedPodfile.modResults.contents).toContain(
-      DEPLOYMENT_TARGET_LIFT_MARKER
-    );
-    expect(modifiedPodfile.modResults.contents).toContain(
-      "config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'"
-    );
-  });
-
-  it('does not inject the lift twice', async () => {
+  it('injects the lift once, even when prebuild runs twice', async () => {
     const result = withIterable(createTestConfig(), {}) as WithIterableResult;
     const firstPass = await result.mods.ios.podfile(
-      createMockPodfileConfig({ contents: EXPO_PODFILE_SNIPPET })
+      createMockPodfileConfig({ contents: getDefaultPodfileContents() })
     );
     const secondPass = await result.mods.ios.podfile(
       createMockPodfileConfig({ contents: firstPass.modResults.contents })
     );
+    const { contents } = secondPass.modResults;
 
-    const markerCount = (
-      secondPass.modResults.contents.match(
-        new RegExp(
-          DEPLOYMENT_TARGET_LIFT_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-          'g'
-        )
-      ) || []
-    ).length;
+    expect(contents.split(DEPLOYMENT_TARGET_LIFT_MARKER)).toHaveLength(2);
+    expect(contents).toContain(
+      "config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'"
+    );
+  });
 
-    expect(markerCount).toBe(1);
+  it('keeps the fmt workaround, which ends up before the lift', async () => {
+    const result = withIterable(createTestConfig(), {}) as WithIterableResult;
+    const { contents } = (
+      await result.mods.ios.podfile(
+        createMockPodfileConfig({ contents: getDefaultPodfileContents() })
+      )
+    ).modResults;
+
+    expect(contents.indexOf(FMT_WORKAROUND_MARKER)).toBeGreaterThan(-1);
+    expect(contents.indexOf(FMT_WORKAROUND_MARKER)).toBeLessThan(
+      contents.indexOf(DEPLOYMENT_TARGET_LIFT_MARKER)
+    );
   });
 });

@@ -1,5 +1,7 @@
 import { ConfigPlugin, withPodfile } from 'expo/config-plugins';
 
+import { injectAfterReactNativePostInstall } from './withIosPodfile.utils';
+
 /** Marker comment used to avoid injecting the lift more than once. */
 export const DEPLOYMENT_TARGET_LIFT_MARKER =
   '# @iterable/expo-plugin: IPHONEOS deployment target lift for Xcode 27';
@@ -23,26 +25,11 @@ const DEPLOYMENT_TARGET_LIFT_RUBY = `
 
 export const withIosDeploymentTargetLift: ConfigPlugin = (config) => {
   return withPodfile(config, (newConfig) => {
-    const { contents } = newConfig.modResults;
-
-    if (contents.includes(DEPLOYMENT_TARGET_LIFT_MARKER)) {
-      return newConfig;
-    }
-
-    const postInstallMatch = contents.match(
-      /(react_native_post_install\([\s\S]*?\n\s*\))/
-    );
-
-    if (!postInstallMatch) {
-      console.warn(
-        '@iterable/expo-plugin: Could not inject IPHONEOS deployment target lift into Podfile — react_native_post_install block not found'
-      );
-      return newConfig;
-    }
-
-    newConfig.modResults.contents = contents.replace(
-      postInstallMatch[0],
-      `${postInstallMatch[0]}${DEPLOYMENT_TARGET_LIFT_RUBY}`
+    newConfig.modResults.contents = injectAfterReactNativePostInstall(
+      newConfig.modResults.contents,
+      DEPLOYMENT_TARGET_LIFT_MARKER,
+      DEPLOYMENT_TARGET_LIFT_RUBY,
+      'IPHONEOS deployment target lift'
     );
 
     return newConfig;
