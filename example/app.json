@@ -59,6 +59,9 @@
       [
         "expo-build-properties",
         {
+          "ios": {
+            "deploymentTarget": "15.1"
+          },
           "android": {
             "extraProguardRules": "-keep class org.json.** { *; }"
           }

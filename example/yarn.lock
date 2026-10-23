@@ -1805,8 +1805,8 @@ __metadata:
   linkType: hard
 
 "@iterable/react-native-sdk@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@iterable/react-native-sdk@npm:3.0.0"
+  version: 3.2.1
+  resolution: "@iterable/react-native-sdk@npm:3.2.1"
   peerDependencies:
     "@react-navigation/native": "*"
     react: "*"
@@ -1816,7 +1816,7 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/986244429e63646cd641a7f7be1a7c93be05f12000d80d1fa5cebce29bc4d87566e72766d1a3f57fe7f5c0a579a8c7d4b5b238cc815c8be161aef0a022314cfc
+  checksum: 10c0/ec6f0b5ab7bc11ee72e26d8416e113f464d0db1e4cd8f6d0e7df43f913ee063a1f781a25d06e4e2b4aa31091162a45f56776d9b950adf6a096313568bf375d6f
   languageName: node
   linkType: hard
 
