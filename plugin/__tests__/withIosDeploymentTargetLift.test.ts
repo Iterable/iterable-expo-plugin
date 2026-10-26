@@ -23,6 +23,7 @@ describe('withIosDeploymentTargetLift', () => {
     expect(contents).toContain(
       "config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'"
     );
+    expect(contents).toContain('if current.nil? || current.to_f < 15.1');
   });
 
   it('keeps the fmt workaround, which ends up before the lift', async () => {

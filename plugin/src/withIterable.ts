@@ -22,8 +22,7 @@ const withIterable: ConfigPlugin<ConfigPluginProps> = (config, props = {}) => {
       props.requestPermissionsForPushNotifications ?? false,
   };
 
-  // Pipeline order: withStoreConfigValues stays first, because
-  // IterableAppDelegate reads the Info.plist values it writes at launch.
+  // Pipeline order: withStoreConfigValues is listed first by convention.
   // Expo runs withPodfile mods in reverse order, so the generated Podfile has
   // the fmt block before the deployment target lift. The two are independent.
   return withPlugins(config, [

@@ -389,7 +389,7 @@ If you encounter the error "Signing for 'IterableExpoRichPush' requires a develo
   `@iterable/react-native-sdk` **3.2.1**. While it may work on previous Expo
   versions, they are not supported. The peer dependency remains `^3.0.0`, so
   apps on RN SDK 3.0.x and 3.1.x remain valid consumers.
-- On **Xcode 27**, CocoaPods may reject Iterable resource bundles that inherit
+- On **Xcode 27**, Xcode rejects CocoaPods resource-bundle targets that inherit
   an iOS deployment target below 15.0 (for example `IterableSDKResources` at
   12.0 from Iterable-iOS-SDK). During `expo prebuild`, this plugin injects a
   `post_install` hook that sets `IPHONEOS_DEPLOYMENT_TARGET` to **15.1** on any

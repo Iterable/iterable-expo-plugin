@@ -10,7 +10,7 @@ export const DEPLOYMENT_TARGET_LIFT_MARKER =
  * Lifts Pods targets below iOS 15.1 so Xcode 27 accepts resource bundles such as
  * IterableSDKResources (Iterable-iOS-SDK still declares 12.0).
  *
- * @see https://github.com/Iterable/react-native-sdk/blob/main/example/ios/Podfile
+ * @see https://github.com/Iterable/react-native-sdk/blob/3.2.1/example/ios/Podfile
  */
 const DEPLOYMENT_TARGET_LIFT_RUBY = `
     ${DEPLOYMENT_TARGET_LIFT_MARKER}

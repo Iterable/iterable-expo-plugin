@@ -173,12 +173,12 @@ jobs:
       # cannot pin 16.4 like the plain React Native SDK repos do.
       - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
-          xcode-version: latest-stable
+          xcode-version: '26.3'
 
       - name: Print available simulators
         run: xcrun simctl list devices | cat
 
-      - name: Get latest stable iOS version
+      - name: Resolve iOS simulator runtime for xcodebuild destination
         id: ios-version
         run: |
           LATEST_IOS=$(xcrun simctl list runtimes | grep "iOS 18" | grep -v "watchOS" | grep -v "beta" | grep -v "Beta" | grep -v "unavailable" | tail -1 | sed 's/.*iOS \([0-9]*\.[0-9]*\).*/\1/')
@@ -189,7 +189,7 @@ jobs:
           fi
 
           echo "version=$LATEST_IOS" >> $GITHUB_OUTPUT
-          echo "Latest stable iOS version: $LATEST_IOS"
+          echo "iOS simulator runtime for destination: $LATEST_IOS"
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -213,7 +213,6 @@ jobs:
           yarn install
           npx expo prebuild --clean
           cd ios
-          pod install
           xcodebuild -workspace expopluginexample.xcworkspace -scheme expopluginexample -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=${{ steps.ios-version.outputs.version }}' build
 
       - name: Perform CodeQL Analysis
