@@ -385,8 +385,20 @@ If you encounter the error "Signing for 'IterableExpoRichPush' requires a develo
 - `@iterable/iterable-expo-plugin` is intended for managed workflows, and will
   overwrite the files in your `ios` and `android` directories. Any manual
   changes to those directories will be overwritten on the next build.
-- This plugin has been tested on Expo SDK 55. While it may work on previous
-  versions, they are not supported.
+- This plugin has been tested on Expo SDK 55 with React Native 0.83.2 and
+  `@iterable/react-native-sdk` **3.2.1**. While it may work on previous Expo
+  versions, they are not supported. The peer dependency remains `^3.0.0`, so
+  apps on RN SDK 3.0.x and 3.1.x remain valid consumers.
+- On **Xcode 27**, Xcode rejects CocoaPods resource-bundle targets that inherit
+  an iOS deployment target below 15.0 (for example `IterableSDKResources` at
+  12.0 from Iterable-iOS-SDK). During `expo prebuild`, this plugin injects a
+  `post_install` hook that sets `IPHONEOS_DEPLOYMENT_TARGET` to **15.1** on any
+  Pods target whose value is missing or below 15.1. This is a host workaround
+  until Iterable-iOS-SDK publishes a minimum of iOS 15.1; it does not change
+  published podspec support ranges. The generated `ios/Podfile` includes the
+  marker `@iterable/expo-plugin: IPHONEOS deployment target lift for Xcode 27`.
+  The existing fmt C++17 workaround for Xcode 26.4+ is injected separately and
+  remains in place.
 
 ## 🎉 Features
 
