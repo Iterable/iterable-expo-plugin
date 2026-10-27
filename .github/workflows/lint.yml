@@ -1,4 +1,3 @@
-# Build, typecheck, lint, and dependency review for PRs to main.
 name: Build and Lint
 on:
   push:
@@ -10,7 +9,6 @@ on:
   merge_group:
     types:
       - checks_requested
-  workflow_dispatch:
 
 permissions:
   contents: read # Required for checking out code
