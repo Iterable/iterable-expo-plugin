@@ -136,6 +136,13 @@ npx expo run:android
    - If you still see the error, confirm your generated `ios/Podfile` contains the
      `@iterable/expo-plugin: fmt workaround for Xcode 26.4` comment inside `post_install`
 
+5. **iOS build rejected for deployment target below 15.0 (Xcode 27+, `IterableSDKResources`)**
+   - Iterable-iOS-SDK resource bundles may still inherit iOS 12.0; Xcode 27 rejects them
+   - `@iterable/expo-plugin` injects a Podfile `post_install` lift to **15.1** during prebuild
+   - Rebuild native code: `npx expo prebuild --clean`, then `cd ios && pod install && cd ..`
+   - Confirm your generated `ios/Podfile` contains
+     `@iterable/expo-plugin: IPHONEOS deployment target lift for Xcode 27` inside `post_install`
+
 ### Development Tips
 
 - Use `yarn start` to start the Metro bundler
