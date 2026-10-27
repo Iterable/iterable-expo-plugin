@@ -1,3 +1,4 @@
+# Build, typecheck, lint, and dependency review for PRs to main.
 name: Build and Lint
 on:
   push:
