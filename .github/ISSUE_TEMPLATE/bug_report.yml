@@ -68,7 +68,7 @@ body:
     attributes:
       label: Expo SDK version
       description: For example 53
-      placeholder: 53
+      placeholder: '53'
     validations:
       required: true
   - type: dropdown
