@@ -7,5 +7,3 @@ export const FIREBASE_BOM_VERSION = '32.8.1';
 
 export const FIREBASE_MESSAGING_CLASS_PATH =
   'com.google.firebase:firebase-messaging';
-
-export const DEFAULT_GOOGLE_SERVICES_PATH = 'app/google-services.json';
