@@ -8,6 +8,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-16
+
 ### Added
 - Podfile `post_install` injection that sets `IPHONEOS_DEPLOYMENT_TARGET` to 15.1
   for Pods targets below 15.1 (Xcode 27 / IterableSDKResources workaround).
